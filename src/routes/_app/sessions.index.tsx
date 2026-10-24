@@ -1,7 +1,8 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { ChevronRight } from "lucide-react";
 import { useState } from "react";
-import { CLASS_END, CLASS_START, SESSIONS, formatDateKo, monthKey, seoulToday } from "@/data/schedule";
-import { PageHeader, StatusBadge } from "@/components/lms";
+import { CLASS_END, CLASS_START, SESSIONS, monthKey, seoulToday, weekdayKo } from "@/data/schedule";
+import { PageHeader } from "@/components/lms";
 import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/_app/sessions/")({
@@ -17,6 +18,11 @@ export const Route = createFileRoute("/_app/sessions/")({
 });
 
 const MONTHS = Array.from(new Set(SESSIONS.map((s) => monthKey(s.date))));
+
+function formatDateCompact(date: string) {
+  const [year, month, day] = date.split("-");
+  return `${year.slice(2)}.${month}.${day} ${weekdayKo(date)}`;
+}
 
 function Sessions() {
   const [month, setMonth] = useState<string | null>(null);
@@ -35,18 +41,39 @@ function Sessions() {
           </button>
         ))}
       </div>
-      <ul className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+      <ul className="space-y-3">
         {list.map((s) => {
           const state = s.date === today ? "today" : s.date < today ? "done" : "upcoming";
           return (
             <li key={s.id}>
-              <Link to="/sessions/$id" params={{ id: s.id }} className="block h-full rounded-xl border border-border bg-card p-4 shadow-soft hover:border-primary">
-                <div className="flex items-center justify-between">
-                  <span className="font-bold">{s.number}회차</span>
-                  {state === "today" ? <StatusBadge tone="info">오늘</StatusBadge> : state === "done" ? <StatusBadge>지난 수업</StatusBadge> : <StatusBadge tone="neutral">예정</StatusBadge>}
+              <Link
+                to="/sessions/$id"
+                params={{ id: s.id }}
+                className={cn(
+                  "group grid min-h-24 grid-cols-[2.75rem_1fr_auto] items-center gap-x-4 rounded-2xl border bg-card px-4 py-5 transition-colors hover:border-foreground/40 sm:grid-cols-[4rem_1fr_auto_1.5rem] sm:px-7",
+                  state === "today" ? "border-2 border-foreground" : "border-border",
+                )}
+              >
+                <span className="self-start pt-0.5 text-sm font-medium tabular-nums text-muted-foreground sm:self-auto sm:text-base">
+                  {String(s.number).padStart(2, "0")}
+                </span>
+                <div className="min-w-0 sm:flex sm:items-baseline sm:gap-4">
+                  <p className="truncate text-base font-bold text-foreground sm:text-xl">
+                    {s.number}회차 · {s.title}
+                  </p>
+                  <p className="mt-1 shrink-0 text-sm tabular-nums text-muted-foreground sm:mt-0 sm:text-lg">
+                    {formatDateCompact(s.date)}
+                  </p>
                 </div>
-                <p className="mt-2 text-sm">{formatDateKo(s.date)}</p>
-                <p className="mt-1 text-sm text-muted-foreground">{s.title}</p>
+                <span
+                  className={cn(
+                    "rounded-lg px-3 py-2 text-xs font-medium sm:text-sm",
+                    state === "today" ? "bg-foreground text-background" : "bg-muted text-muted-foreground",
+                  )}
+                >
+                  {state === "today" ? "오늘" : state === "done" ? "수업 완료" : "준비중"}
+                </span>
+                <ChevronRight aria-hidden className="hidden h-5 w-5 text-muted-foreground transition-transform group-hover:translate-x-0.5 sm:block" />
               </Link>
             </li>
           );
