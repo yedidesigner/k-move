@@ -23,7 +23,7 @@ function Portfolio() {
         href={DRIVE_FOLDER_URL}
         target="_blank"
         rel="noopener noreferrer"
-        className="inline-flex min-h-12 items-center justify-center gap-3 rounded-xl bg-primary px-6 py-4 text-base font-semibold text-primary-foreground transition-colors hover:bg-primary/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+        className="inline-flex min-h-12 items-center justify-center gap-3 bg-primary px-6 py-4 text-base font-semibold text-primary-foreground transition-colors hover:bg-primary/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
       >
         <FolderOpen aria-hidden="true" className="size-5" />
         Google Drive 바로가기

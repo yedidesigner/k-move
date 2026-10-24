@@ -1,6 +1,15 @@
 import { Link } from "@tanstack/react-router";
 import type { ReactNode } from "react";
-import { Home, CalendarDays, FolderOpen, ClipboardList, Briefcase, Wrench, Shield, LogOut } from "lucide-react";
+import {
+  Home,
+  CalendarDays,
+  FolderOpen,
+  ClipboardList,
+  Briefcase,
+  Wrench,
+  Shield,
+  LogOut,
+} from "lucide-react";
 import { SITE_NAME, COURSE_NAME } from "@/data/schedule";
 import { useAuth } from "@/lib/auth";
 
@@ -19,19 +28,33 @@ export function AppShell({ children }: { children: ReactNode }) {
   const { status, user, signOut } = useAuth();
   const isInstructor = status === "instructor";
   const linkCls =
-    "flex min-h-11 items-center gap-3 rounded-lg px-3 text-sm font-medium text-sidebar-foreground hover:bg-sidebar-accent";
-  const active = { className: "bg-sidebar-accent text-sidebar-primary font-semibold" };
+    "flex min-h-12 items-center gap-3 border-l-2 border-transparent px-4 text-sm font-medium transition-colors hover:bg-sidebar-accent data-[status=active]:border-sidebar-primary data-[status=active]:bg-sidebar-primary data-[status=active]:text-sidebar-primary-foreground";
+  const active = { className: "font-semibold" };
 
   return (
     <div className="min-h-screen bg-background md:flex">
       <aside className="hidden w-72 shrink-0 flex-col border-r border-sidebar-border bg-sidebar md:flex md:sticky md:top-0 md:h-screen">
-        <div className="border-b border-sidebar-border p-5">
-          <p className="text-base font-bold leading-snug text-sidebar-foreground break-keep">{SITE_NAME}</p>
+        <div className="border-b border-sidebar-border px-6 py-7">
+          <p className="mb-4 text-2xl font-bold tracking-tight">
+            K-MOVE
+            <span className="ml-2 text-xs font-medium tracking-[0.16em] text-muted-foreground">
+              LMS
+            </span>
+          </p>
+          <p className="text-base font-bold leading-snug text-sidebar-foreground break-keep">
+            {SITE_NAME}
+          </p>
           <p className="mt-1 text-sm text-muted-foreground break-keep">{COURSE_NAME}</p>
         </div>
-        <nav aria-label="주요 메뉴" className="flex-1 space-y-1 overflow-y-auto p-3">
+        <nav aria-label="주요 메뉴" className="flex-1 space-y-1 overflow-y-auto px-3 py-5">
           {NAV.map(({ to, label, icon: Icon }) => (
-            <Link key={to} to={to} className={linkCls} activeProps={active} activeOptions={{ exact: to === "/" }}>
+            <Link
+              key={to}
+              to={to}
+              className={linkCls}
+              activeProps={active}
+              activeOptions={{ exact: to === "/" }}
+            >
               <Icon className="h-4 w-4" aria-hidden /> {label}
             </Link>
           ))}
@@ -45,8 +68,13 @@ export function AppShell({ children }: { children: ReactNode }) {
           )}
         </nav>
         <div className="border-t border-sidebar-border p-4">
-          <p className="truncate text-sm text-foreground">{user?.user_metadata?.["username"] ?? user?.email}</p>
-          <button onClick={() => void signOut()} className="mt-2 inline-flex min-h-11 items-center gap-2 text-sm text-muted-foreground hover:text-foreground">
+          <p className="truncate text-sm text-foreground">
+            {user?.user_metadata?.["username"] ?? user?.email}
+          </p>
+          <button
+            onClick={() => void signOut()}
+            className="mt-2 inline-flex min-h-11 items-center gap-2 text-sm text-muted-foreground hover:text-foreground"
+          >
             <LogOut className="h-4 w-4" aria-hidden /> 로그아웃
           </button>
         </div>
@@ -56,17 +84,45 @@ export function AppShell({ children }: { children: ReactNode }) {
         <p className="text-sm font-bold leading-snug text-foreground break-keep">{SITE_NAME}</p>
         <p className="text-xs text-muted-foreground break-keep">{COURSE_NAME}</p>
         <div className="mt-2 flex flex-wrap gap-2">
-          <Link to="/tools" className="rounded-md border border-border px-3 py-1.5 text-xs">실습 도구</Link>
-          {isInstructor && <Link to="/admin" className="rounded-md border border-border px-3 py-1.5 text-xs">관리자</Link>}
-          <button onClick={() => void signOut()} className="rounded-md border border-border px-3 py-1.5 text-xs">로그아웃</button>
+          <Link
+            to="/tools"
+            className="border border-border px-3 py-2 text-xs transition-colors hover:bg-muted"
+          >
+            실습 도구
+          </Link>
+          {isInstructor && (
+            <Link
+              to="/admin"
+              className="border border-border px-3 py-2 text-xs transition-colors hover:bg-muted"
+            >
+              관리자
+            </Link>
+          )}
+          <button
+            onClick={() => void signOut()}
+            className="border border-border px-3 py-2 text-xs transition-colors hover:bg-muted"
+          >
+            로그아웃
+          </button>
         </div>
       </header>
 
-      <main className="mx-auto w-full max-w-5xl flex-1 px-4 pb-28 pt-6 md:px-10 md:pb-12 md:pt-10">{children}</main>
+      <main className="mx-auto min-w-0 w-full max-w-5xl flex-1 px-4 pb-28 pt-6 md:px-10 md:pb-12 md:pt-10">
+        {children}
+      </main>
 
-      <nav aria-label="하단 메뉴" className="fixed inset-x-0 bottom-0 z-20 grid grid-cols-5 border-t border-border bg-card md:hidden">
+      <nav
+        aria-label="하단 메뉴"
+        className="fixed inset-x-0 bottom-0 z-20 grid grid-cols-5 border-t border-border bg-card pb-[env(safe-area-inset-bottom)] md:hidden"
+      >
         {NAV.filter((n) => MOBILE.includes(n.to)).map(({ to, label, icon: Icon }) => (
-          <Link key={to} to={to} activeOptions={{ exact: to === "/" }} className="flex min-h-14 flex-col items-center justify-center gap-0.5 text-[11px] text-muted-foreground" activeProps={{ className: "text-primary font-semibold" }}>
+          <Link
+            key={to}
+            to={to}
+            activeOptions={{ exact: to === "/" }}
+            className="flex min-h-14 flex-col items-center justify-center gap-0.5 text-[11px] transition-colors data-[status=active]:bg-primary data-[status=active]:text-primary-foreground"
+            activeProps={{ className: "font-semibold" }}
+          >
             <Icon className="h-5 w-5" aria-hidden />
             {label.replace("내 ", "")}
           </Link>

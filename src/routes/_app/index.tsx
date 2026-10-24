@@ -1,6 +1,13 @@
+import { ArrowUpRight, ChevronRight } from "lucide-react";
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { CLASS_END, CLASS_START, COURSE_NAME, currentOrNextSession, formatDateKo } from "@/data/schedule";
-import { EmptyState, PageHeader, Panel, StatusBadge } from "@/components/lms";
+import {
+  CLASS_END,
+  CLASS_START,
+  COURSE_NAME,
+  currentOrNextSession,
+  formatDateKo,
+} from "@/data/schedule";
+import { EmptyState, PageHeader } from "@/components/lms";
 
 export const Route = createFileRoute("/_app/")({
   head: () => ({
@@ -19,29 +26,64 @@ function HomePage() {
   return (
     <>
       <PageHeader title="홈" description={COURSE_NAME} />
-      <div className="grid gap-4 md:grid-cols-3">
-        <Panel className="md:col-span-2">
+      <div className="grid gap-5 lg:grid-cols-[minmax(0,2fr)_minmax(0,1fr)]">
+        <section className="bg-primary px-6 py-7 text-primary-foreground sm:px-8 sm:py-8">
           {cur ? (
             <>
-              <StatusBadge tone={cur.isToday ? "info" : "neutral"}>{cur.isToday ? "오늘의 수업" : "다음 수업"}</StatusBadge>
-              <p className="mt-3 text-2xl font-bold">{cur.session.number}회차</p>
-              <p className="mt-1 text-lg">{formatDateKo(cur.session.date)}</p>
-              <p className="text-muted-foreground">{CLASS_START} ~ {CLASS_END} (한국 시간)</p>
-              <p className="mt-3 text-sm text-muted-foreground">{cur.session.title}</p>
-              <Link to="/sessions/$id" params={{ id: cur.session.id }} className="mt-4 inline-flex min-h-11 items-center rounded-lg bg-primary px-4 text-sm font-semibold text-primary-foreground hover:bg-primary/90">
-                회차 보기
+              <p className="text-xs font-semibold tracking-wide">
+                {cur.isToday ? "오늘의 수업" : "다음 수업"}
+              </p>
+              <div className="mt-6 flex flex-wrap items-center gap-x-6 gap-y-3">
+                <span
+                  aria-label={`${cur.session.number}회차`}
+                  className="text-6xl font-semibold leading-none tracking-[-0.0325em] tabular-nums sm:text-7xl"
+                >
+                  {String(cur.session.number).padStart(2, "0")}
+                </span>
+                <h2 className="text-lg font-semibold">{cur.session.title}</h2>
+              </div>
+              <div className="mt-6 border-t border-primary-foreground/25 pt-5 text-sm">
+                <p>{formatDateKo(cur.session.date)}</p>
+                <p className="mt-1 text-primary-foreground/75">
+                  {CLASS_START} ~ {CLASS_END} (한국 시간)
+                </p>
+              </div>
+              <Link
+                to="/sessions/$id"
+                params={{ id: cur.session.id }}
+                className="mt-6 inline-flex min-h-11 items-center gap-8 border border-primary-foreground/50 px-4 text-sm font-semibold transition-colors hover:bg-primary-foreground hover:text-primary focus-visible:outline-primary-foreground"
+              >
+                회차 보기 <ChevronRight aria-hidden className="size-4" />
               </Link>
             </>
           ) : (
             <p>모든 회차가 종료되었습니다.</p>
           )}
-        </Panel>
-        <div className="grid gap-4">
-          <Link to="/materials" className="rounded-xl border border-border bg-card p-5 font-semibold shadow-soft hover:border-primary">수업자료 바로가기 →</Link>
-          <Link to="/assignments" className="rounded-xl border border-border bg-card p-5 font-semibold shadow-soft hover:border-primary">과제 바로가기 →</Link>
+        </section>
+        <div className="grid divide-y divide-border border-y border-border bg-card">
+          <Link
+            to="/materials"
+            className="group flex min-h-28 items-center justify-between gap-4 px-6 py-6 transition-colors hover:bg-muted"
+          >
+            <span>
+              <span className="block text-xs text-muted-foreground">수업자료 바로가기</span>
+              <span className="mt-2 block text-lg font-semibold">자료실</span>
+            </span>
+            <ArrowUpRight aria-hidden className="size-5 shrink-0" />
+          </Link>
+          <Link
+            to="/assignments"
+            className="group flex min-h-28 items-center justify-between gap-4 px-6 py-6 transition-colors hover:bg-muted"
+          >
+            <span>
+              <span className="block text-xs text-muted-foreground">과제 바로가기</span>
+              <span className="mt-2 block text-lg font-semibold">과제</span>
+            </span>
+            <ArrowUpRight aria-hidden className="size-5 shrink-0" />
+          </Link>
         </div>
       </div>
-      <h2 className="mb-3 mt-8 text-lg font-bold">공지</h2>
+      <h2 className="mb-3 mt-10 text-lg font-bold">공지</h2>
       <EmptyState title="등록된 공지가 없습니다" reason="공지가 등록되면 이곳에 표시됩니다." />
     </>
   );
