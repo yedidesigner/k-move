@@ -16,7 +16,6 @@ import { Route as SetupRouteImport } from './routes/setup'
 import { Route as AppIndexRouteImport } from './routes/_app/index'
 import { Route as AppAdminRouteImport } from './routes/_app/admin'
 import { Route as AppAssignmentsRouteImport } from './routes/_app/assignments'
-import { Route as AppAttendanceRouteImport } from './routes/_app/attendance'
 import { Route as AppMaterialsRouteImport } from './routes/_app/materials'
 import { Route as AppPortfolioRouteImport } from './routes/_app/portfolio'
 import { Route as AppToolsRouteImport } from './routes/_app/tools'
@@ -57,11 +56,6 @@ const AppAssignmentsRoute = AppAssignmentsRouteImport.update({
   path: '/assignments',
   getParentRoute: () => AppRoute,
 } as any)
-const AppAttendanceRoute = AppAttendanceRouteImport.update({
-  id: '/attendance',
-  path: '/attendance',
-  getParentRoute: () => AppRoute,
-} as any)
 const AppMaterialsRoute = AppMaterialsRouteImport.update({
   id: '/materials',
   path: '/materials',
@@ -95,7 +89,6 @@ export interface FileRoutesByFullPath {
   '/setup': typeof SetupRoute
   '/admin': typeof AppAdminRoute
   '/assignments': typeof AppAssignmentsRoute
-  '/attendance': typeof AppAttendanceRoute
   '/materials': typeof AppMaterialsRoute
   '/portfolio': typeof AppPortfolioRoute
   '/tools': typeof AppToolsRoute
@@ -108,7 +101,6 @@ export interface FileRoutesByTo {
   '/setup': typeof SetupRoute
   '/admin': typeof AppAdminRoute
   '/assignments': typeof AppAssignmentsRoute
-  '/attendance': typeof AppAttendanceRoute
   '/materials': typeof AppMaterialsRoute
   '/portfolio': typeof AppPortfolioRoute
   '/tools': typeof AppToolsRoute
@@ -124,7 +116,6 @@ export interface FileRoutesById {
   '/setup': typeof SetupRoute
   '/_app/admin': typeof AppAdminRoute
   '/_app/assignments': typeof AppAssignmentsRoute
-  '/_app/attendance': typeof AppAttendanceRoute
   '/_app/materials': typeof AppMaterialsRoute
   '/_app/portfolio': typeof AppPortfolioRoute
   '/_app/tools': typeof AppToolsRoute
@@ -141,7 +132,6 @@ export interface FileRouteTypes {
     | '/setup'
     | '/admin'
     | '/assignments'
-    | '/attendance'
     | '/materials'
     | '/portfolio'
     | '/tools'
@@ -154,7 +144,6 @@ export interface FileRouteTypes {
     | '/setup'
     | '/admin'
     | '/assignments'
-    | '/attendance'
     | '/materials'
     | '/portfolio'
     | '/tools'
@@ -169,7 +158,6 @@ export interface FileRouteTypes {
     | '/setup'
     | '/_app/admin'
     | '/_app/assignments'
-    | '/_app/attendance'
     | '/_app/materials'
     | '/_app/portfolio'
     | '/_app/tools'
@@ -236,13 +224,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppAssignmentsRouteImport
       parentRoute: typeof AppRoute
     }
-    '/_app/attendance': {
-      id: '/_app/attendance'
-      path: '/attendance'
-      fullPath: '/attendance'
-      preLoaderRoute: typeof AppAttendanceRouteImport
-      parentRoute: typeof AppRoute
-    }
     '/_app/materials': {
       id: '/_app/materials'
       path: '/materials'
@@ -284,7 +265,6 @@ declare module '@tanstack/react-router' {
 interface AppRouteChildren {
   AppAdminRoute: typeof AppAdminRoute
   AppAssignmentsRoute: typeof AppAssignmentsRoute
-  AppAttendanceRoute: typeof AppAttendanceRoute
   AppMaterialsRoute: typeof AppMaterialsRoute
   AppPortfolioRoute: typeof AppPortfolioRoute
   AppToolsRoute: typeof AppToolsRoute
@@ -296,7 +276,6 @@ interface AppRouteChildren {
 const AppRouteChildren: AppRouteChildren = {
   AppAdminRoute: AppAdminRoute,
   AppAssignmentsRoute: AppAssignmentsRoute,
-  AppAttendanceRoute: AppAttendanceRoute,
   AppMaterialsRoute: AppMaterialsRoute,
   AppPortfolioRoute: AppPortfolioRoute,
   AppToolsRoute: AppToolsRoute,

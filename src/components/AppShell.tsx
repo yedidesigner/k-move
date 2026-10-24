@@ -1,6 +1,6 @@
 import { Link } from "@tanstack/react-router";
 import type { ReactNode } from "react";
-import { Home, CalendarDays, FolderOpen, ClipboardList, Briefcase, CheckSquare, Wrench, Shield, LogOut } from "lucide-react";
+import { Home, CalendarDays, FolderOpen, ClipboardList, Briefcase, Wrench, Shield, LogOut } from "lucide-react";
 import { SITE_NAME, COURSE_NAME } from "@/data/schedule";
 import { useAuth } from "@/lib/auth";
 
@@ -10,7 +10,6 @@ const NAV = [
   { to: "/materials", label: "자료실", icon: FolderOpen },
   { to: "/assignments", label: "과제", icon: ClipboardList },
   { to: "/portfolio", label: "내 포트폴리오", icon: Briefcase },
-  { to: "/attendance", label: "내 출석", icon: CheckSquare },
   { to: "/tools", label: "실습 도구", icon: Wrench },
 ] as const;
 
@@ -57,7 +56,6 @@ export function AppShell({ children }: { children: ReactNode }) {
         <p className="text-sm font-bold leading-snug text-foreground break-keep">{SITE_NAME}</p>
         <p className="text-xs text-muted-foreground break-keep">{COURSE_NAME}</p>
         <div className="mt-2 flex flex-wrap gap-2">
-          <Link to="/attendance" className="rounded-md border border-border px-3 py-1.5 text-xs">내 출석</Link>
           <Link to="/tools" className="rounded-md border border-border px-3 py-1.5 text-xs">실습 도구</Link>
           {isInstructor && <Link to="/admin" className="rounded-md border border-border px-3 py-1.5 text-xs">관리자</Link>}
           <button onClick={() => void signOut()} className="rounded-md border border-border px-3 py-1.5 text-xs">로그아웃</button>
