@@ -48,13 +48,13 @@ function Sessions() {
                 to="/sessions/$id"
                 params={{ id: s.id }}
                 className={cn(
-                  "group grid min-h-24 grid-cols-[3rem_minmax(0,1fr)_auto] items-center gap-x-3 px-3 py-4 transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-primary sm:grid-cols-[5rem_minmax(0,1fr)_auto_1.25rem] sm:gap-x-5 sm:px-7",
+                  "group relative grid min-h-24 grid-cols-[4.25rem_minmax(0,1fr)_auto] items-center gap-x-3 px-3 py-4 transition duration-200 ease-out hover:z-10 focus-visible:z-10 focus-visible:outline focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-primary motion-safe:hover:scale-[1.015] motion-safe:focus-visible:scale-[1.015] motion-reduce:transition-none sm:grid-cols-[6rem_minmax(0,1fr)_auto_1.25rem] sm:gap-x-5 sm:px-7",
                   state === "today"
                     ? "bg-black text-white hover:bg-neutral-900"
-                    : "bg-card text-foreground hover:bg-muted/50",
+                    : "bg-card text-foreground hover:bg-muted",
                 )}
               >
-                <span className="text-5xl font-light leading-none tracking-tight tabular-nums sm:text-6xl">
+                <span className="text-[3.36rem] font-bold leading-none tracking-tight tabular-nums sm:text-[4.2rem]">
                   {String(s.number).padStart(2, "0")}
                 </span>
                 <div className="flex min-w-0 flex-wrap items-baseline gap-x-5 gap-y-1">
