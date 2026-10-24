@@ -7,7 +7,6 @@ import {
   currentOrNextSession,
   formatDateKo,
 } from "@/data/schedule";
-import { PageHeader } from "@/components/lms";
 
 export const Route = createFileRoute("/_app/")({
   head: () => ({
@@ -25,7 +24,12 @@ function HomePage() {
   const cur = currentOrNextSession();
   return (
     <>
-      <PageHeader title="홈" description={COURSE_NAME} />
+      <header className="mb-6 flex items-baseline gap-4">
+        <h1 className="shrink-0 text-2xl font-bold tracking-tight text-foreground md:text-3xl">
+          HOME
+        </h1>
+        <p className="min-w-0 text-base text-muted-foreground">{COURSE_NAME}</p>
+      </header>
       <section aria-labelledby="home-notice-title" className="mb-8">
         <h2 id="home-notice-title" className="mb-3 text-lg font-bold">
           공지
@@ -61,7 +65,7 @@ function HomePage() {
                 <Link
                   to="/sessions/$id"
                   params={{ id: cur.session.id }}
-                  className="col-start-2 inline-flex min-h-11 w-fit items-center gap-8 whitespace-nowrap border border-foreground/50 px-4 text-sm font-semibold transition-colors hover:bg-foreground hover:text-card focus-visible:outline-foreground @min-[28rem]:col-start-auto"
+                  className="relative -left-[6px] col-start-2 inline-flex min-h-11 w-fit items-center gap-8 whitespace-nowrap border border-foreground/50 px-4 text-sm font-semibold transition-colors hover:bg-foreground hover:text-card focus-visible:outline-foreground @min-[28rem]:col-start-auto"
                 >
                   회차 보기 <ChevronRight aria-hidden className="size-4" />
                 </Link>
