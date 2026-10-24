@@ -54,7 +54,7 @@ function Sessions() {
                     : "bg-card text-foreground hover:bg-muted",
                 )}
               >
-                <span className="text-[3.36rem] font-bold leading-none tracking-tight tabular-nums sm:text-[4.2rem]">
+                <span className="text-[3.6288rem] font-semibold leading-none tracking-[-0.0325em] tabular-nums sm:text-[4.536rem]">
                   {String(s.number).padStart(2, "0")}
                 </span>
                 <div className="flex min-w-0 flex-wrap items-baseline gap-x-5 gap-y-1">
