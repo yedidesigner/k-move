@@ -34,17 +34,14 @@ export function AppShell({ children }: { children: ReactNode }) {
   return (
     <div className="min-h-screen bg-background md:flex">
       <aside className="hidden w-72 shrink-0 flex-col border-r border-sidebar-border bg-sidebar md:flex md:sticky md:top-0 md:h-screen">
-        <div className="border-b border-sidebar-border px-6 py-7">
-          <p className="mb-4 text-2xl font-bold tracking-tight">
-            K-MOVE
-            <span className="ml-2 text-xs font-medium tracking-[0.16em] text-muted-foreground">
-              LMS
-            </span>
+        <div className="shrink-0 border-b border-sidebar-border px-6 py-10">
+          <p className="text-2xl font-bold leading-[1.2] tracking-tight text-sidebar-foreground">
+            <span className="block">K-MOVE</span>
+            <span className="block">DESIGN</span>
           </p>
-          <p className="text-base font-bold leading-snug text-sidebar-foreground break-keep">
+          <p className="mt-7 text-[13px] font-light leading-relaxed tracking-tight text-muted-foreground break-keep">
             {SITE_NAME}
           </p>
-          <p className="mt-1 text-sm text-muted-foreground break-keep">{COURSE_NAME}</p>
         </div>
         <nav aria-label="주요 메뉴" className="flex-1 space-y-1 overflow-y-auto px-3 py-5">
           {NAV.map(({ to, label, icon: Icon }) => (
