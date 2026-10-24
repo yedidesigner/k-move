@@ -19,15 +19,16 @@ function normalizeLoginId(loginId: string) {
   return loginId.trim().normalize("NFKC").toLocaleLowerCase("ko-KR");
 }
 
-function validateCredentials(loginId: string, password: string) {
+function validateCredentials(loginId: string, password: string, requireKoreanId = false) {
   const normalizedId = normalizeLoginId(loginId);
   if (normalizedId.length < 2 || normalizedId.length > 30) throw new Error("auth/invalid-login-id");
+  if (requireKoreanId && !/^[가-힣]+$/.test(normalizedId)) throw new Error("auth/korean-login-id-required");
   if (!/^\d{4}$/.test(password)) throw new Error("auth/invalid-pin");
   return normalizedId;
 }
 
-async function internalCredentials(loginId: string, password: string) {
-  const normalizedId = validateCredentials(loginId, password);
+async function internalCredentials(loginId: string, password: string, requireKoreanId = false) {
+  const normalizedId = validateCredentials(loginId, password, requireKoreanId);
   const digest = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(normalizedId));
   const hash = Array.from(new Uint8Array(digest), (byte) => byte.toString(16).padStart(2, "0")).join("");
   // The UI uses a four-digit PIN. Add an app-specific prefix before sending it
@@ -95,7 +96,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const signUp = useCallback(async (loginId: string, password: string) => {
-    const credentials = await internalCredentials(loginId, password);
+    const credentials = await internalCredentials(loginId, password, true);
     const supabase = getSupabase();
     const { data, error } = await supabase.auth.signUp({
       email: credentials.email,

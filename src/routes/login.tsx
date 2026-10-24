@@ -27,6 +27,7 @@ const ERROR_MESSAGES: Record<string, string> = {
   "auth/too-many-requests": "시도가 너무 많습니다. 잠시 후 다시 시도해 주세요.",
   "auth/network-request-failed": "네트워크 연결을 확인해 주세요.",
   "auth/invalid-login-id": "아이디는 2~30자로 입력해 주세요.",
+  "auth/korean-login-id-required": "아이디는 한글로만 입력해 주세요.",
   "auth/invalid-pin": "비밀번호는 숫자 4자리로 입력해 주세요.",
   "auth/email-confirmation-required": "Supabase Authentication에서 Confirm email을 꺼 주세요.",
   "invalid_credentials": "아이디 또는 비밀번호가 올바르지 않습니다.",
@@ -111,11 +112,16 @@ function Login() {
                   onChange={(event) => setLoginId(event.target.value)}
                   minLength={2}
                   maxLength={30}
+                  pattern={mode === "signup" ? "[가-힣]{2,30}" : undefined}
+                  title={mode === "signup" ? "아이디는 한글 2~30자로 입력해 주세요." : undefined}
                   autoComplete="username"
                   required
                   className="min-h-12 w-full rounded-lg border border-input bg-background px-3 text-base outline-none focus:ring-2 focus:ring-ring"
                   placeholder="사용할 아이디"
                 />
+                {mode === "signup" && (
+                  <p className="mt-1.5 text-xs text-muted-foreground">한글 2~30자로 입력해 주세요.</p>
+                )}
               </div>
               <div>
                 <label htmlFor="password" className="mb-1.5 block text-sm font-medium text-foreground">비밀번호</label>
