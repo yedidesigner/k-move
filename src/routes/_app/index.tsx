@@ -26,8 +26,14 @@ function HomePage() {
   return (
     <>
       <PageHeader title="홈" description={COURSE_NAME} />
+      <section aria-labelledby="home-notice-title" className="mb-8">
+        <h2 id="home-notice-title" className="mb-3 text-lg font-bold">
+          공지
+        </h2>
+        <EmptyState title="등록된 공지가 없습니다" reason="공지가 등록되면 이곳에 표시됩니다." />
+      </section>
       <div className="grid gap-5 lg:grid-cols-[minmax(0,2fr)_minmax(0,1fr)]">
-        <section className="bg-primary px-6 py-7 text-primary-foreground sm:px-8 sm:py-8">
+        <section className="border-y border-border bg-card px-6 py-7 text-foreground sm:px-8 sm:py-8">
           {cur ? (
             <>
               <p className="text-xs font-semibold tracking-wide">
@@ -42,19 +48,21 @@ function HomePage() {
                 </span>
                 <h2 className="text-lg font-semibold">{cur.session.title}</h2>
               </div>
-              <div className="mt-6 border-t border-primary-foreground/25 pt-5 text-sm">
-                <p>{formatDateKo(cur.session.date)}</p>
-                <p className="mt-1 text-primary-foreground/75">
-                  {CLASS_START} ~ {CLASS_END} (한국 시간)
-                </p>
+              <div className="mt-6 grid items-center gap-5 border-t border-border pt-5 text-sm sm:grid-cols-2">
+                <div>
+                  <p>{formatDateKo(cur.session.date)}</p>
+                  <p className="mt-1">
+                    {CLASS_START} ~ {CLASS_END} (한국 시간)
+                  </p>
+                </div>
+                <Link
+                  to="/sessions/$id"
+                  params={{ id: cur.session.id }}
+                  className="inline-flex min-h-11 w-fit items-center gap-8 border border-foreground/50 px-4 text-sm font-semibold transition-colors hover:bg-foreground hover:text-card focus-visible:outline-foreground"
+                >
+                  회차 보기 <ChevronRight aria-hidden className="size-4" />
+                </Link>
               </div>
-              <Link
-                to="/sessions/$id"
-                params={{ id: cur.session.id }}
-                className="mt-6 inline-flex min-h-11 items-center gap-8 border border-primary-foreground/50 px-4 text-sm font-semibold transition-colors hover:bg-primary-foreground hover:text-primary focus-visible:outline-primary-foreground"
-              >
-                회차 보기 <ChevronRight aria-hidden className="size-4" />
-              </Link>
             </>
           ) : (
             <p>모든 회차가 종료되었습니다.</p>
@@ -83,8 +91,6 @@ function HomePage() {
           </Link>
         </div>
       </div>
-      <h2 className="mb-3 mt-10 text-lg font-bold">공지</h2>
-      <EmptyState title="등록된 공지가 없습니다" reason="공지가 등록되면 이곳에 표시됩니다." />
     </>
   );
 }
