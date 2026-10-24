@@ -1,6 +1,13 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { ChevronRight } from "lucide-react";
-import { CLASS_END, CLASS_START, SESSIONS, TIME_ZONE, seoulToday, weekdayKo } from "@/data/schedule";
+import {
+  CLASS_END,
+  CLASS_START,
+  SESSIONS,
+  TIME_ZONE,
+  seoulToday,
+  weekdayKo,
+} from "@/data/schedule";
 import { PageHeader } from "@/components/lms";
 import { cn } from "@/lib/utils";
 
@@ -28,7 +35,10 @@ function Sessions() {
   const today = seoulToday();
   return (
     <>
-      <PageHeader title="CURRICULUM" description={`총 ${SESSIONS.length}회차 · 매회 ${CLASS_START}~${CLASS_END} (한국 시간)`} />
+      <PageHeader
+        title="CURRICULUM"
+        description={`총 ${SESSIONS.length}회차 · 매회 ${CLASS_START}~${CLASS_END} (한국 시간)`}
+      />
       <ul className="divide-y divide-border border-y border-border">
         {SESSIONS.map((s) => {
           const state = s.date === today ? "today" : s.date < today ? "done" : "upcoming";
@@ -39,7 +49,9 @@ function Sessions() {
                 params={{ id: s.id }}
                 className={cn(
                   "group grid min-h-24 grid-cols-[3rem_minmax(0,1fr)_auto] items-center gap-x-3 px-3 py-4 transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-primary sm:grid-cols-[5rem_minmax(0,1fr)_auto_1.25rem] sm:gap-x-5 sm:px-7",
-                  state === "today" ? "bg-black text-white hover:bg-neutral-900" : "bg-card text-foreground hover:bg-muted/50",
+                  state === "today"
+                    ? "bg-black text-white hover:bg-neutral-900"
+                    : "bg-card text-foreground hover:bg-muted/50",
                 )}
               >
                 <span className="text-5xl font-light leading-none tracking-tight tabular-nums sm:text-6xl">
@@ -47,14 +59,28 @@ function Sessions() {
                 </span>
                 <div className="flex min-w-0 flex-wrap items-baseline gap-x-5 gap-y-1">
                   <p className="text-base font-bold leading-snug">{s.title}</p>
-                  <time dateTime={s.date} className={cn("whitespace-nowrap text-[0.675rem] leading-relaxed tabular-nums", state === "today" ? "text-white/80" : "text-muted-foreground")}>
+                  <time
+                    dateTime={s.date}
+                    className={cn(
+                      "whitespace-nowrap text-[0.675rem] leading-relaxed tabular-nums",
+                      state === "today" ? "text-white/80" : "text-muted-foreground",
+                    )}
+                  >
                     {formatDateCompact(s.date)}
                   </time>
                 </div>
-                <span className={cn("whitespace-nowrap text-xs font-medium sm:text-sm", state === "today" ? "text-white" : "text-muted-foreground")}>
+                <span
+                  className={cn(
+                    "whitespace-nowrap text-xs font-medium sm:text-sm",
+                    state === "today" ? "text-white" : "text-muted-foreground",
+                  )}
+                >
                   {state === "today" ? "오늘" : state === "done" ? "수업 완료" : "준비중"}
                 </span>
-                <ChevronRight aria-hidden className="hidden h-5 w-5 transition-transform group-hover:translate-x-0.5 sm:block" />
+                <ChevronRight
+                  aria-hidden
+                  className="hidden h-5 w-5 transition-transform group-hover:translate-x-0.5 sm:block"
+                />
               </Link>
             </li>
           );
