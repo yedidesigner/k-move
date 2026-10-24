@@ -91,7 +91,7 @@ function PortfolioFolder() {
       fill="none"
       aria-hidden="true"
       focusable="false"
-      className="h-auto w-[var(--folder-size)] max-w-full drop-shadow-sm transition-transform duration-200 motion-safe:group-hover:-translate-y-1 motion-safe:group-hover:scale-[1.025] motion-safe:group-focus-visible:-translate-y-1 motion-reduce:transition-none"
+      className="h-auto w-[var(--folder-size)] max-w-full drop-shadow-sm transition-transform duration-200 motion-safe:group-hover:-translate-y-1 motion-safe:group-focus-visible:-translate-y-1 motion-reduce:transition-none"
     >
       <path
         d="M6 26C6 16 14 8 24 8H57C64 8 67 10 73 14L82 20C86 23 90 24 96 24H176C186 24 194 32 194 42V142C194 152 186 160 176 160H24C14 160 6 152 6 142V26Z"
