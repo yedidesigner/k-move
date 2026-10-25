@@ -18,6 +18,7 @@ import { Route as AppAdminRouteImport } from './routes/_app/admin'
 import { Route as AppAssignmentsRouteImport } from './routes/_app/assignments'
 import { Route as AppMaterialsRouteImport } from './routes/_app/materials'
 import { Route as AppPortfolioRouteImport } from './routes/_app/portfolio'
+import { Route as AppSurveyRouteImport } from './routes/_app/survey'
 import { Route as AppToolsRouteImport } from './routes/_app/tools'
 import { Route as AppSessionsIndexRouteImport } from './routes/_app/sessions.index'
 import { Route as AppSessionsIdRouteImport } from './routes/_app/sessions.$id'
@@ -66,6 +67,11 @@ const AppPortfolioRoute = AppPortfolioRouteImport.update({
   path: '/portfolio',
   getParentRoute: () => AppRoute,
 } as any)
+const AppSurveyRoute = AppSurveyRouteImport.update({
+  id: '/survey',
+  path: '/survey',
+  getParentRoute: () => AppRoute,
+} as any)
 const AppToolsRoute = AppToolsRouteImport.update({
   id: '/tools',
   path: '/tools',
@@ -91,6 +97,7 @@ export interface FileRoutesByFullPath {
   '/assignments': typeof AppAssignmentsRoute
   '/materials': typeof AppMaterialsRoute
   '/portfolio': typeof AppPortfolioRoute
+  '/survey': typeof AppSurveyRoute
   '/tools': typeof AppToolsRoute
   '/sessions/$id': typeof AppSessionsIdRoute
   '/sessions/': typeof AppSessionsIndexRoute
@@ -103,6 +110,7 @@ export interface FileRoutesByTo {
   '/assignments': typeof AppAssignmentsRoute
   '/materials': typeof AppMaterialsRoute
   '/portfolio': typeof AppPortfolioRoute
+  '/survey': typeof AppSurveyRoute
   '/tools': typeof AppToolsRoute
   '/': typeof AppIndexRoute
   '/sessions/$id': typeof AppSessionsIdRoute
@@ -118,6 +126,7 @@ export interface FileRoutesById {
   '/_app/assignments': typeof AppAssignmentsRoute
   '/_app/materials': typeof AppMaterialsRoute
   '/_app/portfolio': typeof AppPortfolioRoute
+  '/_app/survey': typeof AppSurveyRoute
   '/_app/tools': typeof AppToolsRoute
   '/_app/': typeof AppIndexRoute
   '/_app/sessions/$id': typeof AppSessionsIdRoute
@@ -134,6 +143,7 @@ export interface FileRouteTypes {
     | '/assignments'
     | '/materials'
     | '/portfolio'
+    | '/survey'
     | '/tools'
     | '/sessions/$id'
     | '/sessions/'
@@ -146,6 +156,7 @@ export interface FileRouteTypes {
     | '/assignments'
     | '/materials'
     | '/portfolio'
+    | '/survey'
     | '/tools'
     | '/'
     | '/sessions/$id'
@@ -160,6 +171,7 @@ export interface FileRouteTypes {
     | '/_app/assignments'
     | '/_app/materials'
     | '/_app/portfolio'
+    | '/_app/survey'
     | '/_app/tools'
     | '/_app/'
     | '/_app/sessions/$id'
@@ -238,6 +250,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppPortfolioRouteImport
       parentRoute: typeof AppRoute
     }
+    '/_app/survey': {
+      id: '/_app/survey'
+      path: '/survey'
+      fullPath: '/survey'
+      preLoaderRoute: typeof AppSurveyRouteImport
+      parentRoute: typeof AppRoute
+    }
     '/_app/tools': {
       id: '/_app/tools'
       path: '/tools'
@@ -267,6 +286,7 @@ interface AppRouteChildren {
   AppAssignmentsRoute: typeof AppAssignmentsRoute
   AppMaterialsRoute: typeof AppMaterialsRoute
   AppPortfolioRoute: typeof AppPortfolioRoute
+  AppSurveyRoute: typeof AppSurveyRoute
   AppToolsRoute: typeof AppToolsRoute
   AppIndexRoute: typeof AppIndexRoute
   AppSessionsIdRoute: typeof AppSessionsIdRoute
@@ -278,6 +298,7 @@ const AppRouteChildren: AppRouteChildren = {
   AppAssignmentsRoute: AppAssignmentsRoute,
   AppMaterialsRoute: AppMaterialsRoute,
   AppPortfolioRoute: AppPortfolioRoute,
+  AppSurveyRoute: AppSurveyRoute,
   AppToolsRoute: AppToolsRoute,
   AppIndexRoute: AppIndexRoute,
   AppSessionsIdRoute: AppSessionsIdRoute,

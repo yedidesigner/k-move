@@ -35,7 +35,7 @@ export function AppShell({ children }: { children: ReactNode }) {
     <div className="min-h-screen bg-background md:flex">
       <aside className="hidden w-72 shrink-0 flex-col border-r border-sidebar-border bg-sidebar md:flex md:sticky md:top-0 md:h-screen">
         <div className="shrink-0 border-b border-sidebar-border px-6 py-10">
-          <p className="text-2xl font-bold leading-[1.2] tracking-tight text-sidebar-foreground">
+          <p className="text-2xl font-semibold leading-[1.2] tracking-tight text-sidebar-foreground">
             <span className="block">K-MOVE</span>
             <span className="block">DESIGN</span>
           </p>
@@ -59,7 +59,7 @@ export function AppShell({ children }: { children: ReactNode }) {
             <div className="mt-4 border-t border-sidebar-border pt-4">
               <p className="px-3 pb-1 text-xs font-semibold text-muted-foreground">강사 메뉴</p>
               <Link to="/admin" className={linkCls} activeProps={active}>
-                <Shield className="h-4 w-4" aria-hidden /> 관리자
+                <Shield className="h-4 w-4" aria-hidden /> 강사 대시보드
               </Link>
             </div>
           )}
@@ -92,7 +92,7 @@ export function AppShell({ children }: { children: ReactNode }) {
               to="/admin"
               className="border border-border px-3 py-2 text-xs transition-colors hover:bg-muted"
             >
-              관리자
+              강사 대시보드
             </Link>
           )}
           <button

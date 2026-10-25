@@ -1,0 +1,351 @@
+{
+  "id": "k-move-ot-2026",
+  "version": 2,
+  "title": "2026년 K-Move 미국 디자인 실무 취업 연수과정 | 사전 학습 설문",
+  "questions": [
+    {
+      "id": "name",
+      "number": 1,
+      "step": 0,
+      "type": "text",
+      "required": true,
+      "title": "성함을 입력해 주세요.",
+      "maxLength": 50
+    },
+    {
+      "id": "aiExperience",
+      "number": 2,
+      "step": 0,
+      "type": "single",
+      "required": true,
+      "title": "AI 활용 수준을 선택해 주세요.",
+      "help": "직접 해 본 경험 중 가장 높은 수준을 선택해 주세요.",
+      "options": [
+        {
+          "id": "none",
+          "title": "사용 경험 없음",
+          "description": "AI 서비스를 사용해 본 적이 없습니다."
+        },
+        {
+          "id": "basic",
+          "title": "기본 기능 사용",
+          "description": "질문·번역·요약 등 간단한 요청을 해 본 적이 있습니다."
+        },
+        {
+          "id": "iterate",
+          "title": "프롬프트 작성·수정",
+          "description": "원하는 결과를 얻기 위해 요청을 구체화하고 수정해 본 적이 있습니다."
+        },
+        {
+          "id": "apply",
+          "title": "실제 작업에 활용",
+          "description": "AI 결과를 검토·수정하여 과제나 디자인 작업에 활용해 본 적이 있습니다."
+        },
+        {
+          "id": "project",
+          "title": "프로젝트 전반에 활용",
+          "description": "기획·제작·수정 등 프로젝트의 여러 단계에 AI를 활용해 본 적이 있습니다."
+        }
+      ]
+    },
+    {
+      "id": "aiServices",
+      "number": 3,
+      "step": 0,
+      "type": "multi",
+      "required": true,
+      "title": "AI 서비스별 무료·유료 이용 경험을 선택해 주세요.",
+      "help": "두 방식 모두 사용했다면 둘 다 선택해 주세요. 무료 체험·제공 이용권은 무료에 포함합니다.",
+      "options": [
+        {
+          "id": "chatgpt_free",
+          "title": "ChatGPT · 무료"
+        },
+        {
+          "id": "chatgpt_paid",
+          "title": "ChatGPT · 유료"
+        },
+        {
+          "id": "gemini_free",
+          "title": "Gemini · 무료"
+        },
+        {
+          "id": "gemini_paid",
+          "title": "Gemini · 유료"
+        },
+        {
+          "id": "claude_free",
+          "title": "Claude · 무료"
+        },
+        {
+          "id": "claude_paid",
+          "title": "Claude · 유료"
+        },
+        {
+          "id": "ai_studio_free",
+          "title": "Google AI Studio · 무료"
+        },
+        {
+          "id": "ai_studio_paid",
+          "title": "Google AI Studio · 유료"
+        },
+        {
+          "id": "firefly_free",
+          "title": "Adobe Firefly · 무료"
+        },
+        {
+          "id": "firefly_paid",
+          "title": "Adobe Firefly · 유료"
+        },
+        {
+          "id": "midjourney_free",
+          "title": "Midjourney · 무료"
+        },
+        {
+          "id": "midjourney_paid",
+          "title": "Midjourney · 유료"
+        },
+        {
+          "id": "other_free",
+          "title": "기타 서비스 · 무료"
+        },
+        {
+          "id": "other_paid",
+          "title": "기타 서비스 · 유료"
+        },
+        {
+          "id": "none",
+          "title": "사용해 본 적이 없습니다"
+        }
+      ],
+      "exclusive": "none",
+      "other": true,
+      "layout": "servicePlans",
+      "otherOptionIds": [
+        "other_free",
+        "other_paid"
+      ],
+      "services": [
+        {
+          "id": "chatgpt",
+          "title": "ChatGPT"
+        },
+        {
+          "id": "gemini",
+          "title": "Gemini"
+        },
+        {
+          "id": "claude",
+          "title": "Claude"
+        },
+        {
+          "id": "ai_studio",
+          "title": "Google AI Studio"
+        },
+        {
+          "id": "firefly",
+          "title": "Adobe Firefly"
+        },
+        {
+          "id": "midjourney",
+          "title": "Midjourney"
+        },
+        {
+          "id": "other",
+          "title": "기타 서비스"
+        }
+      ]
+    },
+    {
+      "id": "designSkills",
+      "number": 4,
+      "step": 1,
+      "type": "matrix",
+      "required": true,
+      "title": "디자인 프로그램별 활용 수준을 선택해 주세요.",
+      "help": "각 프로그램에 대해 하나씩 선택해 주세요. 사용 경험이 없다면 ‘경험 없음’을 선택해 주세요.",
+      "rows": [
+        {
+          "id": "photoshop",
+          "title": "Photoshop"
+        },
+        {
+          "id": "illustrator",
+          "title": "Illustrator"
+        },
+        {
+          "id": "indesign",
+          "title": "InDesign"
+        },
+        {
+          "id": "after_effects",
+          "title": "After Effects"
+        },
+        {
+          "id": "premiere_pro",
+          "title": "Premiere Pro"
+        },
+        {
+          "id": "figma",
+          "title": "Figma"
+        },
+        {
+          "id": "canva",
+          "title": "Canva"
+        }
+      ],
+      "otherText": true,
+      "otherMaxLength": 300
+    },
+    {
+      "id": "portfolio",
+      "number": 5,
+      "step": 1,
+      "type": "single",
+      "required": true,
+      "title": "현재 포트폴리오 준비 상태를 선택해 주세요.",
+      "help": "PDF, 인쇄물, 웹사이트 등 형식과 관계없이 현재 상태를 기준으로 선택해 주세요.",
+      "options": [
+        {
+          "id": "starting",
+          "title": "포트폴리오에 넣을 작업물부터 준비해야 합니다."
+        },
+        {
+          "id": "works",
+          "title": "작업물은 있지만 포트폴리오로 정리하지 않았습니다."
+        },
+        {
+          "id": "partial",
+          "title": "일부 구성했지만 아직 완성하지 못했습니다."
+        },
+        {
+          "id": "draft",
+          "title": "초안은 완성했지만 지원용으로 제출하기 전에 수정이 필요합니다."
+        },
+        {
+          "id": "ready",
+          "title": "지원용으로 제출할 수 있는 포트폴리오가 준비되어 있습니다."
+        }
+      ]
+    },
+    {
+      "id": "interests",
+      "number": 6,
+      "step": 2,
+      "type": "multi",
+      "required": true,
+      "title": "관심 있는 디자인 분야 또는 희망 직무는 무엇인가요?",
+      "help": "가장 관심 있는 분야를 최대 2개 선택해 주세요.",
+      "max": 2,
+      "options": [
+        {
+          "id": "graphic",
+          "title": "그래픽·시각 디자인"
+        },
+        {
+          "id": "branding",
+          "title": "브랜딩·브랜드 아이덴티티"
+        },
+        {
+          "id": "editorial",
+          "title": "편집·출판 디자인"
+        },
+        {
+          "id": "packaging",
+          "title": "패키지 디자인"
+        },
+        {
+          "id": "uiux",
+          "title": "웹·UI/UX 디자인"
+        },
+        {
+          "id": "motion",
+          "title": "영상 편집·모션 그래픽"
+        },
+        {
+          "id": "other",
+          "title": "기타 분야"
+        },
+        {
+          "id": "undecided",
+          "title": "아직 정하지 못했습니다"
+        }
+      ],
+      "exclusive": "undecided",
+      "other": true
+    },
+    {
+      "id": "goals",
+      "number": 7,
+      "step": 2,
+      "type": "multi",
+      "required": true,
+      "title": "이번 수업에서 특히 배우고 싶은 내용을 선택해 주세요.",
+      "help": "우선 배우고 싶은 내용을 최대 2개 선택해 주세요.",
+      "max": 2,
+      "options": [
+        {
+          "id": "prompt",
+          "title": "AI에 원하는 결과를 구체적으로 요청하는 방법"
+        },
+        {
+          "id": "research",
+          "title": "디자인 자료 조사와 아이디어 구체화"
+        },
+        {
+          "id": "image",
+          "title": "AI 이미지 생성·수정 및 디자인 작업에 활용"
+        },
+        {
+          "id": "curation",
+          "title": "포트폴리오의 작품 선정·순서·전체 구성"
+        },
+        {
+          "id": "visual",
+          "title": "레이아웃·타이포그래피·시각적 완성도 개선"
+        },
+        {
+          "id": "website",
+          "title": "포트폴리오 웹사이트 제작"
+        },
+        {
+          "id": "other",
+          "title": "기타 학습 목표"
+        }
+      ],
+      "other": true
+    },
+    {
+      "id": "message",
+      "number": 8,
+      "step": 2,
+      "type": "textarea",
+      "required": false,
+      "title": "꼭 해결하고 싶은 어려움이나 강사에게 전하고 싶은 말이 있나요?",
+      "help": "어려운 점이나 추가로 사용하는 디자인 도구도 자유롭게 적어 주세요.",
+      "maxLength": 1000
+    }
+  ],
+  "levels": [
+    {
+      "id": "none",
+      "short": "경험 없음",
+      "description": "사용해 본 적이 없어요"
+    },
+    {
+      "id": "guided",
+      "short": "따라 하기",
+      "description": "설명·예제를 따라 작업해요"
+    },
+    {
+      "id": "independent",
+      "short": "독립 작업",
+      "description": "기본 작업을 혼자 완성해요"
+    },
+    {
+      "id": "advanced",
+      "short": "응용 가능",
+      "description": "목적에 맞게 기능을 응용해요"
+    }
+  ]
+}

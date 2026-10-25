@@ -52,7 +52,8 @@ function Login() {
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  if (status === "student" || status === "instructor") return <Navigate to="/" />;
+  if (status === "instructor") return <Navigate to="/admin" />;
+  if (status === "student") return <Navigate to="/" />;
 
   async function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -76,7 +77,7 @@ function Login() {
   return (
     <div className="flex min-h-screen items-center justify-center bg-background px-4 py-10">
       <div className="w-full max-w-md border-y border-foreground bg-card px-5 py-8 sm:px-8">
-        <p className="mb-6 text-3xl font-bold tracking-tight">
+        <p className="mb-6 text-3xl font-semibold tracking-tight">
           K-MOVE
           <span className="ml-3 text-xs font-medium tracking-[0.16em] text-muted-foreground">
             LMS
@@ -116,7 +117,7 @@ function Login() {
           ) : status === "notConfigured" ? (
             <div className="space-y-3">
               <StatusBadge tone="warning">설정 필요</StatusBadge>
-              <p className="text-sm text-muted-foreground">Firebase 연결 설정이 필요합니다.</p>
+              <p className="text-sm text-muted-foreground">로그인 연결 설정이 필요합니다.</p>
               <Link to="/setup" className="inline-block text-xs text-muted-foreground underline">
                 운영자 설정 안내
               </Link>
@@ -215,7 +216,7 @@ function Login() {
               )}
               <p className="text-xs leading-relaxed text-muted-foreground">
                 {mode === "signup"
-                  ? "가입 후 강사의 수강 승인이 완료되면 수업 정보를 볼 수 있습니다."
+                  ? "한글 이름과 숫자 4자리 비밀번호로 가입합니다. 이미 가입했다면 로그인 탭을 이용해 주세요."
                   : "가입할 때 정한 아이디와 숫자 4자리 비밀번호를 입력하세요."}
               </p>
             </form>
