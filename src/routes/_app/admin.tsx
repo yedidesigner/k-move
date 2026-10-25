@@ -1,40 +1,69 @@
 import { createFileRoute, Navigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { useAuth } from "@/lib/auth";
-import { getSupabase } from "@/lib/supabase";
-import { EmptyState, PageHeader, Panel, Spinner, StatusBadge } from "@/components/lms";
-import { SetupGuide } from "@/components/SetupGuide";
+import { loadDashboard } from "@/lib/survey-api";
+import { type Profile, type SurveyResponse } from "@/lib/survey";
+import { Spinner } from "@/components/lms";
+import { InstructorDashboard } from "@/components/InstructorDashboard";
 
 export const Route = createFileRoute("/_app/admin")({
-  head: () => ({ meta: [{ title: "관리자 | K-Move LMS" }, { name: "robots", content: "noindex" }] }),
+  head: () => ({
+    meta: [{ title: "강사 대시보드 | K-Move LMS" }, { name: "robots", content: "noindex" }],
+  }),
   component: Admin,
 });
 
-interface Profile { id: string; username: string; role: "student" | "instructor"; created_at: string }
-
 function Admin() {
   const { status } = useAuth();
-  const [rows, setRows] = useState<Profile[] | null>(null);
+  const [data, setData] = useState<{ profiles: Profile[]; responses: SurveyResponse[] } | null>(
+    null,
+  );
   const [error, setError] = useState<string | null>(null);
-
+  const [refreshing, setRefreshing] = useState(true);
+  const [refresh, setRefresh] = useState(0);
   useEffect(() => {
     if (status !== "instructor") return;
-    void getSupabase().from("kmove_profiles").select("id,username,role,created_at").order("created_at").then(({ data, error }) => {
-      if (error) setError(error.message);
-      else setRows((data ?? []) as Profile[]);
-    });
-  }, [status]);
-
+    let active = true;
+    setRefreshing(true);
+    setError(null);
+    void loadDashboard()
+      .then((result) => {
+        if (active) setData(result);
+      })
+      .catch((e: Error) => {
+        if (active) setError(e.message);
+      })
+      .finally(() => {
+        if (active) setRefreshing(false);
+      });
+    return () => {
+      active = false;
+    };
+  }, [status, refresh]);
+  if (status === "loading") return <Spinner />;
   if (status !== "instructor") return <Navigate to="/" />;
-  return <>
-    <PageHeader title="관리자" description="Supabase에 등록된 K-Move 사용자" />
-    {error && <p role="alert" className="mb-3 text-sm text-destructive">{error}</p>}
-    {rows === null && !error ? <Spinner /> : rows?.length === 0 ? <EmptyState title="등록된 사용자가 없습니다" reason="사용자가 회원가입하면 여기에 표시됩니다." /> : (
-      <div className="space-y-2">{rows?.map((row) => <Panel key={row.id} className="flex items-center justify-between gap-3">
-        <span className="font-semibold">{row.username}</span>
-        <StatusBadge tone={row.role === "instructor" ? "success" : "neutral"}>{row.role === "instructor" ? "강사" : "수강생"}</StatusBadge>
-      </Panel>)}</div>
-    )}
-    <div className="mt-10"><SetupGuide /></div>
-  </>;
+  return (
+    <>
+      {error && (
+        <div role="alert" className="mb-5 border-l-2 border-foreground bg-muted p-5">
+          <p className="text-sm">{error}</p>
+          <button
+            className="mt-3 min-h-11 border border-border px-4 text-sm"
+            onClick={() => setRefresh((r) => r + 1)}
+          >
+            다시 불러오기
+          </button>
+        </div>
+      )}
+      {!data ? (
+        refreshing && <Spinner />
+      ) : (
+        <InstructorDashboard
+          {...data}
+          refreshing={refreshing}
+          onRefresh={() => setRefresh((r) => r + 1)}
+        />
+      )}
+    </>
+  );
 }
