@@ -121,7 +121,7 @@ function FeedbackPage() {
                 ))}
               </div>
               <div className="px-5 pt-9 sm:px-8 md:px-9 lg:px-[clamp(2rem,4vw,3.5rem)]">
-                <div className={instructor ? "border-b-2 border-black pb-3" : "border-b border-neutral-500"}>
+                <div className={instructor ? "border-b-2 border-black pb-3" : "border-b border-neutral-500 pb-1"}>
                   <h2 className={instructor
                     ? "text-[clamp(1.5rem,2.3vw,2rem)] font-light leading-tight tracking-[-0.05em]"
                     : "text-xl font-normal uppercase leading-7 tracking-[-0.035em]"}>
