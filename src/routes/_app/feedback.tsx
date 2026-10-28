@@ -102,12 +102,12 @@ function FeedbackPage() {
           })}
         </nav>
       ) : (
-        <div aria-label="현재 학생" className="inline-flex h-11 min-w-32 items-center justify-center rounded-full border border-white/70 px-5 text-xs font-medium text-white">
-          {loading ? "불러오는 중…" : selected?.name || "내 피드백"}
-        </div>
+        <h1 className="flex min-h-11 items-center text-[clamp(2.25rem,3.1vw,3.125rem)] font-normal leading-none tracking-[-0.035em]">
+          FEEDBACK
+        </h1>
       )}
       <section aria-label="주차별 피드백 문서" className="min-w-0">
-          <div className="relative isolate mr-9 ml-0 mt-12 pt-8 sm:mr-11 md:mr-12 md:ml-14">
+          <div className="relative isolate mr-9 ml-0 mt-12 pt-8 sm:mr-11 md:mr-12 md:ml-6">
             <div aria-hidden="true" className="pointer-events-none absolute inset-x-6 bottom-3 top-0 border border-[#d9d9d5] bg-[#e0e0dc] sm:left-12 sm:right-6" />
             <div aria-hidden="true" className="pointer-events-none absolute inset-x-3 bottom-1 top-3 border border-[#dededb] bg-[#efefec] sm:left-6 sm:right-3" />
             <div className="relative min-h-[1190px] border border-[#dadad7] bg-white text-[#111] shadow-[0_12px_20px_rgba(0,0,0,0.13)]">
