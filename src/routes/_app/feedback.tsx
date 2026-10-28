@@ -1,6 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
-import { ChevronLeft, ChevronRight, ClipboardPenLine } from "lucide-react";
 
 export const Route = createFileRoute("/_app/feedback")({
   head: () => ({
@@ -13,107 +12,92 @@ export const Route = createFileRoute("/_app/feedback")({
 });
 
 const STUDENTS = [
-  { name: "강민주", major: "시각디자인학과", marked: true },
+  { name: "강민주", major: "시각디자인학과" },
   { name: "강유민", major: "의류산업학과" },
   { name: "김다혜", major: "컴퓨터공학과" },
   { name: "김선미", major: "시각디자인학전공" },
   { name: "김재은", major: "시각커뮤니케이션디자인전공" },
-  { name: "김화민", major: "영상미디어콘텐츠과", marked: true },
+  { name: "김화민", major: "영상미디어콘텐츠과" },
   { name: "류영진", major: "리빙디자인과" },
-  { name: "오한별", major: "영상미디어과", marked: true },
-  { name: "이익제", major: "시각디자인학과", marked: true },
+  { name: "오한별", major: "영상미디어과" },
+  { name: "이익제", major: "시각디자인학과" },
   { name: "이주희", major: "디지털콘텐츠디자인학전공" },
   { name: "이지원", major: "산업디자인학전공" },
-  { name: "임시윤", major: "영상미디어과", marked: true },
-  { name: "정여진", major: "시각디자인학과", marked: true },
-  { name: "최지인", major: "영상미디어과", marked: true },
+  { name: "임시윤", major: "영상미디어과" },
+  { name: "정여진", major: "시각디자인학과" },
+  { name: "최지인", major: "영상미디어과" },
   { name: "최형주", major: "시각디자인학과" },
 ] as const;
 
-const WEEKS = Array.from({ length: 24 }, (_, i) => i + 1);
+const WEEKS = Array.from({ length: 24 }, (_, index) => index + 1);
 
 function FeedbackPage() {
-  const [selectedStudent, setSelectedStudent] = useState(0);
-  const [selectedWeek, setSelectedWeek] = useState(1);
-  const student = STUDENTS[selectedStudent];
+  const [studentIndex, setStudentIndex] = useState(0);
+  const [week, setWeek] = useState(6);
+  const student = STUDENTS[studentIndex];
 
   return (
-    <div className="-mx-4 -mt-6 min-h-[calc(100vh-5rem)] bg-[#111111] px-4 pb-14 pt-9 text-white md:-mx-10 md:-mt-10 md:px-8 md:pt-11">
-      <header className="mx-auto mb-9 max-w-5xl border-b border-white/30 pb-6">
-        <p className="mb-2 text-[11px] font-semibold tracking-[0.3em] text-white/60">K-MOVE / DESIGN ARCHIVE</p>
-        <div className="flex flex-wrap items-end justify-between gap-5">
-          <div>
-            <h1 className="text-4xl font-black tracking-[-0.055em] md:text-6xl">FEEDBACK.</h1>
-            <p className="mt-3 text-sm text-white/65">수강생별 · 01—24주차 피드백 아카이브</p>
-          </div>
-          <span className="text-xs tabular-nums tracking-widest text-white/55">15 STUDENTS / 24 WEEKS</span>
-        </div>
-      </header>
+    <div className="min-h-screen bg-[#101010] px-4 pb-20 pt-9 text-white sm:px-5 md:px-5 md:pb-12 lg:px-6">
+      <h1 className="mb-8 text-[clamp(2.25rem,3.1vw,3.125rem)] font-normal leading-none tracking-[-0.035em] md:mb-7">
+        FEEDBACK
+      </h1>
 
-      <div className="mx-auto grid max-w-5xl items-start gap-10 lg:grid-cols-[220px_minmax(0,1fr)]">
-        <section aria-label="수강생 선택" className="lg:sticky lg:top-6">
-          <h2 className="mb-3 border-b border-white/25 pb-2 text-xs font-semibold uppercase tracking-[0.2em]">INDEX / STUDENTS</h2>
-          <div className="grid grid-cols-2 gap-x-4 sm:grid-cols-3 lg:grid-cols-1 lg:gap-x-0">
-            {STUDENTS.map((item, i) => (
-              <button key={item.name} type="button" onClick={() => setSelectedStudent(i)}
-                aria-pressed={selectedStudent === i}
-                className={`flex min-h-11 items-center justify-between gap-2 border-b px-2 py-2 text-left text-sm transition-colors ${selectedStudent === i ? "border-white bg-white font-bold text-black" : "border-white/20 text-white/70 hover:bg-white/10 hover:text-white"}`}>
-                <span>{String(i + 1).padStart(2, "0")}. {item.name}</span>
-                <span aria-hidden="true" className="text-xs">{selectedStudent === i ? "↗" : ""}</span>
+      <div className="grid min-w-0 gap-7 md:grid-cols-[104px_minmax(0,1fr)] md:items-start md:gap-x-[clamp(2.5rem,8vw,8.75rem)]">
+        <section aria-label="수강생 선택" className="min-w-0 md:pt-0">
+          <div className="flex gap-1 overflow-x-auto pb-1 md:block md:overflow-visible md:pb-0">
+            {STUDENTS.map((item, index) => (
+              <button
+                key={item.name}
+                type="button"
+                aria-pressed={studentIndex === index}
+                onClick={() => setStudentIndex(index)}
+                className={`flex h-10 min-w-[104px] shrink-0 items-center border-b border-[#666] px-2.5 text-left text-[12px] tracking-[-0.035em] transition-colors md:w-full md:min-w-0 ${studentIndex === index ? "border-white bg-white text-black" : "bg-black text-[#dedede] hover:bg-[#303030] hover:text-white"}`}
+              >
+                <span className="whitespace-nowrap">{String(index + 1).padStart(2, "0")}. {item.name}</span>
               </button>
             ))}
           </div>
         </section>
 
-        <section aria-label="주차별 피드백" className="min-w-0">
-          <div className="relative isolate pr-5 pt-5 sm:pr-9 sm:pt-7">
-            <div aria-hidden="true" className="absolute inset-x-5 bottom-3 top-1 border border-[#d1d1ce] bg-[#dddcd8] sm:inset-x-9" />
-            <div aria-hidden="true" className="absolute inset-x-2 bottom-1 top-3 border border-[#ddd] bg-[#eeeeeb] sm:inset-x-5" />
+        <section aria-label="주차별 피드백 문서" className="min-w-0">
+          <div className="relative isolate mr-9 pt-8 sm:mr-11 md:mr-12">
+            <div aria-hidden="true" className="pointer-events-none absolute inset-x-6 bottom-3 top-0 border border-[#d9d9d5] bg-[#e0e0dc] sm:left-12 sm:right-6" />
+            <div aria-hidden="true" className="pointer-events-none absolute inset-x-3 bottom-1 top-3 border border-[#dededb] bg-[#efefec] sm:left-6 sm:right-3" />
 
-            <div className="relative min-h-[640px] border border-[#dededc] bg-[#fdfdfb] px-6 pb-10 pt-9 text-black shadow-[12px_16px_0_rgba(0,0,0,.25)] sm:px-10 sm:pt-12">
-              <div className="absolute -right-5 top-8 flex flex-col gap-[2px] sm:-right-9" aria-label="주차 인덱스">
-                {WEEKS.map((week) => (
-                  <button type="button" key={week} onClick={() => setSelectedWeek(week)}
-                    aria-label={`${week}주차 선택`} aria-pressed={selectedWeek === week}
-                    className={`flex h-7 w-6 items-center justify-center rounded-r-md border border-l-0 text-[9px] font-bold tabular-nums transition-colors sm:h-8 sm:w-9 sm:text-[10px] ${selectedWeek === week ? "z-10 border-[#fdfdfb] bg-[#fdfdfb] text-black" : "border-[#d0d0ce] bg-[#dfdfdc] text-[#666] hover:bg-white"}`}>
-                    {String(week).padStart(2, "0")}
-                  </button>
-                ))}
+            <div className="relative min-h-[1190px] border border-[#dadad7] bg-[#fff] text-[#111] shadow-[0_12px_20px_rgba(0,0,0,0.13)]">
+              <div role="group" aria-label="피드백 주차 선택" className="absolute left-full top-11 z-10 flex flex-col">
+                {WEEKS.map((number) => {
+                  const active = number === week;
+                  return (
+                    <button
+                      key={number}
+                      type="button"
+                      aria-label={`${number}주차 피드백 보기`}
+                      aria-pressed={active}
+                      onClick={() => setWeek(number)}
+                      className={`relative flex h-[46px] w-9 items-center justify-center border-b-[3px] border-[#171717] text-[11px] font-semibold tabular-nums transition-colors sm:w-11 ${active ? "z-20 -ml-px bg-white text-black" : "bg-[#d2d2d0] text-[#696969] hover:bg-[#ececea] hover:text-black"}`}
+                    >
+                      {String(number).padStart(2, "0")}
+                    </button>
+                  );
+                })}
               </div>
 
-              <div className="flex items-center justify-between border-b border-black/20 pb-4 text-[10px] font-bold tracking-[0.2em] sm:text-xs">
-                <span>K-MOVE / PORTFOLIO</span>
-                <span>FEEDBACK FILE — {String(selectedStudent + 1).padStart(2, "0")}</span>
-              </div>
-
-              <div className="mt-9 border-b-2 border-black pb-7">
-                <p className="mb-2 text-xs font-bold tracking-[0.2em] text-neutral-500">STUDENT PROFILE</p>
-                <h2 className="text-5xl font-black tracking-[-0.065em] sm:text-7xl">{student.name}</h2>
-                <p className="mt-3 text-sm text-neutral-600">{student.major}</p>
-              </div>
-
-              <div className="mt-10 flex items-end justify-between gap-4 border-b border-black/20 pb-5">
-                <div>
-                  <p className="text-[11px] font-bold tracking-[0.2em] text-neutral-500">WEEKLY REVIEW</p>
-                  <h3 className="mt-1 text-4xl font-black tracking-[-0.05em] sm:text-5xl">{String(selectedWeek).padStart(2, "0")}<span className="ml-2 text-lg font-medium">주차</span></h3>
+              <div className="px-5 pt-9 sm:px-8 md:px-9 lg:px-[clamp(2rem,4vw,3.5rem)]">
+                <div className="border-b-2 border-black pb-3">
+                  <h2 className="text-[clamp(1.5rem,2.3vw,2rem)] font-light leading-tight tracking-[-0.05em]">
+                    Week {String(week).padStart(2, "0")}
+                  </h2>
                 </div>
-                <ClipboardPenLine className="size-7 text-neutral-400" aria-hidden="true" />
+                <div className="border-b-2 border-black py-4">
+                  <h3 className="text-[clamp(2.125rem,3.2vw,3.125rem)] font-semibold leading-tight tracking-[-0.055em]">
+                    {student.name}
+                  </h3>
+                </div>
+                <div className="min-h-[900px]" aria-live="polite">
+                  <p className="sr-only">{student.name}의 {week}주차 피드백은 아직 등록되지 않았습니다.</p>
+                </div>
               </div>
-
-              <div className="mt-8 min-h-48 border-b border-black/20 pb-9">
-                <p className="mb-3 text-[11px] font-bold tracking-[0.2em] text-neutral-500">INSTRUCTOR'S NOTE</p>
-                <p className="text-sm leading-7 text-neutral-500">등록된 피드백이 없습니다.</p>
-                <p className="mt-1 text-xs leading-6 text-neutral-400">피드백 작성 및 저장 기능은 추후 연결할 예정입니다.</p>
-              </div>
-
-              <div className="mt-8 flex items-center justify-between gap-3">
-                <button type="button" disabled={selectedWeek === 1} onClick={() => setSelectedWeek((v) => Math.max(1, v - 1))}
-                  className="inline-flex min-h-11 items-center gap-1 text-xs font-bold disabled:opacity-30"><ChevronLeft className="size-4" /> PREV WEEK</button>
-                <span className="text-xs font-semibold tabular-nums">{String(selectedWeek).padStart(2, "0")} / 24</span>
-                <button type="button" disabled={selectedWeek === 24} onClick={() => setSelectedWeek((v) => Math.min(24, v + 1))}
-                  className="inline-flex min-h-11 items-center gap-1 text-xs font-bold disabled:opacity-30">NEXT WEEK <ChevronRight className="size-4" /></button>
-              </div>
-              <p className="mt-14 text-right text-[10px] font-bold tracking-[0.2em] text-neutral-400">K-MOVE DESIGN ARCHIVE · 2026—2027</p>
             </div>
           </div>
         </section>
