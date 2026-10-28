@@ -181,8 +181,8 @@ export function FeedbackWorkspace({studentId,studentName,week,userId,instructor}
         const current=draft?.imageId===image.id?draft:null;
         return (
           <section key={image.id} className="border-b border-neutral-200 pb-10">
-            <div className="mb-4 flex items-center justify-between">
-              <h4 className="text-xs font-bold tracking-widest">IMAGE {String(index+1).padStart(2,"0")}</h4>
+            <div className="mb-4 flex items-center justify-start gap-3">
+              <h4 className="shrink-0 text-xs font-bold tracking-widest">IMAGE {String(index+1).padStart(2,"0")}</h4>
               {(instructor || image.created_by===userId) && (
                 <button type="button" disabled={busy} onClick={()=>void removeImage(image)}
                   aria-label={studentName+" "+week+"주차 "+(index+1)+"번째 이미지 삭제"}
