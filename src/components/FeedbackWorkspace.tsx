@@ -3,7 +3,7 @@ import { ImagePlus, Trash2 } from "lucide-react";
 import { getSupabase } from "@/lib/supabase";
 
 const BUCKET = "kmove-feedback-screenshots";
-type ImageRow = { id:string; student_id:string; week:number; object_path:string; created_at:string };
+type ImageRow = { id:string; student_id:string; week:number; object_path:string; created_by:string; created_at:string };
 type Pin = { id:string; image_id:string; x:number; y:number; content:string; created_at:string };
 type Draft = { imageId:string; x:number; y:number } | null;
 type Props = { studentId:string; studentName:string; week:number; userId:string; instructor:boolean };
@@ -33,7 +33,7 @@ export function FeedbackWorkspace({studentId,studentName,week,userId,instructor}
       try {
         const db = getSupabase();
         const im = await db.from("kmove_feedback_images")
-          .select("id,student_id,week,object_path,created_at")
+          .select("id,student_id,week,object_path,created_by,created_at")
           .eq("student_id",studentId).eq("week",week)
           .order("created_at",{ascending:true});
         if(im.error) throw im.error;
@@ -74,7 +74,7 @@ export function FeedbackWorkspace({studentId,studentName,week,userId,instructor}
           student_id:studentId,week,object_path:path,created_by:userId
         });
         if(inserted.error) {
-          if(instructor) await db.storage.from(BUCKET).remove([path]);
+          await db.storage.from(BUCKET).remove([path]);
           throw inserted.error;
         }
       }
@@ -129,15 +129,28 @@ export function FeedbackWorkspace({studentId,studentName,week,userId,instructor}
   }
 
   async function removeImage(image:ImageRow) {
-    if(!instructor || busy || !window.confirm("이미지와 연결된 피드백을 모두 삭제할까요?")) return;
+    if((!instructor && image.created_by!==userId) || busy) return;
+    if(!window.confirm("이 이미지를 삭제하면 연결된 피드백도 함께 삭제됩니다. 삭제할까요?")) return;
     setBusy(true);setError("");
     try {
       const db=getSupabase();
-      const result=await db.from("kmove_feedback_images").delete().eq("id",image.id);
-      if(result.error) throw result.error;
+      const deleted=await db.from("kmove_feedback_images")
+        .delete().eq("id",image.id).select("id");
+      if(deleted.error) throw deleted.error;
+      if(deleted.data?.length!==1) throw new Error("이미지가 이미 삭제되었거나 삭제 권한이 없습니다.");
+
       const removed=await db.storage.from(BUCKET).remove([image.object_path]);
-      if(removed.error) setError("목록 삭제는 완료됐지만 저장소 파일 정리에 실패했습니다: "+removed.error.message);
-      reload();
+      setImages(previous=>previous.filter(item=>item.id!==image.id));
+      setPins(previous=>previous.filter(pin=>pin.image_id!==image.id));
+      setUrls(previous=>{
+        const updated={...previous};
+        delete updated[image.id];
+        return updated;
+      });
+      setDraft(previous=>previous?.imageId===image.id?null:previous);
+      if(removed.error) {
+        setError("이미지 목록은 삭제됐지만 저장소 파일 정리에 실패했습니다. 관리자에게 문의해 주세요: "+removed.error.message);
+      }
     } catch(e) {setError("이미지 삭제 실패: "+errText(e));}
     finally {setBusy(false);}
   }
@@ -145,13 +158,13 @@ export function FeedbackWorkspace({studentId,studentName,week,userId,instructor}
   return (
     <div className="space-y-8 pb-14">
       <div className="flex flex-wrap items-center justify-between gap-3 border-b border-neutral-200 py-4">
-        <span className="text-xs text-neutral-500">{instructor?"이미지의 원하는 위치를 클릭해 피드백을 작성하세요.":"스크린샷을 업로드하고 강사의 피드백을 확인하세요."}</span>
+        <span className="text-xs text-neutral-500">{instructor?"이미지의 원하는 위치를 클릭해 피드백을 작성하세요.":"이미지를 업로드하고 강사의 피드백을 확인하세요."}</span>
         <input ref={fileInput} type="file" multiple accept="image/jpeg,image/png,image/webp"
-          aria-label="스크린샷 파일 선택" className="sr-only"
+          aria-label="이미지 파일 선택" className="sr-only"
           onChange={e=>void upload(e.target.files)} />
         <button type="button" disabled={busy} onClick={()=>fileInput.current?.click()}
           className="flex min-h-10 items-center gap-2 bg-black px-4 text-xs font-semibold text-white disabled:opacity-50">
-          <ImagePlus className="size-4" /> {busy?"처리 중…":"스크린샷 업로드"}
+          <ImagePlus className="size-4" /> {busy?"처리 중…":"이미지 업로드"}
         </button>
       </div>
       {error && <p role="alert" className="border border-red-400 p-3 text-sm text-red-700">{error}</p>}
@@ -159,7 +172,7 @@ export function FeedbackWorkspace({studentId,studentName,week,userId,instructor}
       {!loading && images.length===0 && !error && (
         <div className="flex min-h-60 flex-col items-center justify-center border border-dashed border-neutral-300">
           <ImagePlus className="mb-3 size-8 text-neutral-400"/>
-          <p className="text-sm text-neutral-500">업로드한 스크린샷이 없습니다.</p>
+          <p className="text-sm text-neutral-500">업로드한 이미지가 없습니다.</p>
           <p className="mt-1 text-xs text-neutral-400">JPG · PNG · WebP / 최대 10MB</p>
         </div>
       )}
@@ -170,9 +183,13 @@ export function FeedbackWorkspace({studentId,studentName,week,userId,instructor}
           <section key={image.id} className="border-b border-neutral-200 pb-10">
             <div className="mb-4 flex items-center justify-between">
               <h4 className="text-xs font-bold tracking-widest">IMAGE {String(index+1).padStart(2,"0")}</h4>
-              {instructor && <button type="button" disabled={busy} onClick={()=>void removeImage(image)}
-                className="flex min-h-10 items-center gap-1 text-xs text-neutral-500 hover:text-red-700">
-                <Trash2 className="size-3.5"/> 이미지 삭제</button>}
+              {(instructor || image.created_by===userId) && (
+                <button type="button" disabled={busy} onClick={()=>void removeImage(image)}
+                  aria-label={studentName+" "+week+"주차 "+(index+1)+"번째 이미지 삭제"}
+                  className="flex min-h-10 items-center gap-1 text-xs text-neutral-500 hover:text-red-700 disabled:opacity-50">
+                  <Trash2 className="size-3.5" aria-hidden="true"/> 이미지 삭제
+                </button>
+              )}
             </div>
             <div className="grid items-start gap-5 lg:grid-cols-[minmax(0,1.3fr)_minmax(185px,1fr)]">
               <div className="min-w-0">
