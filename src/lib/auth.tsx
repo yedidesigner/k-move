@@ -11,6 +11,7 @@ interface AuthState {
   signIn: (loginId: string, password: string) => Promise<void>;
   signUp: (loginId: string, password: string) => Promise<void>;
   signOut: () => Promise<void>;
+  changePassword: (currentPassword: string, newPassword: string) => Promise<void>;
 }
 
 const Ctx = createContext<AuthState | null>(null);
@@ -23,7 +24,7 @@ function validateCredentials(loginId: string, password: string, requireKoreanId 
   const normalizedId = normalizeLoginId(loginId);
   if (normalizedId.length < 2 || normalizedId.length > 30) throw new Error("auth/invalid-login-id");
   if (requireKoreanId && !/^[가-힣]+$/.test(normalizedId)) throw new Error("auth/korean-login-id-required");
-  if (!/^\d{4}$/.test(password)) throw new Error("auth/invalid-pin");
+  if (!/^\d{4}$/.test(password) && (password.length < 8 || password.length > 64)) throw new Error("auth/invalid-password");
   return normalizedId;
 }
 
@@ -107,12 +108,28 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     if (!data.session) throw new Error("auth/email-confirmation-required");
   }, []);
 
+  const changePassword = useCallback(async (currentPassword: string, newPassword: string) => {
+    if (!user?.email) throw new Error("auth/not-signed-in");
+    if (newPassword.length < 8 || newPassword.length > 64 || !/[A-Za-z]/.test(newPassword) || !/[0-9]/.test(newPassword)) {
+      throw new Error("auth/weak-new-password");
+    }
+    if (newPassword === currentPassword) throw new Error("auth/password-unchanged");
+    const db = getSupabase();
+    const { error: verifyError } = await db.auth.signInWithPassword({
+      email: user.email,
+      password: `Kmove:${currentPassword}`,
+    });
+    if (verifyError) throw new Error("auth/current-password-incorrect");
+    const { error } = await db.auth.updateUser({ password: `Kmove:${newPassword}` });
+    if (error) throw error;
+  }, [user]);
+
   const signOut = useCallback(async () => {
     const { error } = await getSupabase().auth.signOut();
     if (error) throw error;
   }, []);
 
-  return <Ctx.Provider value={{ status, user, errorDetail, signIn, signUp, signOut }}>{children}</Ctx.Provider>;
+  return <Ctx.Provider value={{ status, user, errorDetail, signIn, signUp, signOut, changePassword }}>{children}</Ctx.Provider>;
 }
 
 export function useAuth() {
