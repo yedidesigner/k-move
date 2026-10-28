@@ -128,7 +128,7 @@ function FeedbackPage() {
                     {instructor ? "Week" : "WEEK"} {String(week).padStart(2,"0")}
                   </h2>
                 </div>
-                <div className={instructor ? "border-b-2 border-black py-4" : "pt-3"}>
+                <div className={instructor ? "border-b-2 border-black py-4" : "pt-[14px]"}>
                   <h3 className={instructor
                     ? "text-[clamp(2.125rem,3.2vw,3.125rem)] font-semibold leading-tight tracking-[-0.055em]"
                     : "text-[clamp(1.75rem,2vw,2rem)] font-bold leading-tight tracking-[-0.055em]"}>
