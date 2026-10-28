@@ -83,7 +83,7 @@ function FeedbackPage() {
       <h1 className="mb-8 text-[clamp(2.25rem,3.1vw,3.125rem)] font-normal leading-none tracking-[-0.035em] md:mb-7">
         FEEDBACK
       </h1>
-      <div className="grid min-w-0 gap-7 md:grid-cols-[104px_minmax(0,1fr)] md:items-start md:gap-x-[clamp(2.5rem,8vw,8.75rem)]">
+      <div className="grid min-w-0 gap-7 md:grid-cols-[104px_minmax(0,1fr)] md:items-start md:gap-x-[clamp(0.5rem,1.6vw,1.75rem)]">
         <section aria-label="수강생 선택" className="min-w-0">
           <div className="flex gap-1 overflow-x-auto pb-1 md:block md:overflow-visible md:pb-0">
             {students.map((item,index)=>(
