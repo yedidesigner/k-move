@@ -6,6 +6,7 @@ import {
   FolderOpen,
   ClipboardList,
   Briefcase,
+  MessageSquareText,
   Wrench,
   Shield,
   LogOut,
@@ -19,6 +20,7 @@ const NAV = [
   { to: "/materials", label: "자료실", icon: FolderOpen },
   { to: "/assignments", label: "과제", icon: ClipboardList },
   { to: "/portfolio", label: "내 포트폴리오", icon: Briefcase },
+  { to: "/feedback", label: "피드백", icon: MessageSquareText },
   { to: "/tools", label: "실습 도구", icon: Wrench },
 ] as const;
 
@@ -86,6 +88,12 @@ export function AppShell({ children }: { children: ReactNode }) {
             className="border border-border px-3 py-2 text-xs transition-colors hover:bg-muted"
           >
             실습 도구
+          </Link>
+          <Link
+            to="/feedback"
+            className="border border-border px-3 py-2 text-xs transition-colors hover:bg-muted"
+          >
+            피드백
           </Link>
           {isInstructor && (
             <Link
