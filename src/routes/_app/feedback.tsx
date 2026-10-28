@@ -1,6 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useEffect, useRef, useState } from "react";
-import { Check, ChevronDown } from "lucide-react";
+import { useEffect, useState } from "react";
 import { FeedbackWorkspace } from "@/components/FeedbackWorkspace";
 import { getSupabase } from "@/lib/supabase";
 import { useAuth } from "@/lib/auth";
@@ -32,9 +31,6 @@ function FeedbackPage() {
   const [loading,setLoading] = useState(true);
   const [setupError,setSetupError] = useState("");
   const [mappingBusy,setMappingBusy] = useState(false);
-  const [studentMenuOpen,setStudentMenuOpen] = useState(false);
-  const studentMenuRef = useRef<HTMLDivElement>(null);
-  const studentToggleRef = useRef<HTMLButtonElement>(null);
 
   useEffect(()=>{
     if(!user || (status!=="instructor" && status!=="student")) return;
@@ -67,31 +63,9 @@ function FeedbackPage() {
     return ()=>{active=false;};
   },[user?.id,status,instructor]);
 
-  useEffect(() => {
-    if (!studentMenuOpen) return;
-    function handleOutsideClick(event: PointerEvent) {
-      if (studentMenuRef.current && !studentMenuRef.current.contains(event.target as Node)) {
-        setStudentMenuOpen(false);
-      }
-    }
-    function handleEscape(event: KeyboardEvent) {
-      if (event.key === "Escape") {
-        setStudentMenuOpen(false);
-        studentToggleRef.current?.focus();
-      }
-    }
-    document.addEventListener("pointerdown", handleOutsideClick);
-    document.addEventListener("keydown", handleEscape);
-    return () => {
-      document.removeEventListener("pointerdown", handleOutsideClick);
-      document.removeEventListener("keydown", handleEscape);
-    };
-  }, [studentMenuOpen]);
-
   const selected = instructor
     ? students.find(row => row.name === studentName) || students[0]
     : students.find(row => row.user_id === user?.id) || students[0];
-  const selectedIndex = students.findIndex(row => row.id === selected?.id);
 
   async function linkAccount(accountId:string) {
     if(!instructor || !selected?.id || mappingBusy) return;
@@ -107,62 +81,31 @@ function FeedbackPage() {
   }
 
   return (
-    <div className="min-h-screen bg-[#101010] px-4 pb-20 pt-2 text-white sm:px-5 md:pb-12">
-      <div className="relative z-50 flex min-h-9 items-start">
-        {instructor ? (
-          <div ref={studentMenuRef} className="relative w-44">
-            <button
-              ref={studentToggleRef}
-              type="button"
-              aria-label="수강생 선택"
-              aria-haspopup="menu"
-              aria-expanded={studentMenuOpen}
-              aria-controls="feedback-student-menu"
-              disabled={loading || students.length === 0}
-              onClick={() => setStudentMenuOpen(open => !open)}
-              className="flex h-9 w-full items-center justify-between gap-2 border border-neutral-300 bg-white px-3 text-left text-xs font-medium text-black hover:bg-neutral-100 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white disabled:opacity-60"
-            >
-              <span className="truncate">
-                {loading ? "수강생 불러오는 중…" : selected ? `${String(selectedIndex + 1).padStart(2, "0")}. ${selected.name}` : "수강생 선택"}
-              </span>
-              <ChevronDown className={`size-3.5 shrink-0 transition-transform ${studentMenuOpen ? "rotate-180" : ""}`} aria-hidden="true" />
-            </button>
-            {studentMenuOpen && (
-              <div
-                id="feedback-student-menu"
-                role="menu"
-                aria-label="수강생 목록"
-                className="absolute left-0 top-full z-50 mt-1 max-h-80 w-52 overflow-y-auto border border-neutral-300 bg-white py-1 text-black shadow-xl"
+    <div className="min-h-screen bg-[#101010] px-4 pb-20 pt-6 text-white sm:px-5 md:pb-12 md:pt-8">
+      {instructor ? (
+        <nav aria-label="수강생 선택" className="flex items-center gap-3 overflow-x-auto pb-2 md:flex-wrap md:overflow-visible md:pb-0">
+          {loading ? (
+            <span className="text-xs text-neutral-400">수강생 불러오는 중…</span>
+          ) : students.map(item => {
+            const active = selected?.name === item.name;
+            return (
+              <button
+                key={item.id || item.name}
+                type="button"
+                aria-pressed={active}
+                onClick={() => setStudentName(item.name)}
+                className={`flex h-11 min-w-[92px] shrink-0 items-center justify-center rounded-full border border-white px-5 text-xs font-medium transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white ${active ? "bg-white text-black" : "bg-transparent text-white hover:bg-white/10"}`}
               >
-                {students.map((item, index) => {
-                  const active = item.id === selected?.id;
-                  return (
-                    <button
-                      key={item.id || item.name}
-                      type="button"
-                      role="menuitemradio"
-                      aria-checked={active}
-                      onClick={() => {
-                        setStudentName(item.name);
-                        setStudentMenuOpen(false);
-                        studentToggleRef.current?.focus();
-                      }}
-                      className={`flex min-h-10 w-full items-center justify-between gap-2 px-3 text-left text-xs transition-colors hover:bg-neutral-100 focus:bg-neutral-100 focus:outline-none ${active ? "bg-neutral-100 font-semibold" : ""}`}
-                    >
-                      <span>{String(index + 1).padStart(2, "0")}. {item.name}</span>
-                      {active && <Check className="size-3.5 shrink-0" aria-hidden="true" />}
-                    </button>
-                  );
-                })}
-              </div>
-            )}
-          </div>
-        ) : (
-          <div aria-label="현재 학생" className="flex h-9 min-w-32 items-center border border-neutral-300 bg-white px-3 text-xs font-medium text-black">
-            {loading ? "불러오는 중…" : selected?.name || "내 피드백"}
-          </div>
-        )}
-      </div>
+                {item.name}
+              </button>
+            );
+          })}
+        </nav>
+      ) : (
+        <div aria-label="현재 학생" className="inline-flex h-11 min-w-32 items-center justify-center rounded-full border border-white/70 px-5 text-xs font-medium text-white">
+          {loading ? "불러오는 중…" : selected?.name || "내 피드백"}
+        </div>
+      )}
       <section aria-label="주차별 피드백 문서" className="min-w-0">
           <div className="relative isolate mr-9 ml-0 mt-12 pt-8 sm:mr-11 md:mr-12 md:ml-14">
             <div aria-hidden="true" className="pointer-events-none absolute inset-x-6 bottom-3 top-0 border border-[#d9d9d5] bg-[#e0e0dc] sm:left-12 sm:right-6" />
