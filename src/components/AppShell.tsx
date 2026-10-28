@@ -1,4 +1,4 @@
-import { Link } from "@tanstack/react-router";
+import { Link, useLocation } from "@tanstack/react-router";
 import type { ReactNode } from "react";
 import {
   Home,
@@ -29,13 +29,14 @@ const MOBILE = ["/", "/sessions", "/materials", "/assignments", "/portfolio"];
 export function AppShell({ children }: { children: ReactNode }) {
   const { status, user, signOut } = useAuth();
   const isInstructor = status === "instructor";
+  const isFeedback = useLocation().pathname === "/feedback";
   const linkCls =
     "flex min-h-12 items-center gap-3 border-l-2 border-transparent px-4 text-sm font-medium transition-colors hover:bg-sidebar-accent data-[status=active]:border-sidebar-primary data-[status=active]:bg-sidebar-primary data-[status=active]:text-sidebar-primary-foreground";
   const active = { className: "font-semibold" };
 
   return (
     <div className="min-h-screen bg-background md:flex">
-      <aside className="hidden w-72 shrink-0 flex-col border-r border-sidebar-border bg-sidebar md:flex md:sticky md:top-0 md:h-screen">
+      <aside className={`hidden shrink-0 flex-col border-r border-sidebar-border bg-sidebar md:sticky md:top-0 md:flex md:h-screen ${isFeedback ? "md:w-80" : "md:w-72"}`}>
         <div className="shrink-0 border-b border-sidebar-border px-6 py-10">
           <p className="text-2xl font-bold leading-[1.2] tracking-tight text-sidebar-foreground">
             <span className="block">K-MOVE</span>
@@ -112,7 +113,7 @@ export function AppShell({ children }: { children: ReactNode }) {
         </div>
       </header>
 
-      <main className="mx-auto min-w-0 w-full max-w-5xl flex-1 px-4 pb-28 pt-6 md:px-10 md:pb-12 md:pt-10">
+      <main className={isFeedback ? "min-w-0 w-full flex-1 p-0" : "mx-auto min-w-0 w-full max-w-5xl flex-1 px-4 pb-28 pt-6 md:px-10 md:pb-12 md:pt-10"}>
         {children}
       </main>
 
