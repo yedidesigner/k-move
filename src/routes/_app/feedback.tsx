@@ -145,9 +145,9 @@ function FeedbackPage() {
                         aria-expanded={studentPickerOpen}
                         disabled={loading || students.length === 0}
                         onClick={() => setStudentPickerOpen(open => !open)}
-                        className="flex size-9 items-center justify-center rounded-sm border border-neutral-300 bg-white text-black transition-colors hover:bg-neutral-100 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-black disabled:opacity-50"
+                        className="flex size-[18px] shrink-0 items-center justify-center rounded-sm border border-neutral-300 bg-white text-black transition-colors hover:bg-neutral-100 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-black disabled:opacity-50"
                       >
-                        <ChevronDown className={`size-4 transition-transform ${studentPickerOpen ? "rotate-180" : ""}`} aria-hidden="true" />
+                        <ChevronDown className={`size-2 transition-transform ${studentPickerOpen ? "rotate-180" : ""}`} aria-hidden="true" />
                       </button>
                       {studentPickerOpen && (
                         <div
