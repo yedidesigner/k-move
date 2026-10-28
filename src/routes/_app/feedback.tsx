@@ -102,7 +102,7 @@ function FeedbackPage() {
           })}
         </nav>
       ) : (
-        <h1 className="flex min-h-11 items-center text-[clamp(1.75rem,2.1vw,2.125rem)] font-normal leading-none tracking-[-0.035em] md:ml-5">
+        <h1 className="flex min-h-11 w-full items-center justify-center text-center text-[clamp(1.75rem,2.1vw,2.125rem)] font-normal leading-none tracking-[-0.035em]">
           FEEDBACK
         </h1>
       )}
@@ -128,7 +128,7 @@ function FeedbackPage() {
                     {instructor ? "Week" : "WEEK"} {String(week).padStart(2,"0")}
                   </h2>
                 </div>
-                <div className={instructor ? "border-b-2 border-black py-4" : "pt-1"}>
+                <div className={instructor ? "border-b-2 border-black py-4" : "pt-3"}>
                   <h3 className={instructor
                     ? "text-[clamp(2.125rem,3.2vw,3.125rem)] font-semibold leading-tight tracking-[-0.055em]"
                     : "text-[clamp(1.75rem,2vw,2rem)] font-bold leading-tight tracking-[-0.055em]"}>
@@ -149,7 +149,7 @@ function FeedbackPage() {
                     <span className="text-xs text-neutral-500">학생은 연결 후 본인 자료만 열람·업로드합니다.</span>
                   </div>
                 )}
-                <div className={instructor ? "min-h-[900px]" : "min-h-[900px] mt-[25px]"} aria-live="polite">
+                <div className={instructor ? "min-h-[900px]" : "min-h-[900px] mt-[12.5px]"} aria-live="polite">
                   {setupError && <p role="alert" className="mt-8 border border-neutral-400 p-4 text-sm leading-6">{setupError}</p>}
                   {loading && <p className="mt-8 text-sm text-neutral-400">수강생 정보를 불러오는 중…</p>}
                   {!loading && selected?.id && user && (
