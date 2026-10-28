@@ -10,6 +10,7 @@ import {
   Wrench,
   Shield,
   LogOut,
+  KeyRound,
 } from "lucide-react";
 import { SITE_NAME, COURSE_NAME } from "@/data/schedule";
 import { useAuth } from "@/lib/auth";
@@ -71,6 +72,9 @@ export function AppShell({ children }: { children: ReactNode }) {
           <p className="truncate text-sm text-foreground">
             {user?.user_metadata?.["username"] ?? user?.email}
           </p>
+          <Link to="/password" className="mt-3 inline-flex min-h-10 items-center gap-2 text-sm text-muted-foreground hover:text-foreground">
+            <KeyRound className="h-4 w-4" aria-hidden /> 비밀번호 변경
+          </Link>
           <button
             onClick={() => void signOut()}
             className="mt-2 inline-flex min-h-11 items-center gap-2 text-sm text-muted-foreground hover:text-foreground"
@@ -89,6 +93,12 @@ export function AppShell({ children }: { children: ReactNode }) {
             className="border border-border px-3 py-2 text-xs transition-colors hover:bg-muted"
           >
             실습 도구
+          </Link>
+          <Link
+            to="/password"
+            className="border border-border px-3 py-2 text-xs transition-colors hover:bg-muted"
+          >
+            비밀번호 변경
           </Link>
           <Link
             to="/feedback"
