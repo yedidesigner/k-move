@@ -149,7 +149,7 @@ function FeedbackPage() {
                     <span className="text-xs text-neutral-500">학생은 연결 후 본인 자료만 열람·업로드합니다.</span>
                   </div>
                 )}
-                <div className={instructor ? "min-h-[900px]" : "min-h-[900px] mt-[50px]"} aria-live="polite">
+                <div className={instructor ? "min-h-[900px]" : "min-h-[900px] mt-[25px]"} aria-live="polite">
                   {setupError && <p role="alert" className="mt-8 border border-neutral-400 p-4 text-sm leading-6">{setupError}</p>}
                   {loading && <p className="mt-8 text-sm text-neutral-400">수강생 정보를 불러오는 중…</p>}
                   {!loading && selected?.id && user && (
