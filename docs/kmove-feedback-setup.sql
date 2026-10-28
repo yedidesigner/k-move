@@ -146,7 +146,7 @@ create policy "Feedback screenshot read" on storage.objects
 for select to authenticated using (
   bucket_id = 'kmove-feedback-screenshots' and exists (
     select 1 from public.kmove_feedback_students s
-    where s.id::text = split_part(name, '/', 1)
+    where s.id::text = split_part(storage.objects.name, '/', 1)
     and ((select private.is_kmove_instructor()) or s.user_id = (select auth.uid()))
   )
 );
@@ -157,7 +157,7 @@ for insert to authenticated with check (
   bucket_id = 'kmove-feedback-screenshots'
   and exists (
     select 1 from public.kmove_feedback_students s
-    where s.id::text = split_part(name, '/', 1)
+    where s.id::text = split_part(storage.objects.name, '/', 1)
     and ((select private.is_kmove_instructor()) or s.user_id = (select auth.uid()))
   )
 );
