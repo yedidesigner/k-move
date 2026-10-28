@@ -8,7 +8,7 @@ import { useAuth } from "@/lib/auth";
 export const Route = createFileRoute("/_app/feedback")({
   head: () => ({ meta: [
     { title: "피드백 | K-Move LMS" },
-    { name: "description", content: "수강생 포트폴리오 스크린샷과 위치별 피드백" },
+    { name: "description", content: "수강생 포트폴리오 이미지와 위치별 피드백" },
   ] }),
   component: FeedbackPage,
 });
