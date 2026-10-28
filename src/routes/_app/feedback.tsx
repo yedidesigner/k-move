@@ -107,7 +107,7 @@ function FeedbackPage() {
         </h1>
       )}
       <section aria-label="주차별 피드백 문서" className="min-w-0">
-          <div className={`relative isolate mr-9 ml-0 pt-8 sm:mr-11 md:mr-12 md:ml-6 ${instructor ? "mt-12" : "mt-12 md:mt-[88px]"}`}>
+          <div className={`relative isolate mr-9 ml-0 pt-8 sm:mr-11 md:mr-12 md:ml-6 ${instructor ? "mt-12" : "mt-6 md:mt-[44px]"}`}>
             <div aria-hidden="true" className="pointer-events-none absolute inset-x-6 bottom-3 top-0 border border-[#d9d9d5] bg-[#e0e0dc] sm:left-12 sm:right-6" />
             <div aria-hidden="true" className="pointer-events-none absolute inset-x-3 bottom-1 top-3 border border-[#dededb] bg-[#efefec] sm:left-6 sm:right-3" />
             <div className="relative min-h-[1190px] border border-[#dadad7] bg-white text-[#111] shadow-[0_12px_20px_rgba(0,0,0,0.13)]">
@@ -149,7 +149,7 @@ function FeedbackPage() {
                     <span className="text-xs text-neutral-500">학생은 연결 후 본인 자료만 열람·업로드합니다.</span>
                   </div>
                 )}
-                <div className={instructor ? "min-h-[900px]" : "min-h-[900px] mt-[100px]"} aria-live="polite">
+                <div className={instructor ? "min-h-[900px]" : "min-h-[900px] mt-[50px]"} aria-live="polite">
                   {setupError && <p role="alert" className="mt-8 border border-neutral-400 p-4 text-sm leading-6">{setupError}</p>}
                   {loading && <p className="mt-8 text-sm text-neutral-400">수강생 정보를 불러오는 중…</p>}
                   {!loading && selected?.id && user && (
