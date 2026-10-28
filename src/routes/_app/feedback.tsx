@@ -81,7 +81,7 @@ function FeedbackPage() {
   }
 
   return (
-    <div className="min-h-screen bg-[#101010] px-4 pb-20 pt-6 text-white sm:px-5 md:pb-12 md:pt-8">
+    <div className={`min-h-screen bg-[#101010] px-4 pb-20 pt-6 text-white sm:px-5 md:pb-12 ${instructor ? "md:pt-8" : "md:pt-4"}`}>
       {instructor ? (
         <nav aria-label="수강생 선택" className="flex items-center gap-3 overflow-x-auto pb-2 md:flex-wrap md:overflow-visible md:pb-0">
           {loading ? (
@@ -102,12 +102,12 @@ function FeedbackPage() {
           })}
         </nav>
       ) : (
-        <h1 className="flex min-h-11 items-center text-[clamp(2.25rem,3.1vw,3.125rem)] font-normal leading-none tracking-[-0.035em]">
+        <h1 className="flex min-h-11 items-center text-[clamp(1.75rem,2.1vw,2.125rem)] font-normal leading-none tracking-[-0.035em] md:ml-5">
           FEEDBACK
         </h1>
       )}
       <section aria-label="주차별 피드백 문서" className="min-w-0">
-          <div className="relative isolate mr-9 ml-0 mt-12 pt-8 sm:mr-11 md:mr-12 md:ml-6">
+          <div className={`relative isolate mr-9 ml-0 pt-8 sm:mr-11 md:mr-12 md:ml-6 ${instructor ? "mt-12" : "mt-12 md:mt-[88px]"}`}>
             <div aria-hidden="true" className="pointer-events-none absolute inset-x-6 bottom-3 top-0 border border-[#d9d9d5] bg-[#e0e0dc] sm:left-12 sm:right-6" />
             <div aria-hidden="true" className="pointer-events-none absolute inset-x-3 bottom-1 top-3 border border-[#dededb] bg-[#efefec] sm:left-6 sm:right-3" />
             <div className="relative min-h-[1190px] border border-[#dadad7] bg-white text-[#111] shadow-[0_12px_20px_rgba(0,0,0,0.13)]">
@@ -121,13 +121,17 @@ function FeedbackPage() {
                 ))}
               </div>
               <div className="px-5 pt-9 sm:px-8 md:px-9 lg:px-[clamp(2rem,4vw,3.5rem)]">
-                <div className="border-b-2 border-black pb-3">
-                  <h2 className="text-[clamp(1.5rem,2.3vw,2rem)] font-light leading-tight tracking-[-0.05em]">
-                    Week {String(week).padStart(2,"0")}
+                <div className={instructor ? "border-b-2 border-black pb-3" : "border-b border-neutral-500"}>
+                  <h2 className={instructor
+                    ? "text-[clamp(1.5rem,2.3vw,2rem)] font-light leading-tight tracking-[-0.05em]"
+                    : "text-xl font-normal uppercase leading-7 tracking-[-0.035em]"}>
+                    {instructor ? "Week" : "WEEK"} {String(week).padStart(2,"0")}
                   </h2>
                 </div>
-                <div className="border-b-2 border-black py-4">
-                  <h3 className="text-[clamp(2.125rem,3.2vw,3.125rem)] font-semibold leading-tight tracking-[-0.055em]">
+                <div className={instructor ? "border-b-2 border-black py-4" : "pt-1"}>
+                  <h3 className={instructor
+                    ? "text-[clamp(2.125rem,3.2vw,3.125rem)] font-semibold leading-tight tracking-[-0.055em]"
+                    : "text-[clamp(1.75rem,2vw,2rem)] font-bold leading-tight tracking-[-0.055em]"}>
                     {selected?.name||"피드백"}
                   </h3>
                 </div>
@@ -145,7 +149,7 @@ function FeedbackPage() {
                     <span className="text-xs text-neutral-500">학생은 연결 후 본인 자료만 열람·업로드합니다.</span>
                   </div>
                 )}
-                <div className="min-h-[900px]" aria-live="polite">
+                <div className={instructor ? "min-h-[900px]" : "min-h-[900px] mt-[100px]"} aria-live="polite">
                   {setupError && <p role="alert" className="mt-8 border border-neutral-400 p-4 text-sm leading-6">{setupError}</p>}
                   {loading && <p className="mt-8 text-sm text-neutral-400">수강생 정보를 불러오는 중…</p>}
                   {!loading && selected?.id && user && (
