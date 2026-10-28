@@ -27,8 +27,8 @@ function PasswordPage() {
       setError("새 비밀번호와 확인란이 일치하지 않습니다.");
       return;
     }
-    if (next.length < 8 || next.length > 64 || !/[A-Za-z]/.test(next) || !/[0-9]/.test(next)) {
-      setError("새 비밀번호는 영문과 숫자를 포함한 8~64자로 설정해 주세요.");
+    if (!/^[0-9]{4}$/.test(current) || !/^[0-9]{4}$/.test(next)) {
+      setError("현재 및 새 비밀번호는 숫자 4자리로 입력해 주세요.");
       return;
     }
     setBusy(true);
@@ -61,7 +61,7 @@ function PasswordPage() {
         </div>
         <h1 className="text-3xl font-bold tracking-tight">비밀번호 변경</h1>
         <p className="mt-2 text-sm text-muted-foreground">
-          발급된 4자리 임시 비밀번호로 로그인한 뒤, 본인만 아는 비밀번호로 변경해 주세요.
+          임시 비밀번호로 로그인한 뒤, 본인이 원하는 숫자 4자리로 변경할 수 있습니다.
         </p>
       </header>
       <div className="mb-5 border border-border bg-card px-5 py-4">
@@ -71,24 +71,27 @@ function PasswordPage() {
       <form onSubmit={(event) => void submit(event)} className="space-y-5">
         <div>
           <label htmlFor="current-password" className="mb-2 block text-sm font-medium">현재 비밀번호</label>
-          <input id="current-password" type="password" required minLength={4} maxLength={64}
-            autoComplete="current-password" value={current} onChange={(event) => setCurrent(event.target.value)}
-            placeholder="기존 4자리 PIN 또는 현재 비밀번호"
+          <input id="current-password" type="password" required minLength={4} maxLength={4}
+            inputMode="numeric" pattern="[0-9]{4}"
+            autoComplete="current-password" value={current} onChange={(event) => setCurrent(event.target.value.replace(/\D/g, "").slice(0, 4))}
+            placeholder="현재 비밀번호 숫자 4자리"
             className="min-h-12 w-full border border-input bg-card px-3 text-base" />
         </div>
         <div>
           <label htmlFor="new-password" className="mb-2 block text-sm font-medium">새 비밀번호</label>
-          <input id="new-password" type="password" required minLength={8} maxLength={64}
-            autoComplete="new-password" value={next} onChange={(event) => setNext(event.target.value)}
-            placeholder="영문과 숫자를 포함한 8자 이상"
+          <input id="new-password" type="password" required minLength={4} maxLength={4}
+            inputMode="numeric" pattern="[0-9]{4}"
+            autoComplete="new-password" value={next} onChange={(event) => setNext(event.target.value.replace(/\D/g, "").slice(0, 4))}
+            placeholder="새 비밀번호 숫자 4자리"
             className="min-h-12 w-full border border-input bg-card px-3 text-base" />
-          <p className="mt-1 text-xs text-muted-foreground">영문·숫자 포함, 8~64자. 다른 서비스와 중복되지 않도록 설정해 주세요.</p>
+          <p className="mt-1 text-xs text-muted-foreground">기존 비밀번호와 다른 숫자 4자리를 입력해 주세요.</p>
         </div>
         <div>
           <label htmlFor="confirm-password" className="mb-2 block text-sm font-medium">새 비밀번호 확인</label>
-          <input id="confirm-password" type="password" required minLength={8} maxLength={64}
-            autoComplete="new-password" value={confirm} onChange={(event) => setConfirm(event.target.value)}
-            placeholder="새 비밀번호를 다시 입력"
+          <input id="confirm-password" type="password" required minLength={4} maxLength={4}
+            inputMode="numeric" pattern="[0-9]{4}"
+            autoComplete="new-password" value={confirm} onChange={(event) => setConfirm(event.target.value.replace(/\D/g, "").slice(0, 4))}
+            placeholder="새 비밀번호 4자리 확인"
             className="min-h-12 w-full border border-input bg-card px-3 text-base" />
         </div>
         {error && <p role="alert" className="border-l-2 border-foreground bg-muted px-4 py-3 text-sm">{error}</p>}

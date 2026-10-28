@@ -9,11 +9,11 @@ export const Route = createFileRoute("/login")({
   head: () => ({
     meta: [
       { title: `로그인 | ${SITE_NAME}` },
-      { name: "description", content: "아이디와 비밀번호로 K-Move LMS에 로그인합니다." },
+      { name: "description", content: "아이디와 숫자 4자리 비밀번호로 K-Move LMS에 로그인합니다." },
       { property: "og:title", content: `로그인 | ${SITE_NAME}` },
       {
         property: "og:description",
-        content: "아이디와 비밀번호로 K-Move LMS에 로그인합니다.",
+        content: "아이디와 숫자 4자리 비밀번호로 K-Move LMS에 로그인합니다.",
       },
     ],
   }),
@@ -31,8 +31,7 @@ const ERROR_MESSAGES: Record<string, string> = {
   "auth/network-request-failed": "네트워크 연결을 확인해 주세요.",
   "auth/invalid-login-id": "아이디는 2~30자로 입력해 주세요.",
   "auth/korean-login-id-required": "아이디는 한글로만 입력해 주세요.",
-  "auth/invalid-pin": "기존 임시 비밀번호는 숫자 4자리입니다.",
-  "auth/invalid-password": "임시 비밀번호 4자리 또는 변경한 비밀번호 8자 이상을 입력해 주세요.",
+  "auth/invalid-pin": "비밀번호는 숫자 4자리로 입력해 주세요.",
   "auth/email-confirmation-required": "Supabase Authentication에서 Confirm email을 꺼 주세요.",
   invalid_credentials: "아이디 또는 비밀번호가 올바르지 않습니다.",
   user_already_exists: "이미 사용 중인 아이디입니다.",
@@ -160,15 +159,16 @@ function Login() {
                 <input
                   id="password"
                   type="password"
-                  minLength={mode === "signup" ? 8 : 4}
-                  maxLength={64}
-                  pattern={mode === "signup" ? ".{8,64}" : undefined}
+                  minLength={4}
+                  maxLength={4}
+                  inputMode="numeric"
+                  pattern="[0-9]{4}"
                   value={password}
-                  onChange={(event) => setPassword(event.target.value)}
+                  onChange={(event) => setPassword(event.target.value.replace(/\D/g, "").slice(0, 4))}
                   autoComplete={mode === "signup" ? "new-password" : "current-password"}
                   required
                   className="min-h-12 w-full border border-input bg-card px-3 text-base outline-none focus:ring-2 focus:ring-ring"
-                  placeholder={mode === "signup" ? "영문·숫자 포함 8자 이상" : "임시 PIN 4자리 또는 새 비밀번호"}
+                  placeholder="숫자 4자리"
                 />
               </div>
               {mode === "signup" && (
@@ -182,10 +182,12 @@ function Login() {
                   <input
                     id="password-confirm"
                     type="password"
-                    minLength={8}
-                    maxLength={64}
+                    minLength={4}
+                    maxLength={4}
+                    inputMode="numeric"
+                    pattern="[0-9]{4}"
                     value={passwordConfirm}
-                    onChange={(event) => setPasswordConfirm(event.target.value)}
+                    onChange={(event) => setPasswordConfirm(event.target.value.replace(/\D/g, "").slice(0, 4))}
                     autoComplete="new-password"
                     required
                     className="min-h-12 w-full border border-input bg-card px-3 text-base outline-none focus:ring-2 focus:ring-ring"
@@ -194,7 +196,7 @@ function Login() {
                 </div>
               )}
               <button
-                disabled={busy || (mode === "signup" ? password.length < 8 || !/[A-Za-z]/.test(password) || !/[0-9]/.test(password) : !/^\d{4}$/.test(password) && (password.length < 8 || password.length > 64))}
+                disabled={busy || !/^\d{4}$/.test(password)}
                 className="flex min-h-12 w-full items-center justify-center bg-primary px-4 text-base font-semibold text-primary-foreground hover:bg-primary/90 disabled:opacity-60"
               >
                 {busy ? "처리 중…" : mode === "login" ? "로그인" : "회원가입"}
@@ -209,8 +211,8 @@ function Login() {
               )}
               <p className="text-xs leading-relaxed text-muted-foreground">
                 {mode === "signup"
-                  ? "새 비밀번호는 영문과 숫자를 포함해 8자 이상으로 설정하세요."
-                  : "배부된 4자리 임시 비밀번호 또는 직접 변경한 새 비밀번호로 로그인하세요."}
+                  ? "비밀번호는 숫자 4자리로 설정해 주세요."
+                  : "배부된 임시 비밀번호 또는 직접 변경한 숫자 4자리 비밀번호를 입력하세요."}
               </p>
             </form>
           )}

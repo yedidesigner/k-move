@@ -24,7 +24,7 @@ function validateCredentials(loginId: string, password: string, requireKoreanId 
   const normalizedId = normalizeLoginId(loginId);
   if (normalizedId.length < 2 || normalizedId.length > 30) throw new Error("auth/invalid-login-id");
   if (requireKoreanId && !/^[가-힣]+$/.test(normalizedId)) throw new Error("auth/korean-login-id-required");
-  if (!/^\d{4}$/.test(password) && (password.length < 8 || password.length > 64)) throw new Error("auth/invalid-password");
+  if (!/^\d{4}$/.test(password)) throw new Error("auth/invalid-pin");
   return normalizedId;
 }
 
@@ -110,8 +110,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const changePassword = useCallback(async (currentPassword: string, newPassword: string) => {
     if (!user?.email) throw new Error("auth/not-signed-in");
-    if (newPassword.length < 8 || newPassword.length > 64 || !/[A-Za-z]/.test(newPassword) || !/[0-9]/.test(newPassword)) {
-      throw new Error("auth/weak-new-password");
+    if (!/^\d{4}$/.test(currentPassword) || !/^\d{4}$/.test(newPassword)) {
+      throw new Error("auth/invalid-pin");
     }
     if (newPassword === currentPassword) throw new Error("auth/password-unchanged");
     const db = getSupabase();
