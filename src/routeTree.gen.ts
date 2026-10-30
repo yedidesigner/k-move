@@ -16,7 +16,10 @@ import { Route as SetupRouteImport } from './routes/setup'
 import { Route as AppIndexRouteImport } from './routes/_app/index'
 import { Route as AppAdminRouteImport } from './routes/_app/admin'
 import { Route as AppAssignmentsRouteImport } from './routes/_app/assignments'
+import { Route as AppFeedbackRouteImport } from './routes/_app/feedback'
+import { Route as AppGlossaryRouteImport } from './routes/_app/glossary'
 import { Route as AppMaterialsRouteImport } from './routes/_app/materials'
+import { Route as AppPasswordRouteImport } from './routes/_app/password'
 import { Route as AppPortfolioRouteImport } from './routes/_app/portfolio'
 import { Route as AppToolsRouteImport } from './routes/_app/tools'
 import { Route as AppSessionsIndexRouteImport } from './routes/_app/sessions.index'
@@ -56,9 +59,24 @@ const AppAssignmentsRoute = AppAssignmentsRouteImport.update({
   path: '/assignments',
   getParentRoute: () => AppRoute,
 } as any)
+const AppFeedbackRoute = AppFeedbackRouteImport.update({
+  id: '/feedback',
+  path: '/feedback',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppGlossaryRoute = AppGlossaryRouteImport.update({
+  id: '/glossary',
+  path: '/glossary',
+  getParentRoute: () => AppRoute,
+} as any)
 const AppMaterialsRoute = AppMaterialsRouteImport.update({
   id: '/materials',
   path: '/materials',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppPasswordRoute = AppPasswordRouteImport.update({
+  id: '/password',
+  path: '/password',
   getParentRoute: () => AppRoute,
 } as any)
 const AppPortfolioRoute = AppPortfolioRouteImport.update({
@@ -89,7 +107,10 @@ export interface FileRoutesByFullPath {
   '/setup': typeof SetupRoute
   '/admin': typeof AppAdminRoute
   '/assignments': typeof AppAssignmentsRoute
+  '/feedback': typeof AppFeedbackRoute
+  '/glossary': typeof AppGlossaryRoute
   '/materials': typeof AppMaterialsRoute
+  '/password': typeof AppPasswordRoute
   '/portfolio': typeof AppPortfolioRoute
   '/tools': typeof AppToolsRoute
   '/sessions/$id': typeof AppSessionsIdRoute
@@ -101,7 +122,10 @@ export interface FileRoutesByTo {
   '/setup': typeof SetupRoute
   '/admin': typeof AppAdminRoute
   '/assignments': typeof AppAssignmentsRoute
+  '/feedback': typeof AppFeedbackRoute
+  '/glossary': typeof AppGlossaryRoute
   '/materials': typeof AppMaterialsRoute
+  '/password': typeof AppPasswordRoute
   '/portfolio': typeof AppPortfolioRoute
   '/tools': typeof AppToolsRoute
   '/': typeof AppIndexRoute
@@ -116,7 +140,10 @@ export interface FileRoutesById {
   '/setup': typeof SetupRoute
   '/_app/admin': typeof AppAdminRoute
   '/_app/assignments': typeof AppAssignmentsRoute
+  '/_app/feedback': typeof AppFeedbackRoute
+  '/_app/glossary': typeof AppGlossaryRoute
   '/_app/materials': typeof AppMaterialsRoute
+  '/_app/password': typeof AppPasswordRoute
   '/_app/portfolio': typeof AppPortfolioRoute
   '/_app/tools': typeof AppToolsRoute
   '/_app/': typeof AppIndexRoute
@@ -132,7 +159,10 @@ export interface FileRouteTypes {
     | '/setup'
     | '/admin'
     | '/assignments'
+    | '/feedback'
+    | '/glossary'
     | '/materials'
+    | '/password'
     | '/portfolio'
     | '/tools'
     | '/sessions/$id'
@@ -144,7 +174,10 @@ export interface FileRouteTypes {
     | '/setup'
     | '/admin'
     | '/assignments'
+    | '/feedback'
+    | '/glossary'
     | '/materials'
+    | '/password'
     | '/portfolio'
     | '/tools'
     | '/'
@@ -158,7 +191,10 @@ export interface FileRouteTypes {
     | '/setup'
     | '/_app/admin'
     | '/_app/assignments'
+    | '/_app/feedback'
+    | '/_app/glossary'
     | '/_app/materials'
+    | '/_app/password'
     | '/_app/portfolio'
     | '/_app/tools'
     | '/_app/'
@@ -224,11 +260,32 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppAssignmentsRouteImport
       parentRoute: typeof AppRoute
     }
+    '/_app/feedback': {
+      id: '/_app/feedback'
+      path: '/feedback'
+      fullPath: '/feedback'
+      preLoaderRoute: typeof AppFeedbackRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/glossary': {
+      id: '/_app/glossary'
+      path: '/glossary'
+      fullPath: '/glossary'
+      preLoaderRoute: typeof AppGlossaryRouteImport
+      parentRoute: typeof AppRoute
+    }
     '/_app/materials': {
       id: '/_app/materials'
       path: '/materials'
       fullPath: '/materials'
       preLoaderRoute: typeof AppMaterialsRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/password': {
+      id: '/_app/password'
+      path: '/password'
+      fullPath: '/password'
+      preLoaderRoute: typeof AppPasswordRouteImport
       parentRoute: typeof AppRoute
     }
     '/_app/portfolio': {
@@ -265,7 +322,10 @@ declare module '@tanstack/react-router' {
 interface AppRouteChildren {
   AppAdminRoute: typeof AppAdminRoute
   AppAssignmentsRoute: typeof AppAssignmentsRoute
+  AppFeedbackRoute: typeof AppFeedbackRoute
+  AppGlossaryRoute: typeof AppGlossaryRoute
   AppMaterialsRoute: typeof AppMaterialsRoute
+  AppPasswordRoute: typeof AppPasswordRoute
   AppPortfolioRoute: typeof AppPortfolioRoute
   AppToolsRoute: typeof AppToolsRoute
   AppIndexRoute: typeof AppIndexRoute
@@ -276,7 +336,10 @@ interface AppRouteChildren {
 const AppRouteChildren: AppRouteChildren = {
   AppAdminRoute: AppAdminRoute,
   AppAssignmentsRoute: AppAssignmentsRoute,
+  AppFeedbackRoute: AppFeedbackRoute,
+  AppGlossaryRoute: AppGlossaryRoute,
   AppMaterialsRoute: AppMaterialsRoute,
+  AppPasswordRoute: AppPasswordRoute,
   AppPortfolioRoute: AppPortfolioRoute,
   AppToolsRoute: AppToolsRoute,
   AppIndexRoute: AppIndexRoute,

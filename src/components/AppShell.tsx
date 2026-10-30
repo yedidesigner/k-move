@@ -4,6 +4,7 @@ import {
   Home,
   CalendarDays,
   FolderOpen,
+  BookOpen,
   ClipboardList,
   Briefcase,
   MessageSquareText,
@@ -19,6 +20,7 @@ const NAV = [
   { to: "/", label: "홈", icon: Home },
   { to: "/sessions", label: "전체 수업", icon: CalendarDays },
   { to: "/materials", label: "자료실", icon: FolderOpen },
+  { to: "/glossary", label: "용어집", icon: BookOpen },
   { to: "/assignments", label: "과제", icon: ClipboardList },
   { to: "/portfolio", label: "내 포트폴리오", icon: Briefcase },
   { to: "/feedback", label: "피드백", icon: MessageSquareText },
@@ -88,6 +90,12 @@ export function AppShell({ children }: { children: ReactNode }) {
         <p className="text-sm font-bold leading-snug text-foreground break-keep">{SITE_NAME}</p>
         <p className="text-xs text-muted-foreground break-keep">{COURSE_NAME}</p>
         <div className="mt-2 flex flex-wrap gap-2">
+          <Link
+            to="/glossary"
+            className="inline-flex min-h-11 items-center gap-1.5 border border-border px-3 py-2 text-xs transition-colors hover:bg-muted data-[status=active]:bg-primary data-[status=active]:text-primary-foreground"
+          >
+            <BookOpen className="size-3.5" aria-hidden /> 용어집
+          </Link>
           <Link
             to="/tools"
             className="border border-border px-3 py-2 text-xs transition-colors hover:bg-muted"
