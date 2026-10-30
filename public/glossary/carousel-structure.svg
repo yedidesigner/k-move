@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 560 320" role="img" aria-labelledby="title desc">
+  <title id="title">캐러셀의 핵심 구조</title>
+  <desc id="desc">하나의 보기 영역 안에 두 번째 콘텐츠가 크게 보이고, 첫 번째와 세 번째 콘텐츠가 양옆에 일부 보입니다. 이 예시에는 이전과 다음 화살표 및 현재 위치 2/3이 있습니다.</desc>
+  <defs><clipPath id="viewport"><rect x="24" y="32" width="512" height="192" rx="2"/></clipPath></defs>
+  <rect width="560" height="320" rx="20" fill="#f5f5f2"/>
+  <g clip-path="url(#viewport)" font-family="Pretendard, Noto Sans KR, Apple SD Gothic Neo, sans-serif" fill="#171717" font-size="32" text-anchor="middle">
+    <rect x="-183" y="46" width="288" height="164" rx="10" fill="#fff" stroke="#dededb" stroke-width="2"/>
+    <rect x="-167" y="62" width="256" height="84" rx="2" fill="#dededb"/>
+    <text x="59" y="187">01</text>
+    <rect x="120" y="33" width="320" height="190" rx="10" fill="#fff" stroke="#171717" stroke-width="2"/>
+    <rect x="136" y="49" width="288" height="108" rx="2" fill="#dededb"/>
+    <text x="280" y="201" font-weight="600">02</text>
+    <rect x="455" y="46" width="288" height="164" rx="10" fill="#fff" stroke="#dededb" stroke-width="2"/>
+    <rect x="471" y="62" width="256" height="84" rx="2" fill="#dededb"/>
+    <text x="501" y="187">03</text>
+  </g>
+  <g fill="none" stroke="#171717" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="m175 263-10 10 10 10"/><path d="m385 263 10 10-10 10"/></g>
+  <rect x="218" y="246" width="124" height="52" rx="6" fill="#e4f2b4"/>
+  <text x="280" y="284" font-family="Pretendard, Noto Sans KR, Apple SD Gothic Neo, sans-serif" font-size="32" text-anchor="middle" fill="#171717">02 / 03</text>
+</svg>

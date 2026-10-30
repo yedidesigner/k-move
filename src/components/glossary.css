@@ -49,13 +49,184 @@
 .glossary-card-term {
   display: flex;
   flex: 1;
-  align-items: center;
+  flex-direction: column;
+  justify-content: center;
+  align-items: flex-start;
   padding-block: 32px;
   font-size: clamp(22px, 2.2vw, 28px);
   font-weight: 500;
   line-height: 1.25;
   letter-spacing: -0.035em;
   word-break: normal;
+}
+
+.glossary-card-shell {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  min-width: 0;
+}
+.glossary-card-shell > .glossary-card {
+  flex: 1;
+}
+.glossary-card-pronunciation {
+  display: block;
+  margin-top: 14px;
+  font-size: 13px;
+  font-weight: 400;
+  line-height: 1.7;
+  letter-spacing: 0;
+  color: var(--muted-foreground);
+  word-break: keep-all;
+}
+.glossary-learn-button {
+  display: flex;
+  min-height: 48px;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 12px 20px;
+  border: 1px solid var(--border);
+  border-top: 0;
+  background: var(--card);
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+}
+.glossary-learn-button:hover {
+  background: var(--muted);
+}
+.glossary-visual-shortcuts {
+  margin-bottom: 24px;
+  padding: 20px;
+  border: 1px solid var(--border);
+  background: var(--card);
+}
+.glossary-visual-shortcuts-heading h2 {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  font-weight: 600;
+}
+.glossary-visual-shortcuts-heading p {
+  margin-top: 7px;
+  font-size: 12px;
+  line-height: 1.7;
+  color: var(--muted-foreground);
+  word-break: keep-all;
+}
+.glossary-visual-shortcut-list {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+  margin-top: 16px;
+}
+.glossary-visual-shortcut-list button {
+  display: flex;
+  min-height: 46px;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 10px 14px;
+  border: 1px solid var(--border);
+  background: var(--background);
+  font-size: 13px;
+  font-weight: 500;
+  text-align: left;
+  cursor: pointer;
+}
+.glossary-visual-shortcut-list button:hover {
+  border-color: var(--foreground);
+}
+.glossary-visual-shortcut-list svg {
+  flex-shrink: 0;
+}
+.glossary-lesson-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  background: #0009;
+}
+.glossary-lesson-dialog {
+  position: fixed;
+  inset: 4vh 20px;
+  z-index: 61;
+  width: min(960px, calc(100vw - 40px));
+  max-height: 92dvh;
+  margin: auto;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  background: #fff;
+  color: #171717;
+  border-radius: 12px;
+  box-shadow: 0 24px 100px #0003;
+}
+.glossary-lesson-dialog > .vux-lesson {
+  padding: 32px 24px 40px;
+}
+.glossary-lesson-toolbar {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  min-height: 64px;
+  padding: 10px 24px;
+  border-bottom: 1px solid #dededb;
+  background: #fff;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+}
+.glossary-lesson-toolbar-divider {
+  padding-inline: 10px;
+  color: #a3a3a3;
+}
+.glossary-lesson-close {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  min-height: 44px;
+  padding: 8px 10px;
+  border: 1px solid #dededb;
+  border-radius: 6px;
+  font-size: 13px;
+  letter-spacing: 0;
+  cursor: pointer;
+}
+.glossary-lesson-close:hover {
+  background: #f5f5f2;
+}
+.glossary-learn-button:focus-visible,
+.glossary-visual-shortcut-list button:focus-visible,
+.glossary-lesson-dialog button:focus-visible {
+  outline: 2px solid currentColor;
+  outline-offset: 3px;
+}
+@media (max-width: 600px) {
+  .glossary-visual-shortcut-list {
+    grid-template-columns: 1fr;
+  }
+  .glossary-visual-shortcuts {
+    padding: 16px;
+  }
+  .glossary-lesson-dialog {
+    inset: 0;
+    width: 100%;
+    max-height: 100dvh;
+    height: 100dvh;
+    border-radius: 0;
+  }
+  .glossary-lesson-toolbar {
+    padding-inline: 16px;
+  }
+  .glossary-lesson-dialog > .vux-lesson {
+    padding: 24px 16px 32px;
+  }
 }
 
 .glossary-card-back {

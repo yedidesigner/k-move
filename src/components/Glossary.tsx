@@ -1,4 +1,5 @@
 import { useId, useRef, useState } from "react";
+import * as Dialog from "@radix-ui/react-dialog";
 import {
   ArrowUpRight,
   ChevronLeft,
@@ -7,71 +8,109 @@ import {
   RotateCw,
   Search,
   X,
+  MousePointer2,
 } from "lucide-react";
 import { filterGlossary, GLOSSARY, GLOSSARY_SOURCE_URL, type GlossaryEntry } from "@/data/glossary";
+import {
+  VisualGlossaryLesson,
+  VISUAL_LESSONS,
+  type VisualLessonId,
+} from "./glossary/VisualGlossaryLesson";
 import "./glossary.css";
 
 const PAGE_SIZE = 24;
 const ALPHABET = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("");
 const AVAILABLE_LETTERS = new Set(GLOSSARY.map((entry) => entry.letter));
 const NUMBER_BY_ID = new Map(GLOSSARY.map((entry, index) => [entry.id, index + 1]));
+const LESSON_BY_ENTRY: Record<string, VisualLessonId> = {
+  "call-to-action-cta": "cta",
+  "hamburger-menus": "hamburger",
+  carousels: "carousel",
+};
+const LESSON_IDS: VisualLessonId[] = ["cta", "hamburger", "carousel"];
 
-function GlossaryCard({ entry }: { entry: GlossaryEntry }) {
+function GlossaryCard({
+  entry,
+  onLearn,
+}: {
+  entry: GlossaryEntry;
+  onLearn: (lesson: VisualLessonId, trigger: HTMLButtonElement) => void;
+}) {
   const [flipped, setFlipped] = useState(false);
   const descriptionId = useId();
   const [description, note] = entry.description.split("[실무 참고]");
   const number = String(NUMBER_BY_ID.get(entry.id)).padStart(3, "0");
+  const lessonId = LESSON_BY_ENTRY[entry.id];
+  const lesson = lessonId ? VISUAL_LESSONS[lessonId] : null;
 
   return (
-    <button
-      type="button"
-      className="glossary-card"
-      aria-label={`${entry.english} — ${flipped ? "영어로 돌아가기" : "한국어 뜻 보기"}`}
-      aria-pressed={flipped}
-      aria-describedby={flipped ? descriptionId : undefined}
-      data-flipped={flipped}
-      onClick={() => setFlipped((value) => !value)}
-    >
-      <span className="glossary-card-inner">
-        <span className="glossary-card-face glossary-card-front" aria-hidden={flipped}>
-          <span className="flex items-center justify-between text-[11px] font-medium tracking-[0.12em] text-muted-foreground">
-            <span>{number}</span>
-            <span>EN → KR</span>
-          </span>
-          <span lang="en" className="glossary-card-term">
-            {entry.english}
-          </span>
-          <span className="flex items-center justify-between gap-3 text-xs text-muted-foreground">
-            <span>클릭하여 뜻 보기</span>
-            <RotateCw className="size-4" aria-hidden />
-          </span>
-        </span>
-        <span className="glossary-card-face glossary-card-back" aria-hidden={!flipped}>
-          <span className="flex items-center justify-between text-[11px] font-medium tracking-[0.12em] opacity-60">
-            <span>{number}</span>
-            <span>KR → EN</span>
-          </span>
-          <span id={descriptionId} className="my-5 block flex-1" lang="ko">
-            <span className="block text-xl font-semibold leading-snug tracking-tight">
-              {entry.korean}
+    <div className="glossary-card-shell">
+      <button
+        type="button"
+        className="glossary-card"
+        aria-label={`${entry.english} — ${flipped ? "영어로 돌아가기" : "한국어 뜻 보기"}`}
+        aria-pressed={flipped}
+        aria-describedby={flipped ? descriptionId : undefined}
+        data-flipped={flipped}
+        onClick={() => setFlipped((value) => !value)}
+      >
+        <span className="glossary-card-inner">
+          <span className="glossary-card-face glossary-card-front" aria-hidden={flipped}>
+            <span className="flex items-center justify-between text-[11px] font-medium tracking-[0.12em] text-muted-foreground">
+              <span>{number}</span>
+              <span>EN → KR</span>
             </span>
-            <span className="mt-3 block whitespace-pre-line text-sm leading-[1.8] opacity-85">
-              {description}
+            <span className="glossary-card-term">
+              <span lang="en">{entry.english}</span>
+              {lesson && (
+                <span lang="ko" className="glossary-card-pronunciation">
+                  [{lesson.pronunciation}] / {lesson.meaning}
+                </span>
+              )}
             </span>
-            {note && (
-              <span className="mt-3 block border-t border-current/25 pt-3 text-xs leading-[1.8] opacity-75">
-                <span className="mr-1 font-semibold">실무 참고</span>
-                {note.trim()}
+            <span className="flex items-center justify-between gap-3 text-xs text-muted-foreground">
+              <span>클릭하여 뜻 보기</span>
+              <RotateCw className="size-4" aria-hidden />
+            </span>
+          </span>
+          <span className="glossary-card-face glossary-card-back" aria-hidden={!flipped}>
+            <span className="flex items-center justify-between text-[11px] font-medium tracking-[0.12em] opacity-60">
+              <span>{number}</span>
+              <span>KR → EN</span>
+            </span>
+            <span id={descriptionId} className="my-5 block flex-1" lang="ko">
+              <span className="block text-xl font-semibold leading-snug tracking-tight">
+                {entry.korean}
               </span>
-            )}
-          </span>
-          <span className="flex items-center justify-between gap-3 text-xs opacity-60">
-            <span>클릭하여 영어 보기</span>
-            <RotateCcw className="size-4" aria-hidden />
+              <span className="mt-3 block whitespace-pre-line text-sm leading-[1.8] opacity-85">
+                {description}
+              </span>
+              {note && (
+                <span className="mt-3 block border-t border-current/25 pt-3 text-xs leading-[1.8] opacity-75">
+                  <span className="mr-1 font-semibold">실무 참고</span>
+                  {note.trim()}
+                </span>
+              )}
+            </span>
+            <span className="flex items-center justify-between gap-3 text-xs opacity-60">
+              <span>클릭하여 영어 보기</span>
+              <RotateCcw className="size-4" aria-hidden />
+            </span>
           </span>
         </span>
-      </span>
-    </button>
+      </button>
+      {lesson && lessonId && (
+        <button
+          type="button"
+          className="glossary-learn-button"
+          aria-label={`${lesson.english} 핵심 구조와 직접 해보기`}
+          onClick={(event) => onLearn(lessonId, event.currentTarget)}
+        >
+          <span>핵심 구조 · 직접 해보기</span>
+          <ArrowUpRight className="size-4" aria-hidden />
+        </button>
+      )}
+    </div>
   );
 }
 
@@ -80,12 +119,19 @@ export function Glossary() {
   const [letter, setLetter] = useState("ALL");
   const [page, setPage] = useState(1);
   const [resetKey, setResetKey] = useState(0);
+  const [activeLesson, setActiveLesson] = useState<VisualLessonId | null>(null);
+  const lessonTriggerRef = useRef<HTMLButtonElement | null>(null);
   const resultsRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
   const results = filterGlossary(query, letter);
   const pageCount = Math.max(1, Math.ceil(results.length / PAGE_SIZE));
   const start = (page - 1) * PAGE_SIZE;
   const visibleEntries = results.slice(start, start + PAGE_SIZE);
+
+  function openLesson(lesson: VisualLessonId, trigger: HTMLButtonElement) {
+    lessonTriggerRef.current = trigger;
+    setActiveLesson(lesson);
+  }
 
   function changePage(next: number) {
     setPage(next);
@@ -121,6 +167,28 @@ export function Glossary() {
           영어 용어를 먼저 떠올려 보세요. 카드를 누르면 한국어 뜻과 설명을 확인할 수 있습니다.
         </p>
       </header>
+
+      <section className="glossary-visual-shortcuts" aria-labelledby="visual-lessons-title">
+        <div className="glossary-visual-shortcuts-heading">
+          <h2 id="visual-lessons-title">
+            <MousePointer2 className="size-4" aria-hidden /> 눈으로 보고, 직접 해보기
+          </h2>
+          <p>핵심 구조를 먼저 익히고 실제 화면에서 조작해 보세요.</p>
+        </div>
+        <div className="glossary-visual-shortcut-list">
+          {LESSON_IDS.map((id) => (
+            <button
+              key={id}
+              type="button"
+              onClick={(event) => openLesson(id, event.currentTarget)}
+              aria-label={`${VISUAL_LESSONS[id].english} 시각 학습 열기`}
+            >
+              <span lang="en">{VISUAL_LESSONS[id].english}</span>
+              <ArrowUpRight className="size-4" aria-hidden />
+            </button>
+          ))}
+        </div>
+      </section>
 
       <div className="mb-5 flex flex-col gap-3 sm:flex-row">
         <div className="relative flex-1">
@@ -209,7 +277,7 @@ export function Glossary() {
           >
             {visibleEntries.map((entry) => (
               <li key={entry.id} className="min-w-0">
-                <GlossaryCard entry={entry} />
+                <GlossaryCard entry={entry} onLearn={openLesson} />
               </li>
             ))}
           </ul>
@@ -280,6 +348,49 @@ export function Glossary() {
           <span className="sr-only"> (새 탭)</span>
         </a>
       </footer>
+      <Dialog.Root
+        open={activeLesson !== null}
+        onOpenChange={(open) => {
+          if (!open) setActiveLesson(null);
+        }}
+      >
+        <Dialog.Portal>
+          <Dialog.Overlay className="glossary-lesson-overlay" />
+          <Dialog.Content
+            className="glossary-lesson-dialog"
+            onEscapeKeyDown={(event) => {
+              if (
+                event.target instanceof Element &&
+                event.target.closest(
+                  '.vux-cta[data-panel-open="true"], .vux-studio[data-menu-open="true"]',
+                )
+              )
+                event.preventDefault();
+            }}
+            onCloseAutoFocus={(event) => {
+              event.preventDefault();
+              lessonTriggerRef.current?.focus();
+            }}
+          >
+            <div className="glossary-lesson-toolbar">
+              <span>
+                K-MOVE <span className="glossary-lesson-toolbar-divider">/</span> VISUAL GLOSSARY
+              </span>
+              <Dialog.Close className="glossary-lesson-close" aria-label="학습 화면 닫기">
+                <X size={20} aria-hidden />
+                <span>닫기</span>
+              </Dialog.Close>
+            </div>
+            <Dialog.Title className="sr-only">
+              {activeLesson ? VISUAL_LESSONS[activeLesson].english : "용어"} 시각 학습
+            </Dialog.Title>
+            <Dialog.Description className="sr-only">
+              핵심 구조를 보고, 직접 조작한 뒤 다른 형태를 비교하는 학습 화면입니다.
+            </Dialog.Description>
+            {activeLesson && <VisualGlossaryLesson key={activeLesson} lessonId={activeLesson} />}
+          </Dialog.Content>
+        </Dialog.Portal>
+      </Dialog.Root>
     </section>
   );
 }
