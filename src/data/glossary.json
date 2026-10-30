@@ -136,7 +136,7 @@
     "id": "call-to-action-cta",
     "english": "Call-to-action (CTA)",
     "korean": "CTA(행동 유도 요소)",
-    "description": "사용자가 특정 행동을 하도록 안내하거나 유도하는 시각적 요소.",
+    "description": "사용자가 특정 행동을 하도록 제안하는 요소. 버튼이나 링크 등 여러 형태로 나타날 수 있다.",
     "letter": "C"
   },
   {
@@ -150,7 +150,7 @@
     "id": "carousels",
     "english": "Carousels",
     "korean": "캐러셀",
-    "description": "이미지나 카드를 클릭으로 넘겨 보거나 자동으로 순환해 볼 수 있도록 구성한 UI 요소.",
+    "description": "한정된 영역 안에서 여러 콘텐츠를 순서대로 살펴보는 UI 구성. 화살표, 위치 표시, 자동 재생, 무한 반복은 선택 사항이다.",
     "letter": "C"
   },
   {
