@@ -14,4 +14,14 @@ describe("App routing", () => {
 
     expect(matches.at(-1)?.routeId).not.toBe(rootRouteId);
   });
+
+  it("keeps /promises behind the authenticated app layout", () => {
+    const router = createRouter({ routeTree, context: { queryClient: new QueryClient() } });
+
+    expect(router.matchRoutes("/promises").map((match) => match.routeId)).toEqual([
+      rootRouteId,
+      "/_app",
+      "/_app/promises",
+    ]);
+  });
 });

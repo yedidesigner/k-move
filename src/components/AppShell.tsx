@@ -12,6 +12,7 @@ import {
   Shield,
   LogOut,
   KeyRound,
+  Handshake,
 } from "lucide-react";
 import { SITE_NAME, COURSE_NAME } from "@/data/schedule";
 import { useAuth } from "@/lib/auth";
@@ -19,6 +20,7 @@ import { useAuth } from "@/lib/auth";
 const NAV = [
   { to: "/", label: "홈", icon: Home },
   { to: "/sessions", label: "전체 수업", icon: CalendarDays },
+  { to: "/promises", label: "우리의 약속", icon: Handshake },
   { to: "/glossary", label: "용어집", icon: BookOpen },
   { to: "/materials", label: "학습자료", icon: Library },
   { to: "/assignments", label: "과제", icon: ClipboardList },
@@ -97,6 +99,12 @@ export function AppShell({ children }: { children: ReactNode }) {
         <details className="mt-2">
           <summary className="min-h-11 cursor-pointer py-3 text-xs font-medium">추가 메뉴</summary>
           <div className="flex flex-wrap gap-2 pb-2">
+            <Link
+              to="/promises"
+              className="border border-border px-3 py-2 text-xs transition-colors hover:bg-muted"
+            >
+              우리의 약속
+            </Link>
             <Link
               to="/portfolio"
               className="border border-border px-3 py-2 text-xs transition-colors hover:bg-muted"

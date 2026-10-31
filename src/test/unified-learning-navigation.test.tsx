@@ -87,8 +87,14 @@ describe("Separate glossary and study materials navigation", () => {
       expect(menu.getByRole("link", { name: "과제" })).toHaveAttribute("href", "/assignments");
     }
     const moreMenu = within(screen.getByRole("banner")).getByText("추가 메뉴");
+    expect(
+      within(screen.getByRole("navigation", { name: "주요 메뉴" })).getByRole("link", { name: "우리의 약속" }),
+    ).toHaveAttribute("href", "/promises");
     expect(moreMenu.closest("details")).not.toHaveAttribute("open");
     fireEvent.click(moreMenu);
+    expect(
+      within(screen.getByRole("banner")).getByRole("link", { name: "우리의 약속" }),
+    ).toHaveAttribute("href", "/promises");
     expect(
       within(screen.getByRole("banner")).getByRole("link", { name: "내 포트폴리오" }),
     ).toHaveAttribute("href", "/portfolio");
