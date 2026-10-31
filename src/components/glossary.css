@@ -138,9 +138,9 @@
   position: absolute;
   inset: 0;
   transform: rotateY(180deg);
-  border-color: var(--primary);
-  background: var(--primary);
-  color: var(--primary-foreground);
+  border-color: #171717;
+  background: #fff;
+  color: #171717;
 }
 /* Only the active face determines height, so long explanations stay readable
    without making every unopened card as tall as its full definition. */
@@ -184,7 +184,7 @@
   display: block;
   margin-top: 16px;
   padding-top: 14px;
-  border-top: 1px solid #ffffff38;
+  border-top: 1px solid #d9d9d9;
   font-size: 13px;
   line-height: 1.8;
   opacity: 0.85;
@@ -197,7 +197,7 @@
   opacity: 0.7;
 }
 .glossary-card-back .glossary-card-action {
-  border-color: #ffffff38;
+  border-color: #d9d9d9;
   color: inherit;
   opacity: 0.7;
 }
@@ -222,6 +222,19 @@
 }
 .glossary-learn-button:hover {
   background: #e6f2ef;
+}
+.glossary-card-shell[data-learning-mode="example"] .glossary-interactive-badge {
+  border-color: #d7d7d7;
+  background: #fff;
+  color: #555;
+}
+.glossary-card-shell[data-learning-mode="example"] .glossary-learn-button {
+  border-color: var(--border);
+  background: #f7f7f7;
+  color: #171717;
+}
+.glossary-card-shell[data-learning-mode="example"] .glossary-learn-button:hover {
+  background: #ededed;
 }
 .glossary-card:focus-visible,
 .glossary-type-filters button:focus-visible {
@@ -272,7 +285,8 @@
   box-shadow: 0 24px 100px #0003;
 }
 .glossary-lesson-dialog > .vux-lesson,
-.glossary-lesson-dialog > .gp-lesson {
+.glossary-lesson-dialog > .gp-lesson,
+.glossary-lesson-dialog > .gl-lesson {
   padding: 32px 24px 40px;
 }
 .glossary-lesson-toolbar {
@@ -328,7 +342,8 @@
     padding-inline: 16px;
   }
   .glossary-lesson-dialog > .vux-lesson,
-  .glossary-lesson-dialog > .gp-lesson {
+  .glossary-lesson-dialog > .gp-lesson,
+  .glossary-lesson-dialog > .gl-lesson {
     padding: 24px 16px 32px;
   }
 }

@@ -1,11 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { GLOSSARY } from "@/data/glossary";
-import {
-  PRACTICES,
-  getGlossaryPractice,
-  hasGlossaryPractice,
-  getPracticeKind,
-} from "@/data/glossary-practice";
+import { PRACTICES, getGlossaryPractice } from "@/data/glossary-practice";
 
 const visualPresets = new Set([
   "spacing",
@@ -32,28 +27,18 @@ function expectAuthored(value: string, field: string) {
   expect(value, field).not.toMatch(/TODO|TBD|준비 중|작성 예정|예시를 입력/i);
 }
 
-describe("Complete glossary practice coverage", () => {
-  it("gives each of the 239 original terms one usable practice, retaining the three original demos", () => {
+describe("Retained practice engine content", () => {
+  it("keeps practice records tied to real glossary terms and retains the three original demos", () => {
     expect(GLOSSARY).toHaveLength(239);
     const legacy = GLOSSARY.filter((entry) => entry.lessonId);
     expect(legacy.map((entry) => entry.lessonId).sort()).toEqual(["carousel", "cta", "hamburger"]);
-    expect(Object.keys(PRACTICES)).toHaveLength(236);
-    for (const entry of GLOSSARY) {
-      expect(hasGlossaryPractice(entry), entry.id).toBe(true);
-      expect(getPracticeKind(entry), entry.id).toBeDefined();
-      if (entry.lessonId) {
-        expect(getGlossaryPractice(entry.id), entry.id).toBeUndefined();
-      } else {
-        expect(getGlossaryPractice(entry.id)?.id, entry.id).toBe(entry.id);
-      }
-    }
+    expect(Object.keys(PRACTICES).length).toBeGreaterThan(0);
     const glossaryIds = new Set(GLOSSARY.map((entry) => entry.id));
     for (const [id, practice] of Object.entries(PRACTICES)) {
       expect(practice.id, id).toBe(id);
       expect(glossaryIds.has(id), id).toBe(true);
     }
     expect(getGlossaryPractice("a-term-that-does-not-exist")).toBeUndefined();
-    expect(hasGlossaryPractice({ ...GLOSSARY[0]!, id: "a-term-that-does-not-exist" })).toBe(false);
   });
 
   it("provides specific structure, context, instructions and feedback for every new practice", () => {
@@ -115,11 +100,8 @@ describe("Complete glossary practice coverage", () => {
     }
   });
 
-  it("includes manipulation, classification, sequencing and scenario decisions, not one repeated quiz for every word", () => {
+  it("keeps authored situations distinct and provides actual spacing practice for Proximity", () => {
     const practices = Object.values(PRACTICES);
-    expect(new Set(practices.map((practice) => practice.kind))).toEqual(
-      new Set(["visual", "decision", "sort", "sequence"]),
-    );
     expect(new Set(practices.map((practice) => practice.scenario)).size).toBe(practices.length);
     const proximity = getGlossaryPractice("proximity");
     expect(proximity?.kind).toBe("visual");

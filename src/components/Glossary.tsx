@@ -13,17 +13,18 @@ import {
   filterGlossary,
   GLOSSARY,
   GLOSSARY_SOURCE_URL,
-  PRACTICE_FILTERS,
+  LEARNING_FILTERS,
   type GlossaryEntry,
   type GlossaryFilter,
 } from "@/data/glossary";
 import { VisualGlossaryLesson, VISUAL_LESSONS } from "./glossary/VisualGlossaryLesson";
 import { getGlossaryPractice, hasGlossaryPractice } from "@/data/glossary-practice";
+import { getGlossaryLearning, LEARNING_LABELS } from "@/data/glossary-learning";
 import "./glossary.css";
 
-const GlossaryPracticeLesson = lazy(() =>
-  import("./glossary/GlossaryPracticeLesson").then((module) => ({
-    default: module.GlossaryPracticeLesson,
+const GlossaryLearningLesson = lazy(() =>
+  import("./glossary/GlossaryLearningLesson").then((module) => ({
+    default: module.GlossaryLearningLesson,
   })),
 );
 
@@ -45,9 +46,14 @@ function GlossaryCard({
   const lesson = lessonId ? VISUAL_LESSONS[lessonId] : null;
   const english = lesson?.english ?? entry.english;
   const hasPractice = hasGlossaryPractice(entry);
+  const learning = getGlossaryLearning(entry.id);
 
   return (
-    <div className="glossary-card-shell" data-interactive={hasPractice}>
+    <div
+      className="glossary-card-shell"
+      data-interactive={hasPractice}
+      data-learning-mode={learning?.mode}
+    >
       <button
         type="button"
         className="glossary-card"
@@ -59,7 +65,9 @@ function GlossaryCard({
       >
         <span className="glossary-card-inner">
           <span className="glossary-card-face glossary-card-front" aria-hidden={flipped}>
-            {hasPractice && <span className="glossary-interactive-badge">직접 해보기</span>}
+            {learning && (
+              <span className="glossary-interactive-badge">{LEARNING_LABELS[learning.mode]}</span>
+            )}
             <span className="glossary-card-term">
               <span lang="en">{english}</span>
               <span lang="ko" className="glossary-card-pronunciation">
@@ -96,14 +104,14 @@ function GlossaryCard({
           </span>
         </span>
       </button>
-      {hasPractice && (
+      {learning && (
         <button
           type="button"
           className="glossary-learn-button"
-          aria-label={`${english} 핵심 구조와 직접 해보기`}
+          aria-label={`${english} ${hasPractice ? "예시와 직접 해보기" : "시각 예시 보기"}`}
           onClick={(event) => onLearn(entry, event.currentTarget)}
         >
-          <span>핵심 구조 · 직접 해보기</span>
+          <span>{hasPractice ? "예시 · 직접 해보기" : "시각 예시 보기"}</span>
           <ArrowUpRight className="size-4" aria-hidden />
         </button>
       )}
@@ -126,6 +134,7 @@ export function Glossary() {
   const start = (page - 1) * PAGE_SIZE;
   const visibleEntries = results.slice(start, start + PAGE_SIZE);
   const activePractice = activeEntry ? getGlossaryPractice(activeEntry.id) : undefined;
+  const activeLearning = activeEntry ? getGlossaryLearning(activeEntry.id) : undefined;
 
   function openLesson(entry: GlossaryEntry, trigger: HTMLButtonElement) {
     lessonTriggerRef.current = trigger;
@@ -164,7 +173,8 @@ export function Glossary() {
           </span>
         </div>
         <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
-          카드를 뒤집어 설명을 읽고, 직접 해보기로 용어를 익혀 보세요.
+          카드를 뒤집어 뜻을 읽고, 시각 예시로 이해해 보세요. 조작이 도움이 되는 용어에는 실습이
+          함께 있습니다.
         </p>
       </header>
 
@@ -215,7 +225,7 @@ export function Glossary() {
       </div>
 
       <div role="group" aria-label="학습 유형 필터" className="glossary-type-filters">
-        {PRACTICE_FILTERS.map(({ value, label, count }) => (
+        {LEARNING_FILTERS.map(({ value, label, count }) => (
           <button
             key={value}
             type="button"
@@ -258,7 +268,7 @@ export function Glossary() {
           <p role="status" aria-live="polite">
             {filter === "all"
               ? "전체 용어"
-              : (PRACTICE_FILTERS.find((item) => item.value === filter)?.label ?? "직접 해보기")}
+              : LEARNING_FILTERS.find((item) => item.value === filter)?.label}
             {letter !== "ALL" && ` · ${letter}`}{" "}
             <span className="ml-1 font-semibold text-foreground">{results.length}개</span>
             {query.trim() && <span> · 검색 결과</span>}
@@ -384,24 +394,26 @@ export function Glossary() {
                   ? VISUAL_LESSONS[activeEntry.lessonId].english
                   : activeEntry.english
                 : "용어"}{" "}
-              시각 학습
+              학습
             </Dialog.Title>
             <Dialog.Description className="sr-only">
-              핵심 구조를 보고, 직접 조작하거나 상황을 선택하며 개념을 익히는 학습 화면입니다.
+              용어에 맞는 시각 예시와 관찰 포인트를 보고 이해하는 학습 화면입니다. 조작이 도움이
+              되는 용어에는 실습이 함께 제공됩니다.
             </Dialog.Description>
-            {activeEntry?.lessonId ? (
+            {activeEntry?.lessonId && activeLearning?.mode === "practice" ? (
               <VisualGlossaryLesson key={activeEntry.id} lessonId={activeEntry.lessonId} />
-            ) : activeEntry && activePractice ? (
+            ) : activeEntry && activeLearning ? (
               <Suspense
                 fallback={
                   <p className="p-8" role="status">
-                    실습을 불러오고 있습니다.
+                    학습 예시를 불러오고 있습니다.
                   </p>
                 }
               >
-                <GlossaryPracticeLesson
+                <GlossaryLearningLesson
                   key={activeEntry.id}
                   entry={activeEntry}
+                  learning={activeLearning}
                   practice={activePractice}
                 />
               </Suspense>

@@ -147,14 +147,14 @@ describe("Visual glossary lessons", () => {
     const flip = screen.getByRole("button", { name: "CTA — 설명 보기" });
     fireEvent.click(flip);
     expect(flip).toHaveAttribute("aria-pressed", "true");
-    const learn = screen.getByRole("button", { name: "CTA 핵심 구조와 직접 해보기" });
+    const learn = screen.getByRole("button", { name: "CTA 예시와 직접 해보기" });
     learn.focus();
     fireEvent.click(learn);
-    const dialog = screen.getByRole("dialog", { name: "CTA 시각 학습" });
+    const dialog = screen.getByRole("dialog", { name: "CTA 학습" });
     expect(within(dialog).getByRole("img", { name: /행동 유도 요소 도식/ })).toBeInTheDocument();
     fireEvent.click(within(dialog).getByRole("button", { name: "무료로 시작하기" }));
     fireEvent.keyDown(within(dialog).getByRole("button", { name: "예시 닫기" }), { key: "Escape" });
-    expect(screen.getByRole("dialog", { name: "CTA 시각 학습" })).toBeInTheDocument();
+    expect(screen.getByRole("dialog", { name: "CTA 학습" })).toBeInTheDocument();
     expect(within(dialog).getByRole("button", { name: "무료로 시작하기" })).toHaveFocus();
     fireEvent.keyDown(within(dialog).getByRole("button", { name: "무료로 시작하기" }), { key: "Escape" });
     await waitFor(() => expect(screen.queryByRole("dialog")).not.toBeInTheDocument());
