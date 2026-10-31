@@ -1,4 +1,4 @@
-import { useId, useRef, useState } from "react";
+import { lazy, Suspense, useId, useRef, useState } from "react";
 import * as Dialog from "@radix-ui/react-dialog";
 import {
   ArrowUpRight,
@@ -13,16 +13,19 @@ import {
   filterGlossary,
   GLOSSARY,
   GLOSSARY_SOURCE_URL,
-  INTERACTIVE_GLOSSARY_COUNT,
+  PRACTICE_FILTERS,
   type GlossaryEntry,
   type GlossaryFilter,
 } from "@/data/glossary";
-import {
-  VisualGlossaryLesson,
-  VISUAL_LESSONS,
-  type VisualLessonId,
-} from "./glossary/VisualGlossaryLesson";
+import { VisualGlossaryLesson, VISUAL_LESSONS } from "./glossary/VisualGlossaryLesson";
+import { getGlossaryPractice, hasGlossaryPractice } from "@/data/glossary-practice";
 import "./glossary.css";
+
+const GlossaryPracticeLesson = lazy(() =>
+  import("./glossary/GlossaryPracticeLesson").then((module) => ({
+    default: module.GlossaryPracticeLesson,
+  })),
+);
 
 const PAGE_SIZE = 24;
 const ALPHABET = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("");
@@ -33,7 +36,7 @@ function GlossaryCard({
   onLearn,
 }: {
   entry: GlossaryEntry;
-  onLearn: (lesson: VisualLessonId, trigger: HTMLButtonElement) => void;
+  onLearn: (entry: GlossaryEntry, trigger: HTMLButtonElement) => void;
 }) {
   const [flipped, setFlipped] = useState(false);
   const descriptionId = useId();
@@ -41,9 +44,10 @@ function GlossaryCard({
   const lessonId = entry.lessonId;
   const lesson = lessonId ? VISUAL_LESSONS[lessonId] : null;
   const english = lesson?.english ?? entry.english;
+  const hasPractice = hasGlossaryPractice(entry);
 
   return (
-    <div className="glossary-card-shell" data-interactive={Boolean(lesson)}>
+    <div className="glossary-card-shell" data-interactive={hasPractice}>
       <button
         type="button"
         className="glossary-card"
@@ -55,7 +59,7 @@ function GlossaryCard({
       >
         <span className="glossary-card-inner">
           <span className="glossary-card-face glossary-card-front" aria-hidden={flipped}>
-            {lesson && <span className="glossary-interactive-badge">직접 해보기</span>}
+            {hasPractice && <span className="glossary-interactive-badge">직접 해보기</span>}
             <span className="glossary-card-term">
               <span lang="en">{english}</span>
               <span lang="ko" className="glossary-card-pronunciation">
@@ -69,13 +73,11 @@ function GlossaryCard({
           </span>
           <span className="glossary-card-face glossary-card-back" aria-hidden={!flipped}>
             <span id={descriptionId} className="glossary-card-explanation" lang="ko">
-              <span className="glossary-card-back-term" lang="en">{english}</span>
-              <span className="glossary-card-meaning">
-                {entry.korean}
+              <span className="glossary-card-back-term" lang="en">
+                {english}
               </span>
-              <span className="glossary-card-definition">
-                {description}
-              </span>
+              <span className="glossary-card-meaning">{entry.korean}</span>
+              <span className="glossary-card-definition">{description}</span>
               <span className="glossary-card-example">
                 <span className="glossary-card-example-label">예시</span>
                 {entry.example}
@@ -94,14 +96,14 @@ function GlossaryCard({
           </span>
         </span>
       </button>
-      {lesson && lessonId && (
+      {hasPractice && (
         <button
           type="button"
           className="glossary-learn-button"
-          aria-label={`${lesson.english} 핵심 구조와 예시 보기`}
-          onClick={(event) => onLearn(lessonId, event.currentTarget)}
+          aria-label={`${english} 핵심 구조와 직접 해보기`}
+          onClick={(event) => onLearn(entry, event.currentTarget)}
         >
-          <span>핵심 구조 · 예시 보기</span>
+          <span>핵심 구조 · 직접 해보기</span>
           <ArrowUpRight className="size-4" aria-hidden />
         </button>
       )}
@@ -115,7 +117,7 @@ export function Glossary() {
   const [filter, setFilter] = useState<GlossaryFilter>("all");
   const [page, setPage] = useState(1);
   const [resetKey, setResetKey] = useState(0);
-  const [activeLesson, setActiveLesson] = useState<VisualLessonId | null>(null);
+  const [activeEntry, setActiveEntry] = useState<GlossaryEntry | null>(null);
   const lessonTriggerRef = useRef<HTMLButtonElement | null>(null);
   const resultsRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
@@ -123,10 +125,11 @@ export function Glossary() {
   const pageCount = Math.max(1, Math.ceil(results.length / PAGE_SIZE));
   const start = (page - 1) * PAGE_SIZE;
   const visibleEntries = results.slice(start, start + PAGE_SIZE);
+  const activePractice = activeEntry ? getGlossaryPractice(activeEntry.id) : undefined;
 
-  function openLesson(lesson: VisualLessonId, trigger: HTMLButtonElement) {
+  function openLesson(entry: GlossaryEntry, trigger: HTMLButtonElement) {
     lessonTriggerRef.current = trigger;
-    setActiveLesson(lesson);
+    setActiveEntry(entry);
   }
 
   function changePage(next: number) {
@@ -161,7 +164,7 @@ export function Glossary() {
           </span>
         </div>
         <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
-          용어를 이해하고, 예시로 익혀 보세요. 카드를 뒤집으면 설명을 확인할 수 있습니다.
+          카드를 뒤집어 설명을 읽고, 직접 해보기로 용어를 익혀 보세요.
         </p>
       </header>
 
@@ -212,10 +215,7 @@ export function Glossary() {
       </div>
 
       <div role="group" aria-label="학습 유형 필터" className="glossary-type-filters">
-        {([
-          ["all", "전체", GLOSSARY.length],
-          ["interactive", "직접 해보기", INTERACTIVE_GLOSSARY_COUNT],
-        ] as const).map(([value, label, count]) => (
+        {PRACTICE_FILTERS.map(({ value, label, count }) => (
           <button
             key={value}
             type="button"
@@ -256,7 +256,9 @@ export function Glossary() {
       <div ref={resultsRef} tabIndex={-1} aria-label="용어 검색 결과" className="scroll-mt-6">
         <div className="flex min-h-16 items-center justify-between gap-3 text-xs text-muted-foreground">
           <p role="status" aria-live="polite">
-            {filter === "interactive" ? "직접 해보기" : "전체 용어"}
+            {filter === "all"
+              ? "전체 용어"
+              : (PRACTICE_FILTERS.find((item) => item.value === filter)?.label ?? "직접 해보기")}
             {letter !== "ALL" && ` · ${letter}`}{" "}
             <span className="ml-1 font-semibold text-foreground">{results.length}개</span>
             {query.trim() && <span> · 검색 결과</span>}
@@ -344,9 +346,9 @@ export function Glossary() {
         </a>
       </footer>
       <Dialog.Root
-        open={activeLesson !== null}
+        open={activeEntry !== null}
         onOpenChange={(open) => {
-          if (!open) setActiveLesson(null);
+          if (!open) setActiveEntry(null);
         }}
       >
         <Dialog.Portal>
@@ -377,12 +379,33 @@ export function Glossary() {
               </Dialog.Close>
             </div>
             <Dialog.Title className="sr-only">
-              {activeLesson ? VISUAL_LESSONS[activeLesson].english : "용어"} 시각 학습
+              {activeEntry
+                ? activeEntry.lessonId
+                  ? VISUAL_LESSONS[activeEntry.lessonId].english
+                  : activeEntry.english
+                : "용어"}{" "}
+              시각 학습
             </Dialog.Title>
             <Dialog.Description className="sr-only">
-              핵심 구조를 보고, 직접 조작한 뒤 다른 형태를 비교하는 학습 화면입니다.
+              핵심 구조를 보고, 직접 조작하거나 상황을 선택하며 개념을 익히는 학습 화면입니다.
             </Dialog.Description>
-            {activeLesson && <VisualGlossaryLesson key={activeLesson} lessonId={activeLesson} />}
+            {activeEntry?.lessonId ? (
+              <VisualGlossaryLesson key={activeEntry.id} lessonId={activeEntry.lessonId} />
+            ) : activeEntry && activePractice ? (
+              <Suspense
+                fallback={
+                  <p className="p-8" role="status">
+                    실습을 불러오고 있습니다.
+                  </p>
+                }
+              >
+                <GlossaryPracticeLesson
+                  key={activeEntry.id}
+                  entry={activeEntry}
+                  practice={activePractice}
+                />
+              </Suspense>
+            ) : null}
           </Dialog.Content>
         </Dialog.Portal>
       </Dialog.Root>

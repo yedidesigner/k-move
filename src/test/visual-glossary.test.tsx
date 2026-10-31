@@ -147,7 +147,7 @@ describe("Visual glossary lessons", () => {
     const flip = screen.getByRole("button", { name: "CTA — 설명 보기" });
     fireEvent.click(flip);
     expect(flip).toHaveAttribute("aria-pressed", "true");
-    const learn = screen.getByRole("button", { name: "CTA 핵심 구조와 예시 보기" });
+    const learn = screen.getByRole("button", { name: "CTA 핵심 구조와 직접 해보기" });
     learn.focus();
     fireEvent.click(learn);
     const dialog = screen.getByRole("dialog", { name: "CTA 시각 학습" });
