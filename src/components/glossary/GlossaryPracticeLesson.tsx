@@ -358,10 +358,10 @@ export function VisualConceptDiagram({ preset }: { preset: VisualPreset }) {
       drawing = (
         <>
           <DiagramText x={88} y={28} anchor="middle" strong>
-            낮은 충실도
+            로파이
           </DiagramText>
           <DiagramText x={272} y={28} anchor="middle" strong>
-            높은 충실도
+            하이파이
           </DiagramText>
           <rect className="gp-diagram-box" x={18} y={45} width={140} height={166} />
           <rect className="gp-diagram-box" x={202} y={45} width={140} height={166} />

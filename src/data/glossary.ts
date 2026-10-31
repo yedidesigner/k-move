@@ -13,6 +13,7 @@ export type GlossaryEntry = {
   pronunciation: string;
   description: string;
   example: string;
+  aliases?: string[];
   letter: string;
   lessonId?: GlossaryLessonId;
 };
@@ -36,6 +37,11 @@ export const GLOSSARY: GlossaryEntry[] = entries
       letter: entry.english.charAt(0).toUpperCase(),
     };
     if ("lessonId" in entry && isLessonId(entry.lessonId)) normalized.lessonId = entry.lessonId;
+    if ("aliases" in entry && Array.isArray(entry.aliases)) {
+      normalized.aliases = entry.aliases.filter(
+        (alias): alias is string => typeof alias === "string",
+      );
+    }
     return normalized;
   })
   .sort((a, b) => a.english.localeCompare(b.english, "en", { sensitivity: "base" }));
@@ -57,7 +63,7 @@ export function filterGlossary(query: string, letter: string, filter: GlossaryFi
     if (letter !== "ALL" && entry.letter !== letter) return false;
     if (filter !== "all" && getLearningMode(entry) !== filter) return false;
     const text =
-      `${entry.english} ${entry.pronunciation} ${entry.korean} ${entry.description} ${entry.example}`
+      `${entry.english} ${entry.pronunciation} ${entry.korean} ${entry.description} ${entry.example} ${(entry.aliases ?? []).join(" ")}`
         .normalize("NFKC")
         .toLocaleLowerCase();
     return words.every((word) => text.includes(word));
