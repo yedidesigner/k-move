@@ -5,6 +5,8 @@ import { FeedbackWorkspace } from "@/components/FeedbackWorkspace";
 import { getSupabase } from "@/lib/supabase";
 import { useAuth } from "@/lib/auth";
 import { STUDENT_NAMES } from "@/data/student-roster";
+import { SESSIONS, formatDateKo } from "@/data/schedule";
+import { useFeedbackWeek } from "@/hooks/use-feedback-week";
 
 export const Route = createFileRoute("/_app/feedback")({
   head: () => ({ meta: [
@@ -16,16 +18,22 @@ export const Route = createFileRoute("/_app/feedback")({
 
 type Student = { id:string; name:string; major:string; user_id:string|null };
 type Profile = { id:string; username:string; role:string };
-const WEEKS = Array.from({length:24},(_,index)=>index+1);
 const fallback = STUDENT_NAMES.map(name=>({id:"",name,major:"",user_id:null}));
 
 function FeedbackPage() {
+  const { status, user } = useAuth();
+  // Discard previous account's student selection/data before rendering a new account.
+  return <FeedbackPageContent key={`${user?.id ?? "signed-out"}:${status}`} />;
+}
+
+function FeedbackPageContent() {
   const {status,user} = useAuth();
   const instructor = status==="instructor";
   const [students,setStudents] = useState<Student[]>([]);
   const [profiles,setProfiles] = useState<Profile[]>([]);
   const [studentName,setStudentName] = useState("강민주");
-  const [week,setWeek] = useState(6);
+  const { week, setWeek, currentWeek, goToCurrentWeek } = useFeedbackWeek();
+  const selectedSession = SESSIONS.find(session => session.number === week);
   const [loading,setLoading] = useState(true);
   const [setupError,setSetupError] = useState("");
   const [mappingBusy,setMappingBusy] = useState(false);
@@ -119,8 +127,9 @@ function FeedbackPage() {
             <div aria-hidden="true" className="pointer-events-none absolute inset-x-3 bottom-1 top-3 border border-[#dededb] bg-[#efefec] sm:left-6 sm:right-3" />
             <div className="relative min-h-[1190px] border border-[#dadad7] bg-white text-[#111] shadow-[0_12px_20px_rgba(0,0,0,0.13)]">
               <div role="group" aria-label="피드백 주차 선택" className="absolute left-full top-11 z-10 flex flex-col">
-                {WEEKS.map(number=>(
+                {SESSIONS.map(({number,date})=>(
                   <button key={number} type="button" aria-label={number+"주차 피드백 보기"} aria-pressed={number===week}
+                    title={formatDateKo(date)}
                     onClick={()=>setWeek(number)}
                     className={"relative flex h-[46px] w-9 items-center justify-center border-b-[3px] border-[#171717] text-[11px] font-semibold tabular-nums transition-colors sm:w-11 "+(number===week?"z-20 -ml-px bg-white text-black":"bg-[#d2d2d0] text-[#696969] hover:bg-[#ececea] hover:text-black")}>
                     {String(number).padStart(2,"0")}
@@ -128,10 +137,18 @@ function FeedbackPage() {
                 ))}
               </div>
               <div className="px-5 pt-9 sm:px-8 md:px-9 lg:px-[clamp(2rem,4vw,3.5rem)]">
-                <div className="border-b border-neutral-500 pb-1">
+                <div className="flex flex-wrap items-end justify-between gap-2 border-b border-neutral-500 pb-1">
+                  <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1">
                   <h2 className="text-xl font-normal uppercase leading-7 tracking-[-0.035em]">
                     WEEK {String(week).padStart(2,"0")}
                   </h2>
+                  {selectedSession && <span className="text-xs text-neutral-500">{formatDateKo(selectedSession.date)}</span>}
+                  </div>
+                  <button type="button" onClick={goToCurrentWeek}
+                    aria-label={`현재 주차 ${currentWeek}주차로 이동`}
+                    className="min-h-9 text-xs text-neutral-600 underline underline-offset-4 hover:text-black">
+                    현재 주차 · {String(currentWeek).padStart(2,"0")}
+                  </button>
                 </div>
                 <div className="relative z-30 flex items-center gap-2 pt-[14px]">
                   <h3 className="text-[clamp(1.75rem,2vw,2rem)] font-bold leading-tight tracking-[-0.055em]">

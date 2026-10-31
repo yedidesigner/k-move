@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState, type MouseEvent } from "react";
 import { ImagePlus, Trash2 } from "lucide-react";
 import { getSupabase } from "@/lib/supabase";
+import { FeedbackAttachments } from "@/components/FeedbackAttachments";
 
 const BUCKET = "kmove-feedback-screenshots";
 type ImageRow = { id:string; student_id:string; week:number; object_path:string; created_by:string; created_at:string };
@@ -10,7 +11,11 @@ type Props = { studentId:string; studentName:string; week:number; userId:string;
 
 const errText = (e:unknown) => e instanceof Error ? e.message : String(e);
 
-export function FeedbackWorkspace({studentId,studentName,week,userId,instructor}:Props) {
+export function FeedbackWorkspace(props:Props) {
+  return <FeedbackWorkspaceContent key={`${props.studentId}:${props.week}:${props.userId}:${props.instructor}`} {...props} />;
+}
+
+function FeedbackWorkspaceContent({studentId,studentName,week,userId,instructor}:Props) {
   const [images,setImages] = useState<ImageRow[]>([]);
   const [pins,setPins] = useState<Pin[]>([]);
   const [urls,setUrls] = useState<Record<string,string>>({});
@@ -23,11 +28,14 @@ export function FeedbackWorkspace({studentId,studentName,week,userId,instructor}
   const [busy,setBusy] = useState(false);
   const [error,setError] = useState("");
   const fileInput = useRef<HTMLInputElement>(null);
+  const alive = useRef(true);
+  const uploadBusy = useRef(false);
+  useEffect(() => { alive.current = true; return () => { alive.current = false; }; }, []);
   const reload = () => setRevision(n => n+1);
 
   useEffect(() => {
     let active = true;
-    setLoading(true); setError(""); setDraft(null); setNote("");
+    setLoading(true); setDraft(null); setNote("");
     setImages([]); setPins([]); setUrls({});
     (async () => {
       try {
@@ -59,13 +67,19 @@ export function FeedbackWorkspace({studentId,studentName,week,userId,instructor}
   },[studentId,week,revision]);
 
   async function upload(files:FileList|null) {
-    if(!files?.length || busy) return;
+    if(!files?.length || busy || uploadBusy.current) return;
+    uploadBusy.current=true;
     setBusy(true); setError("");
+    let saved=0;
     try {
       const db=getSupabase();
-      for(const file of Array.from(files)) {
+      const selected=Array.from(files);
+      for(const file of selected) {
         if(!["image/png","image/jpeg","image/webp"].includes(file.type)) throw new Error("JPG, PNG, WebP 파일만 가능합니다.");
         if(file.size>10*1024*1024) throw new Error("이미지당 최대 크기는 10MB입니다.");
+      }
+      for(const file of selected) {
+        if(!alive.current) break;
         const ext=file.type==="image/png"?"png":file.type==="image/webp"?"webp":"jpg";
         const path=[studentId,String(week).padStart(2,"0"),crypto.randomUUID()+"."+ext].join("/");
         const stored=await db.storage.from(BUCKET).upload(path,file,{upsert:false,contentType:file.type});
@@ -77,10 +91,14 @@ export function FeedbackWorkspace({studentId,studentName,week,userId,instructor}
           await db.storage.from(BUCKET).remove([path]);
           throw inserted.error;
         }
+        saved++;
       }
-      reload();
-    } catch(e) {setError("업로드 실패: "+errText(e));}
-    finally {setBusy(false); if(fileInput.current) fileInput.current.value="";}
+    } catch(e) {if(alive.current) setError((saved?`${saved}개 이미지는 등록되었습니다. `:"")+"업로드 실패: "+errText(e));}
+    finally {
+      uploadBusy.current=false;
+      if(alive.current) {if(saved) reload();setBusy(false);}
+      if(fileInput.current) fileInput.current.value="";
+    }
   }
 
   function place(e:MouseEvent<HTMLImageElement>,imageId:string) {
@@ -157,21 +175,25 @@ export function FeedbackWorkspace({studentId,studentName,week,userId,instructor}
 
   return (
     <div className="space-y-8 pb-14">
-      <div className="flex flex-wrap items-center justify-between gap-3 border-b border-neutral-200 py-4">
-        <span className="text-xs text-neutral-500">{instructor?"이미지의 원하는 위치를 클릭해 피드백을 작성하세요.":"이미지를 업로드하고 강사의 피드백을 확인하세요."}</span>
-        <input ref={fileInput} type="file" multiple accept="image/jpeg,image/png,image/webp"
-          aria-label="이미지 파일 선택" className="sr-only"
-          onChange={e=>void upload(e.target.files)} />
-        <button type="button" disabled={busy} onClick={()=>fileInput.current?.click()}
-          className="flex min-h-10 items-center gap-2 bg-black px-4 text-xs font-semibold text-white disabled:opacity-50">
-          <ImagePlus className="size-4" /> {busy?"처리 중…":"이미지 업로드"}
-        </button>
+      <FeedbackAttachments studentId={studentId} week={week} userId={userId} instructor={instructor}
+        imageAction={<>
+          <input ref={fileInput} type="file" multiple accept="image/jpeg,image/png,image/webp"
+            aria-label="이미지 파일 선택" className="sr-only" onChange={e=>void upload(e.target.files)} />
+          <button type="button" disabled={busy} onClick={()=>fileInput.current?.click()}
+            className="flex min-h-10 items-center gap-2 bg-black px-4 text-xs font-semibold text-white disabled:opacity-50">
+            <ImagePlus className="size-4" aria-hidden="true" /> {busy?"처리 중…":"이미지 업로드"}
+          </button>
+        </>}
+      />
+      <div>
+        <h4 className="text-sm font-semibold">이미지 피드백</h4>
+        <p className="mt-1 text-xs text-neutral-500">{instructor?"이미지의 원하는 위치를 클릭해 피드백을 작성하세요.":"업로드한 이미지에서 강사의 위치별 피드백을 확인하세요."}</p>
       </div>
       {error && <p role="alert" className="border border-red-400 p-3 text-sm text-red-700">{error}</p>}
       {loading && <p className="text-sm text-neutral-500">불러오는 중…</p>}
       {!loading && images.length===0 && !error && (
-        <div className="flex min-h-60 flex-col items-center justify-center border border-dashed border-neutral-300">
-          <ImagePlus className="mb-3 size-8 text-neutral-400"/>
+        <div className="flex min-h-24 flex-col items-center justify-center border border-dashed border-neutral-300 py-5">
+          <ImagePlus className="mb-2 size-5 text-neutral-400" aria-hidden="true"/>
           <p className="text-sm text-neutral-500">업로드한 이미지가 없습니다.</p>
           <p className="mt-1 text-xs text-neutral-400">JPG · PNG · WebP / 최대 10MB</p>
         </div>
