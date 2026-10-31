@@ -8,9 +8,15 @@ import {
   RotateCw,
   Search,
   X,
-  MousePointer2,
 } from "lucide-react";
-import { filterGlossary, GLOSSARY, GLOSSARY_SOURCE_URL, type GlossaryEntry } from "@/data/glossary";
+import {
+  filterGlossary,
+  GLOSSARY,
+  GLOSSARY_SOURCE_URL,
+  INTERACTIVE_GLOSSARY_COUNT,
+  type GlossaryEntry,
+  type GlossaryFilter,
+} from "@/data/glossary";
 import {
   VisualGlossaryLesson,
   VISUAL_LESSONS,
@@ -21,13 +27,6 @@ import "./glossary.css";
 const PAGE_SIZE = 24;
 const ALPHABET = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("");
 const AVAILABLE_LETTERS = new Set(GLOSSARY.map((entry) => entry.letter));
-const NUMBER_BY_ID = new Map(GLOSSARY.map((entry, index) => [entry.id, index + 1]));
-const LESSON_BY_ENTRY: Record<string, VisualLessonId> = {
-  "call-to-action-cta": "cta",
-  "hamburger-menus": "hamburger",
-  carousels: "carousel",
-};
-const LESSON_IDS: VisualLessonId[] = ["cta", "hamburger", "carousel"];
 
 function GlossaryCard({
   entry,
@@ -39,16 +38,16 @@ function GlossaryCard({
   const [flipped, setFlipped] = useState(false);
   const descriptionId = useId();
   const [description, note] = entry.description.split("[실무 참고]");
-  const number = String(NUMBER_BY_ID.get(entry.id)).padStart(3, "0");
-  const lessonId = LESSON_BY_ENTRY[entry.id];
+  const lessonId = entry.lessonId;
   const lesson = lessonId ? VISUAL_LESSONS[lessonId] : null;
+  const english = lesson?.english ?? entry.english;
 
   return (
-    <div className="glossary-card-shell">
+    <div className="glossary-card-shell" data-interactive={Boolean(lesson)}>
       <button
         type="button"
         className="glossary-card"
-        aria-label={`${entry.english} — ${flipped ? "영어로 돌아가기" : "한국어 뜻 보기"}`}
+        aria-label={`${english} — ${flipped ? "용어로 돌아가기" : "설명 보기"}`}
         aria-pressed={flipped}
         aria-describedby={flipped ? descriptionId : undefined}
         data-flipped={flipped}
@@ -56,34 +55,30 @@ function GlossaryCard({
       >
         <span className="glossary-card-inner">
           <span className="glossary-card-face glossary-card-front" aria-hidden={flipped}>
-            <span className="flex items-center justify-between text-[11px] font-medium tracking-[0.12em] text-muted-foreground">
-              <span>{number}</span>
-              <span>EN → KR</span>
-            </span>
+            {lesson && <span className="glossary-interactive-badge">직접 해보기</span>}
             <span className="glossary-card-term">
-              <span lang="en">{entry.english}</span>
-              {lesson && (
-                <span lang="ko" className="glossary-card-pronunciation">
-                  [{lesson.pronunciation}] / {lesson.meaning}
-                </span>
-              )}
+              <span lang="en">{english}</span>
+              <span lang="ko" className="glossary-card-pronunciation">
+                [{entry.pronunciation}] / {entry.korean}
+              </span>
             </span>
-            <span className="flex items-center justify-between gap-3 text-xs text-muted-foreground">
-              <span>클릭하여 뜻 보기</span>
+            <span className="glossary-card-action">
+              <span>뒤집어 설명 보기</span>
               <RotateCw className="size-4" aria-hidden />
             </span>
           </span>
           <span className="glossary-card-face glossary-card-back" aria-hidden={!flipped}>
-            <span className="flex items-center justify-between text-[11px] font-medium tracking-[0.12em] opacity-60">
-              <span>{number}</span>
-              <span>KR → EN</span>
-            </span>
-            <span id={descriptionId} className="my-5 block flex-1" lang="ko">
-              <span className="block text-xl font-semibold leading-snug tracking-tight">
+            <span id={descriptionId} className="glossary-card-explanation" lang="ko">
+              <span className="glossary-card-back-term" lang="en">{english}</span>
+              <span className="glossary-card-meaning">
                 {entry.korean}
               </span>
-              <span className="mt-3 block whitespace-pre-line text-sm leading-[1.8] opacity-85">
+              <span className="glossary-card-definition">
                 {description}
+              </span>
+              <span className="glossary-card-example">
+                <span className="glossary-card-example-label">예시</span>
+                {entry.example}
               </span>
               {note && (
                 <span className="mt-3 block border-t border-current/25 pt-3 text-xs leading-[1.8] opacity-75">
@@ -92,8 +87,8 @@ function GlossaryCard({
                 </span>
               )}
             </span>
-            <span className="flex items-center justify-between gap-3 text-xs opacity-60">
-              <span>클릭하여 영어 보기</span>
+            <span className="glossary-card-action">
+              <span>용어로 돌아가기</span>
               <RotateCcw className="size-4" aria-hidden />
             </span>
           </span>
@@ -103,10 +98,10 @@ function GlossaryCard({
         <button
           type="button"
           className="glossary-learn-button"
-          aria-label={`${lesson.english} 핵심 구조와 직접 해보기`}
+          aria-label={`${lesson.english} 핵심 구조와 예시 보기`}
           onClick={(event) => onLearn(lessonId, event.currentTarget)}
         >
-          <span>핵심 구조 · 직접 해보기</span>
+          <span>핵심 구조 · 예시 보기</span>
           <ArrowUpRight className="size-4" aria-hidden />
         </button>
       )}
@@ -117,13 +112,14 @@ function GlossaryCard({
 export function Glossary() {
   const [query, setQuery] = useState("");
   const [letter, setLetter] = useState("ALL");
+  const [filter, setFilter] = useState<GlossaryFilter>("all");
   const [page, setPage] = useState(1);
   const [resetKey, setResetKey] = useState(0);
   const [activeLesson, setActiveLesson] = useState<VisualLessonId | null>(null);
   const lessonTriggerRef = useRef<HTMLButtonElement | null>(null);
   const resultsRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
-  const results = filterGlossary(query, letter);
+  const results = filterGlossary(query, letter, filter);
   const pageCount = Math.max(1, Math.ceil(results.length / PAGE_SIZE));
   const start = (page - 1) * PAGE_SIZE;
   const visibleEntries = results.slice(start, start + PAGE_SIZE);
@@ -142,6 +138,7 @@ export function Glossary() {
   function clearFilters() {
     setQuery("");
     setLetter("ALL");
+    setFilter("all");
     setPage(1);
     inputRef.current?.focus();
   }
@@ -164,31 +161,9 @@ export function Glossary() {
           </span>
         </div>
         <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
-          영어 용어를 먼저 떠올려 보세요. 카드를 누르면 한국어 뜻과 설명을 확인할 수 있습니다.
+          용어를 이해하고, 예시로 익혀 보세요. 카드를 뒤집으면 설명을 확인할 수 있습니다.
         </p>
       </header>
-
-      <section className="glossary-visual-shortcuts" aria-labelledby="visual-lessons-title">
-        <div className="glossary-visual-shortcuts-heading">
-          <h2 id="visual-lessons-title">
-            <MousePointer2 className="size-4" aria-hidden /> 눈으로 보고, 직접 해보기
-          </h2>
-          <p>핵심 구조를 먼저 익히고 실제 화면에서 조작해 보세요.</p>
-        </div>
-        <div className="glossary-visual-shortcut-list">
-          {LESSON_IDS.map((id) => (
-            <button
-              key={id}
-              type="button"
-              onClick={(event) => openLesson(id, event.currentTarget)}
-              aria-label={`${VISUAL_LESSONS[id].english} 시각 학습 열기`}
-            >
-              <span lang="en">{VISUAL_LESSONS[id].english}</span>
-              <ArrowUpRight className="size-4" aria-hidden />
-            </button>
-          ))}
-        </div>
-      </section>
 
       <div className="mb-5 flex flex-col gap-3 sm:flex-row">
         <div className="relative flex-1">
@@ -232,8 +207,27 @@ export function Glossary() {
           onClick={() => setResetKey((value) => value + 1)}
           className="inline-flex min-h-12 items-center justify-center gap-2 border border-border bg-card px-4 text-xs font-medium transition-colors hover:bg-muted"
         >
-          <RotateCcw className="size-3.5" aria-hidden /> 모두 영어로
+          <RotateCcw className="size-3.5" aria-hidden /> 카드 초기화
         </button>
+      </div>
+
+      <div role="group" aria-label="학습 유형 필터" className="glossary-type-filters">
+        {([
+          ["all", "전체", GLOSSARY.length],
+          ["interactive", "직접 해보기", INTERACTIVE_GLOSSARY_COUNT],
+        ] as const).map(([value, label, count]) => (
+          <button
+            key={value}
+            type="button"
+            aria-pressed={filter === value}
+            onClick={() => {
+              setFilter(value);
+              setPage(1);
+            }}
+          >
+            {label} <span>{count}</span>
+          </button>
+        ))}
       </div>
 
       <div
@@ -262,18 +256,19 @@ export function Glossary() {
       <div ref={resultsRef} tabIndex={-1} aria-label="용어 검색 결과" className="scroll-mt-6">
         <div className="flex min-h-16 items-center justify-between gap-3 text-xs text-muted-foreground">
           <p role="status" aria-live="polite">
-            {letter === "ALL" ? "전체 용어" : `${letter}로 시작하는 용어`}{" "}
+            {filter === "interactive" ? "직접 해보기" : "전체 용어"}
+            {letter !== "ALL" && ` · ${letter}`}{" "}
             <span className="ml-1 font-semibold text-foreground">{results.length}개</span>
             {query.trim() && <span> · 검색 결과</span>}
           </p>
-          <span>ENGLISH → 한국어</span>
+          <span>A–Z</span>
         </div>
 
         {results.length > 0 ? (
           <ul
-            key={`${query}-${letter}-${page}-${resetKey}`}
+            key={`${query}-${letter}-${filter}-${page}-${resetKey}`}
             aria-label="용어 카드"
-            className="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-3"
+            className="glossary-card-grid"
           >
             {visibleEntries.map((entry) => (
               <li key={entry.id} className="min-w-0">
@@ -285,7 +280,7 @@ export function Glossary() {
           <div className="border border-border bg-card px-5 py-14 text-center">
             <p className="font-semibold">일치하는 용어가 없습니다.</p>
             <p className="mt-2 text-sm text-muted-foreground">
-              다른 검색어를 입력하거나 알파벳 필터를 변경해 보세요.
+              다른 검색어를 입력하거나 학습 유형과 알파벳 필터를 변경해 보세요.
             </p>
             <button
               type="button"
@@ -334,9 +329,9 @@ export function Glossary() {
 
       <footer className="mt-10 flex flex-wrap items-center justify-between gap-3 text-[11px] leading-relaxed text-muted-foreground">
         <p>
-          Google UX Design Certificate · 비공식 한국어 참고 번역
+          용어 목록 원본: Google UX Design Certificate · 비공식 한국어 참고 자료
           <br />
-          원어와 실무 표현을 함께 정리했습니다.
+          발음·설명·예시는 K-Move 학습용으로 정리했습니다.
         </p>
         <a
           href={GLOSSARY_SOURCE_URL}
@@ -344,7 +339,7 @@ export function Glossary() {
           rel="noopener noreferrer"
           className="inline-flex min-h-11 items-center gap-1.5 underline underline-offset-4 hover:text-foreground"
         >
-          전체 번역 문서 <ArrowUpRight className="size-3.5" aria-hidden />
+          용어 목록 원본 <ArrowUpRight className="size-3.5" aria-hidden />
           <span className="sr-only"> (새 탭)</span>
         </a>
       </footer>

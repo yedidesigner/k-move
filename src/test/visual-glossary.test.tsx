@@ -144,10 +144,10 @@ describe("Visual glossary lessons", () => {
   it("opens the lesson from a searched, flipped card and restores that card state and focus", async () => {
     render(<Glossary />);
     fireEvent.change(screen.getByRole("searchbox", { name: "용어 검색" }), { target: { value: "CTA" } });
-    const flip = screen.getByRole("button", { name: "Call-to-action (CTA) — 한국어 뜻 보기" });
+    const flip = screen.getByRole("button", { name: "CTA — 설명 보기" });
     fireEvent.click(flip);
     expect(flip).toHaveAttribute("aria-pressed", "true");
-    const learn = screen.getByRole("button", { name: "CTA 핵심 구조와 직접 해보기" });
+    const learn = screen.getByRole("button", { name: "CTA 핵심 구조와 예시 보기" });
     learn.focus();
     fireEvent.click(learn);
     const dialog = screen.getByRole("dialog", { name: "CTA 시각 학습" });
