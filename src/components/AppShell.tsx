@@ -20,13 +20,13 @@ import { useAuth } from "@/lib/auth";
 const NAV = [
   { to: "/", label: "홈", icon: Home },
   { to: "/sessions", label: "전체 수업", icon: CalendarDays },
-  { to: "/promises", label: "우리의 약속", icon: Handshake },
   { to: "/glossary", label: "용어집", icon: BookOpen },
   { to: "/materials", label: "학습자료", icon: Library },
   { to: "/assignments", label: "과제", icon: ClipboardList },
   { to: "/portfolio", label: "내 포트폴리오", icon: Briefcase },
   { to: "/feedback", label: "피드백", icon: MessageSquareText },
   { to: "/tools", label: "실습 도구", icon: Wrench },
+  { to: "/promises", label: "우리의 약속", icon: Handshake },
 ] as const;
 
 const MOBILE = ["/", "/sessions", "/glossary", "/materials", "/assignments"];
@@ -100,16 +100,16 @@ export function AppShell({ children }: { children: ReactNode }) {
           <summary className="min-h-11 cursor-pointer py-3 text-xs font-medium">추가 메뉴</summary>
           <div className="flex flex-wrap gap-2 pb-2">
             <Link
-              to="/promises"
-              className="border border-border px-3 py-2 text-xs transition-colors hover:bg-muted"
-            >
-              우리의 약속
-            </Link>
-            <Link
               to="/portfolio"
               className="border border-border px-3 py-2 text-xs transition-colors hover:bg-muted"
             >
               내 포트폴리오
+            </Link>
+            <Link
+              to="/feedback"
+              className="border border-border px-3 py-2 text-xs transition-colors hover:bg-muted"
+            >
+              피드백
             </Link>
             <Link
               to="/tools"
@@ -118,16 +118,16 @@ export function AppShell({ children }: { children: ReactNode }) {
               실습 도구
             </Link>
             <Link
+              to="/promises"
+              className="border border-border px-3 py-2 text-xs transition-colors hover:bg-muted"
+            >
+              우리의 약속
+            </Link>
+            <Link
               to="/password"
               className="border border-border px-3 py-2 text-xs transition-colors hover:bg-muted"
             >
               비밀번호 변경
-            </Link>
-            <Link
-              to="/feedback"
-              className="border border-border px-3 py-2 text-xs transition-colors hover:bg-muted"
-            >
-              피드백
             </Link>
             {isInstructor && (
               <Link
