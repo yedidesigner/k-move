@@ -524,75 +524,90 @@ function Remember({ children }: { children: ReactNode }) {
   );
 }
 
-export function VisualGlossaryLesson({ lessonId }: { lessonId: VisualLessonId }) {
+export function VisualGlossaryLesson({
+  lessonId,
+  stage = "all",
+  hideHeader = false,
+}: {
+  lessonId: VisualLessonId;
+  stage?: "all" | "structure" | "example";
+  hideHeader?: boolean;
+}) {
   const lesson = VISUAL_LESSONS[lessonId];
   return (
-    <article className="vux-lesson" key={lessonId}>
-      <header className="vux-term-header">
-        <p>VISUAL GLOSSARY</p>
-        <h2 lang="en">{lesson.english}</h2>
-        <div>
-          [{lesson.pronunciation}] / {lesson.meaning}
-        </div>
-      </header>
-      <LessonSection number="01" title="핵심 구조">
-        <img
-          className="vux-concept"
-          src={`/glossary/${lessonId}-structure.svg`}
-          alt={
-            lessonId === "cta"
-              ? "안내 문장 아래 무료로 시작하기 버튼을 배치한 행동 유도 요소 도식"
-              : lessonId === "hamburger"
-                ? "세 줄 메뉴 버튼과 이를 누르면 나타나는 탐색 목록 도식"
-                : "공유된 영역 안에 순서가 있는 콘텐츠가 놓이고 두 번째 콘텐츠가 선택된 캐러셀 도식"
-          }
-          width="800"
-          height="260"
-        />
-        <p className="vux-definition">{lesson.definition}</p>
-      </LessonSection>
-      {lessonId === "cta" ? (
-        <CtaExample />
-      ) : lessonId === "hamburger" ? (
-        <HamburgerExample />
-      ) : (
-        <CarouselExample />
+    <article className="vux-lesson" key={lessonId} data-lesson-stage={stage}>
+      {!hideHeader && (
+        <header className="vux-term-header">
+          <p>VISUAL GLOSSARY</p>
+          <h2 lang="en">{lesson.english}</h2>
+          <div>
+            [{lesson.pronunciation}] / {lesson.meaning}
+          </div>
+        </header>
       )}
-      <details className="vux-references">
-        <summary>참고 사례와 이미지 출처</summary>
-        <p>
-          실제 서비스의 화면 구조를 참고해 만든 학습용 예시입니다. 원본 서비스의 동작이나 권장
-          사용법을 그대로 재현한 것은 아닙니다.
-        </p>
-        <ul>
-          {references[lessonId].map((ref) => (
-            <li key={ref.url}>
-              <a href={ref.url} target="_blank" rel="noopener noreferrer">
-                {ref.label}
-                <ArrowUpRight size={13} aria-hidden="true" />
-                <span className="vux-sr-only"> (새 탭)</span>
-              </a>
-            </li>
-          ))}
-        </ul>
-        <p>
-          사진: Unsplash —{" "}
-          <a href="https://unsplash.com/license" target="_blank" rel="noopener noreferrer">
-            라이선스<span className="vux-sr-only"> (새 탭)</span>
-          </a>
-        </p>
-        <ul>
-          {(lessonId === "carousel" ? photoCredits : [photoCredits[1]]).map((photo) => (
-            <li key={photo.url}>
-              <a href={photo.url} target="_blank" rel="noopener noreferrer">
-                {photo.label}
-                <ArrowUpRight size={13} aria-hidden="true" />
-                <span className="vux-sr-only"> (새 탭)</span>
-              </a>
-            </li>
-          ))}
-        </ul>
-      </details>
+      {stage !== "example" && (
+        <LessonSection number="01" title="핵심 구조">
+          <img
+            className="vux-concept"
+            src={`/glossary/${lessonId}-structure.svg`}
+            alt={
+              lessonId === "cta"
+                ? "안내 문장 아래 무료로 시작하기 버튼을 배치한 행동 유도 요소 도식"
+                : lessonId === "hamburger"
+                  ? "세 줄 메뉴 버튼과 이를 누르면 나타나는 탐색 목록 도식"
+                  : "공유된 영역 안에 순서가 있는 콘텐츠가 놓이고 두 번째 콘텐츠가 선택된 캐러셀 도식"
+            }
+            width="800"
+            height="260"
+          />
+          {!hideHeader && <p className="vux-definition">{lesson.definition}</p>}
+        </LessonSection>
+      )}
+      {stage !== "structure" &&
+        (lessonId === "cta" ? (
+          <CtaExample />
+        ) : lessonId === "hamburger" ? (
+          <HamburgerExample />
+        ) : (
+          <CarouselExample />
+        ))}
+      {stage !== "structure" && (
+        <details className="vux-references">
+          <summary>참고 사례와 이미지 출처</summary>
+          <p>
+            실제 서비스의 화면 구조를 참고해 만든 학습용 예시입니다. 원본 서비스의 동작이나 권장
+            사용법을 그대로 재현한 것은 아닙니다.
+          </p>
+          <ul>
+            {references[lessonId].map((ref) => (
+              <li key={ref.url}>
+                <a href={ref.url} target="_blank" rel="noopener noreferrer">
+                  {ref.label}
+                  <ArrowUpRight size={13} aria-hidden="true" />
+                  <span className="vux-sr-only"> (새 탭)</span>
+                </a>
+              </li>
+            ))}
+          </ul>
+          <p>
+            사진: Unsplash —{" "}
+            <a href="https://unsplash.com/license" target="_blank" rel="noopener noreferrer">
+              라이선스<span className="vux-sr-only"> (새 탭)</span>
+            </a>
+          </p>
+          <ul>
+            {(lessonId === "carousel" ? photoCredits : [photoCredits[1]]).map((photo) => (
+              <li key={photo.url}>
+                <a href={photo.url} target="_blank" rel="noopener noreferrer">
+                  {photo.label}
+                  <ArrowUpRight size={13} aria-hidden="true" />
+                  <span className="vux-sr-only"> (새 탭)</span>
+                </a>
+              </li>
+            ))}
+          </ul>
+        </details>
+      )}
     </article>
   );
 }

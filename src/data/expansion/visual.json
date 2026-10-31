@@ -1,0 +1,1425 @@
+{
+  "sources": [
+    {
+      "id": "visual-principles",
+      "title": "Figma · Graphic design principles",
+      "url": "https://www.figma.com/resource-library/graphic-design-principles/",
+      "note": "정렬·반복·리듬의 개념 대조. 브랜드별 규칙은 보편 법칙으로 옮기지 않았습니다."
+    },
+    {
+      "id": "visual-layout",
+      "title": "IBM Design Language · Layout overview",
+      "url": "https://www.ibm.com/design/language/layout/overview/",
+      "note": "구성 요소의 관계와 레이아웃 원리 참고."
+    },
+    {
+      "id": "visual-gestalt",
+      "title": "OpenStax · Gestalt Principles of Perception",
+      "url": "https://openstax.org/books/psychology-2e/pages/5-6-gestalt-principles-of-perception",
+      "note": "전경·배경과 좋은 연속의 지각 원리 참고."
+    },
+    {
+      "id": "visual-closure",
+      "title": "NN/g · Principle of Closure in Visual Design",
+      "url": "https://www.nngroup.com/articles/principle-closure/",
+      "note": "폐쇄성의 정의와 불완전한 형태의 인지 참고."
+    },
+    {
+      "id": "visual-contrast",
+      "title": "NN/g · 5 Principles of Visual Design in UX",
+      "url": "https://www.nngroup.com/articles/principles-visual-design/",
+      "note": "대비·균형·게슈탈트 개념 대조."
+    },
+    {
+      "id": "visual-tension",
+      "title": "Raven Heinstein · Visual Tension in Graphic Design",
+      "url": "https://digitalcommons.wku.edu/stu_hon_theses/469/",
+      "note": "디자인 학위 연구 초록의 논의 범위 참고. 보편적 효과나 실험 결과로 사용하지 않았습니다."
+    },
+    {
+      "id": "visual-anatomy",
+      "title": "Monotype · A Glossary of Typographic Terms",
+      "url": "https://www.monotype.com/resources/typographic-terms",
+      "note": "베이스라인·캡 하이트·카운터·디센더의 용어 대조. 웹 본문의 ascender 오기를 그대로 옮기지 않았습니다."
+    },
+    {
+      "id": "visual-type-glossary",
+      "title": "Explorations in Typography · Glossary",
+      "url": "https://explorationsintypography.com/glossary/",
+      "note": "어센더·x-height 등 서체 구조와 합자의 용어 대조."
+    },
+    {
+      "id": "visual-kerning",
+      "title": "Adobe InDesign · About kerning and tracking",
+      "url": "https://helpx.adobe.com/indesign/desktop/format-and-style-text/tabs-indents-and-spacing/about-kerning-and-tracking.html",
+      "note": "글자쌍 간격과 문자열 간격의 차이 참고."
+    },
+    {
+      "id": "visual-leading",
+      "title": "Adobe InDesign · Adjust line spacing with leading",
+      "url": "https://helpx.adobe.com/indesign/desktop/format-and-style-text/character-formatting/adjust-line-spacing-with-leading.html",
+      "note": "베이스라인 사이의 행간과 문단 간격 구분."
+    },
+    {
+      "id": "visual-grid",
+      "title": "Adobe InDesign · Align text",
+      "url": "https://helpx.adobe.com/indesign/using/aligning-text.html",
+      "note": "다단 본문의 베이스라인 그리드 적용 참고."
+    },
+    {
+      "id": "visual-scale",
+      "title": "IBM Design Language · Type scale",
+      "url": "https://www.ibm.com/design/language/typography/type-scale/",
+      "note": "서체 크기·행간 체계의 역할 참고. IBM 수치를 모든 디자인의 규칙으로 취급하지 않았습니다."
+    },
+    {
+      "id": "visual-rag",
+      "title": "Ilene Strizver / Monotype · Rags, Widows & Orphans",
+      "url": "https://www.myfonts.com/pages/fontscom-learning-fontology-level-2-text-typography-rags-widows-orphans",
+      "note": "래그와 외톨이 행의 개념 참고. widow/orphan 명칭은 출판 관행별 차이를 표시했습니다."
+    },
+    {
+      "id": "visual-line-length",
+      "title": "W3C WAI · Understanding SC 1.4.8 Visual Presentation",
+      "url": "https://www.w3.org/WAI/WCAG22/Understanding/visual-presentation.html",
+      "note": "행 길이와 텍스트 조정의 접근성 맥락. AAA 기준을 모든 본문의 최적값으로 주장하지 않습니다."
+    },
+    {
+      "id": "visual-variable",
+      "title": "Google Fonts Knowledge · Introducing variable fonts",
+      "url": "https://github.com/google/fonts/blob/main/cc-by-sa/knowledge/modules/introducing_type/lessons/introducing_variable_fonts/content.md",
+      "note": "가변 폰트의 축과 인스턴스 개념 참고."
+    },
+    {
+      "id": "visual-weight",
+      "title": "Microsoft OpenType · wght axis",
+      "url": "https://learn.microsoft.com/en-us/typography/opentype/spec/dvaraxistag_wght",
+      "note": "등록된 웨이트 축의 역할과 범위 참고."
+    },
+    {
+      "id": "visual-optical",
+      "title": "Microsoft OpenType · opsz axis",
+      "url": "https://learn.microsoft.com/en-us/typography/opentype/spec/dvaraxistag_opsz",
+      "note": "옵티컬 사이즈는 단순 확대가 아닌 글자 형태 조정이라는 구분."
+    },
+    {
+      "id": "visual-hsl",
+      "title": "W3C · CSS Color 4, HSL",
+      "url": "https://www.w3.org/TR/css-color-4/#the-hsl-notation",
+      "note": "HSL 좌표와 지각적 균일성의 한계 참고. 색 견본은 직접 구성했습니다."
+    }
+  ],
+  "terms": [
+    {
+      "id": "alignment",
+      "english": "Alignment",
+      "korean": "정렬",
+      "pronunciation": "얼라인먼트",
+      "description": "요소를 공통의 가장자리·중심·베이스라인에 맞추어 관계와 질서를 만드는 원리다. 같은 좌표에 놓는 기계적 정렬과 눈에 자연스럽게 보이는 광학적 조정은 구분한다.",
+      "example": "행사명, 날짜, 장소의 왼쪽 시작점을 맞추어 한 묶음으로 읽히게 한다.",
+      "aliases": ["alignment", "정렬"],
+      "topic": "visual",
+      "essential": "공통 기준선이 정보의 관계를 설명하는지 확인한다.",
+      "application": {
+        "scenario": "행사 카드마다 제목과 날짜의 시작점이 달라 비교하기 어렵다.",
+        "decision": "텍스트는 공통 왼쪽 축에, 가격은 비교 가능한 오른쪽 축에 맞춘다."
+      },
+      "critique": {
+        "tradeoff": "모든 항목을 중앙 정렬하면 긴 문장이 서로 다른 시작점을 갖는다.",
+        "evidence": "실제 긴 제목과 여러 가격을 넣어 훑어 읽는 순서를 확인한다."
+      },
+      "confusedWith": [
+        {
+          "id": "layout-grid",
+          "difference": "그리드는 배치의 기준 체계이고 정렬은 요소를 그 기준에 맞추는 관계다."
+        }
+      ],
+      "sourceIds": ["visual-principles"],
+      "figure": {
+        "kind": "comparison",
+        "title": "정렬의 핵심 구조",
+        "subtitle": "공통 기준선이 정보의 관계를 설명하는지 확인한다.",
+        "items": [
+          {
+            "label": "같은 시작선",
+            "text": "제목·날짜·장소를 하나의 축에 맞춤"
+          },
+          {
+            "label": "다른 비교 축",
+            "text": "가격은 오른쪽 끝을 맞춤"
+          }
+        ],
+        "focus": "공통 기준선이 정보의 관계를 설명하는지 확인한다.",
+        "caption": "행사명, 날짜, 장소의 왼쪽 시작점을 맞추어 한 묶음으로 읽히게 한다."
+      }
+    },
+    {
+      "id": "contrast",
+      "english": "Contrast",
+      "korean": "대비",
+      "pronunciation": "콘트라스트",
+      "description": "크기·굵기·색·형태 등 요소 사이의 차이를 이용해 구분과 강조를 만드는 원리다. 일반적인 시각 대비와 접근성의 수치화된 색 대비율은 같은 개념이 아니다.",
+      "example": "주요 제목을 크고 굵게, 보조 설명을 작고 보통 굵기로 두어 역할을 구분한다.",
+      "aliases": ["contrast", "대비"],
+      "topic": "visual",
+      "essential": "강조할 정보와 덜 강조할 정보를 먼저 정한다.",
+      "application": {
+        "scenario": "모든 공지에 굵은 제목과 검은 배경을 써서 중요한 내용이 드러나지 않는다.",
+        "decision": "한 개의 핵심 안내에 강한 대비를 주고 나머지는 읽을 수 있는 밀도로 낮춘다."
+      },
+      "critique": {
+        "tradeoff": "차이를 너무 크게 만들면 보조 정보가 사실상 읽히지 않거나 서로 경쟁한다.",
+        "evidence": "색을 제거한 화면과 실제 텍스트 대비율을 각각 검토한다."
+      },
+      "confusedWith": [
+        {
+          "id": "hierarchy",
+          "difference": "대비는 차이를 만드는 수단이고 위계는 중요도에 따른 읽기 순서다."
+        }
+      ],
+      "sourceIds": ["visual-contrast"],
+      "figure": {
+        "kind": "comparison",
+        "title": "대비의 핵심 구조",
+        "subtitle": "강조할 정보와 덜 강조할 정보를 먼저 정한다.",
+        "items": [
+          {
+            "label": "제목 32 / Bold",
+            "text": "가장 먼저 읽을 정보"
+          },
+          {
+            "label": "본문 16 / Regular",
+            "text": "이유와 조건을 설명하는 정보"
+          }
+        ],
+        "focus": "강조할 정보와 덜 강조할 정보를 먼저 정한다.",
+        "caption": "주요 제목을 크고 굵게, 보조 설명을 작고 보통 굵기로 두어 역할을 구분한다."
+      }
+    },
+    {
+      "id": "rhythm",
+      "english": "Rhythm",
+      "korean": "시각적 리듬",
+      "pronunciation": "리듬",
+      "description": "형태·간격·크기의 반복과 변화를 통해 시선의 진행에 박자를 만드는 구성 원리다. 일정한 반복뿐 아니라 점진적인 변화와 의도적인 쉼도 리듬을 만든다.",
+      "example": "전시 페이지에서 작품·설명 묶음이 반복되다가 장의 시작에 넓은 여백을 둔다.",
+      "aliases": ["rhythm", "시각적 리듬"],
+      "topic": "visual",
+      "essential": "반복 간격과 변화 지점이 콘텐츠의 흐름에 맞아야 한다.",
+      "application": {
+        "scenario": "전시 소개의 모든 구간이 같은 높이로 이어져 중요한 장면이 묻힌다.",
+        "decision": "작품 단위를 일정하게 반복하고 장이 바뀌는 위치에 큰 여백을 둔다."
+      },
+      "critique": {
+        "tradeoff": "잦은 변화는 리듬을 끊고, 변화 없는 반복은 우선순위를 약하게 할 수 있다.",
+        "evidence": "페이지를 축소해 반복 패턴과 시선이 멈추는 위치를 비교한다."
+      },
+      "confusedWith": [
+        {
+          "id": "repetition",
+          "difference": "반복은 같은 특징의 재등장이고 리듬은 반복과 변화가 만드는 흐름이다."
+        }
+      ],
+      "sourceIds": ["visual-principles"],
+      "figure": {
+        "kind": "comparison",
+        "title": "시각적 리듬의 핵심 구조",
+        "subtitle": "반복 간격과 변화 지점이 콘텐츠의 흐름에 맞아야 한다.",
+        "items": [
+          {
+            "label": "반복",
+            "text": "같은 간격으로 이어지는 요소"
+          },
+          {
+            "label": "쉼과 변화",
+            "text": "장 전환에서 더 큰 간격"
+          }
+        ],
+        "focus": "반복 간격과 변화 지점이 콘텐츠의 흐름에 맞아야 한다.",
+        "caption": "전시 페이지에서 작품·설명 묶음이 반복되다가 장의 시작에 넓은 여백을 둔다."
+      }
+    },
+    {
+      "id": "repetition",
+      "english": "Repetition",
+      "korean": "반복",
+      "pronunciation": "레퍼티션",
+      "description": "형태·색·글자 스타일·배치 규칙을 다시 사용하여 연결성과 일관성을 만드는 원리다. 무엇이 같은 역할인지 드러내도록 반복하며 모든 화면을 동일하게 만드는 것은 아니다.",
+      "example": "시리즈 포스터마다 같은 호수 표기와 날짜 위치를 반복한다.",
+      "aliases": ["repetition", "반복"],
+      "topic": "visual",
+      "essential": "반복할 시각 규칙이 같은 의미를 가져야 한다.",
+      "application": {
+        "scenario": "전시 시리즈가 각기 다른 서체와 정보 위치를 사용해 같은 행사로 보이지 않는다.",
+        "decision": "전시 제목 영역과 날짜 형식을 공통으로 두고 작품 이미지는 바꾼다."
+      },
+      "critique": {
+        "tradeoff": "장식만 반복하면 실제 정보의 역할은 여전히 모호할 수 있다.",
+        "evidence": "세 개 이상의 결과물을 나란히 놓고 공통 요소와 예외의 이유를 설명한다."
+      },
+      "confusedWith": [
+        {
+          "id": "consistency",
+          "difference": "반복은 시각 요소의 재사용이고 일관성은 동작·언어까지 포함하는 더 넓은 개념이다."
+        }
+      ],
+      "sourceIds": ["visual-layout"],
+      "figure": {
+        "kind": "comparison",
+        "title": "반복의 핵심 구조",
+        "subtitle": "반복할 시각 규칙이 같은 의미를 가져야 한다.",
+        "items": [
+          {
+            "label": "공통 위치",
+            "text": "날짜와 호수는 같은 위치"
+          },
+          {
+            "label": "변하는 내용",
+            "text": "작품과 전시명은 다르게"
+          }
+        ],
+        "focus": "반복할 시각 규칙이 같은 의미를 가져야 한다.",
+        "caption": "시리즈 포스터마다 같은 호수 표기와 날짜 위치를 반복한다."
+      }
+    },
+    {
+      "id": "figure-ground",
+      "english": "Figure–ground",
+      "korean": "전경과 배경",
+      "pronunciation": "피겨 그라운드",
+      "description": "시각 장면에서 관심 대상인 전경과 그 뒤의 배경을 구분해 지각하는 관계다. 어느 영역을 전경으로 읽느냐에 따라 같은 경계도 다르게 해석될 수 있다.",
+      "example": "안내 패널 주변 배경을 덜 복잡하게 정리해 패널의 경계와 내용을 구분한다.",
+      "aliases": ["figure–ground", "전경과 배경"],
+      "topic": "visual",
+      "essential": "읽어야 할 대상과 주변이 분명히 분리되는지 본다.",
+      "application": {
+        "scenario": "복잡한 사진 위의 예약 정보가 배경 무늬와 섞인다.",
+        "decision": "정보 패널의 면과 여백을 확보하고 사진의 시각적 강도를 조절한다."
+      },
+      "critique": {
+        "tradeoff": "배경을 모두 지우면 맥락이 사라지고, 흐림만 적용하면 글자 대비가 부족할 수 있다.",
+        "evidence": "사진이 달라진 상태에서도 패널의 범위와 읽을 내용을 구분할 수 있는지 확인한다."
+      },
+      "confusedWith": [
+        {
+          "id": "negative-white-space",
+          "difference": "여백은 비어 있는 공간이고 전경·배경은 형태를 구별하는 지각 관계다."
+        }
+      ],
+      "sourceIds": ["visual-gestalt"],
+      "figure": {
+        "kind": "comparison",
+        "title": "전경과 배경의 핵심 구조",
+        "subtitle": "읽어야 할 대상과 주변이 분명히 분리되는지 본다.",
+        "items": [
+          {
+            "label": "전경",
+            "text": "읽어야 할 예약 안내 패널"
+          },
+          {
+            "label": "배경",
+            "text": "주변 사진과 공간"
+          }
+        ],
+        "focus": "읽어야 할 대상과 주변이 분명히 분리되는지 본다.",
+        "caption": "안내 패널 주변 배경을 덜 복잡하게 정리해 패널의 경계와 내용을 구분한다."
+      }
+    },
+    {
+      "id": "closure",
+      "english": "Closure",
+      "korean": "폐쇄성의 원리",
+      "pronunciation": "클로저",
+      "description": "일부 윤곽이 빠져 있어도 남은 단서를 연결해 완성된 형태로 지각하는 경향이다. 생략해도 알아볼 수 있는 구조가 남아 있을 때 성립하며 정보 누락을 정당화하지 않는다.",
+      "example": "떨어진 네 모서리만으로 하나의 스캔 영역을 암시한다.",
+      "aliases": ["closure", "폐쇄성의 원리"],
+      "topic": "visual",
+      "essential": "생략된 부분을 학습자도 같은 형태로 보완하는지 확인한다.",
+      "application": {
+        "scenario": "스캔 화면에 전체 테두리를 그리니 사진을 가리는 느낌이 강하다.",
+        "decision": "네 모서리를 남겨 사각형 영역을 암시하고 사용 안내는 별도 텍스트로 적는다."
+      },
+      "critique": {
+        "tradeoff": "생략이 크거나 형태가 낯설면 대상과 경계를 인식하기 어렵다.",
+        "evidence": "짧게 보여준 뒤 인식한 형태와 촬영 영역을 말하게 한다."
+      },
+      "confusedWith": [
+        {
+          "id": "good-continuation",
+          "difference": "폐쇄성은 빠진 부분을 보완하는 경향이고 좋은 연속은 매끄러운 경로를 따라 묶는 경향이다."
+        }
+      ],
+      "sourceIds": ["visual-closure"],
+      "figure": {
+        "kind": "comparison",
+        "title": "폐쇄성의 원리의 핵심 구조",
+        "subtitle": "생략된 부분을 학습자도 같은 형태로 보완하는지 확인한다.",
+        "items": [
+          {
+            "label": "남은 단서",
+            "text": "네 모서리만 표시"
+          },
+          {
+            "label": "인지한 전체",
+            "text": "하나의 사각형 스캔 영역"
+          }
+        ],
+        "focus": "생략된 부분을 학습자도 같은 형태로 보완하는지 확인한다.",
+        "caption": "떨어진 네 모서리만으로 하나의 스캔 영역을 암시한다."
+      }
+    },
+    {
+      "id": "good-continuation",
+      "english": "Good continuation",
+      "korean": "좋은 연속의 원리",
+      "pronunciation": "굿 컨티뉴에이션",
+      "description": "서로 교차하거나 일부 가려진 선을 볼 때 급격히 꺾인 조각보다 매끄럽게 이어지는 경로로 지각하는 경향이다. 화면 간 경험의 연속성을 뜻하는 continuity와 구분한다.",
+      "example": "교차한 두 경로를 각각 자연스럽게 이어지는 선으로 읽도록 그린다.",
+      "aliases": ["good continuation", "좋은 연속의 원리"],
+      "topic": "visual",
+      "essential": "연결 방향이 갑자기 바뀌지 않도록 경로를 설계한다.",
+      "application": {
+        "scenario": "배송 흐름 도식의 선들이 교차해 어느 단계로 이어지는지 헷갈린다.",
+        "decision": "관련 단계의 연결은 부드러운 방향으로 유지하고 교차부에는 구분 단서를 더한다."
+      },
+      "critique": {
+        "tradeoff": "선의 연속성만 믿으면 교차점에서 잘못된 연결을 추정할 수 있다.",
+        "evidence": "시작점에서 끝점까지 직접 따라가며 경로 해석이 일치하는지 확인한다."
+      },
+      "confusedWith": [
+        {
+          "id": "continuity",
+          "difference": "여기서는 선의 시각적 연결을 뜻하며 기존 continuity 용어는 경험의 연속성을 다룬다."
+        }
+      ],
+      "sourceIds": ["visual-gestalt"],
+      "figure": {
+        "kind": "comparison",
+        "title": "좋은 연속의 원리의 핵심 구조",
+        "subtitle": "연결 방향이 갑자기 바뀌지 않도록 경로를 설계한다.",
+        "items": [
+          {
+            "label": "자연스러운 경로",
+            "text": "교차해도 이어지는 선"
+          },
+          {
+            "label": "구분 단서",
+            "text": "필요한 경우 선 끝의 레이블"
+          }
+        ],
+        "focus": "연결 방향이 갑자기 바뀌지 않도록 경로를 설계한다.",
+        "caption": "교차한 두 경로를 각각 자연스럽게 이어지는 선으로 읽도록 그린다."
+      }
+    },
+    {
+      "id": "symmetry",
+      "english": "Symmetry",
+      "korean": "대칭",
+      "pronunciation": "시메트리",
+      "description": "축이나 중심을 기준으로 형태와 위치가 대응하는 구성 관계다. 대칭은 균형을 만드는 한 방법이며 비대칭 구성도 시각적 균형을 가질 수 있다.",
+      "example": "포스터의 중심축 양쪽에 같은 크기의 도형을 대응시킨다.",
+      "aliases": ["symmetry", "대칭"],
+      "topic": "visual",
+      "essential": "어떤 축을 기준으로 무엇이 대응하는지 본다.",
+      "application": {
+        "scenario": "두 협업 기관의 로고를 동등하게 보여야 하는 초대장을 만든다.",
+        "decision": "중심축 양쪽의 영역과 시각적 무게를 비슷하게 맞춘다."
+      },
+      "critique": {
+        "tradeoff": "기하학적으로 같은 크기여도 복잡한 로고가 더 무겁게 보일 수 있다.",
+        "evidence": "축을 표시해 대응 관계를 보고 실제 로고의 무게는 별도로 조절한다."
+      },
+      "confusedWith": [
+        {
+          "id": "visual-balance",
+          "difference": "대칭은 대응하는 배치이고 균형은 전체 시각적 무게가 안정적으로 분포하는 상태다."
+        }
+      ],
+      "sourceIds": ["visual-contrast"],
+      "figure": {
+        "kind": "comparison",
+        "title": "대칭의 핵심 구조",
+        "subtitle": "어떤 축을 기준으로 무엇이 대응하는지 본다.",
+        "items": [
+          {
+            "label": "중심축",
+            "text": "좌우 대응의 기준"
+          },
+          {
+            "label": "대응 요소",
+            "text": "같은 크기와 거리의 형태"
+          }
+        ],
+        "focus": "어떤 축을 기준으로 무엇이 대응하는지 본다.",
+        "caption": "포스터의 중심축 양쪽에 같은 크기의 도형을 대응시킨다."
+      }
+    },
+    {
+      "id": "visual-tension",
+      "english": "Visual tension",
+      "korean": "시각적 긴장감",
+      "pronunciation": "비주얼 텐션",
+      "description": "요소의 치우침·근접한 경계·충돌하는 방향 등으로 생기는 불안정하거나 당기는 듯한 시각적 관계를 가리킨다. 맥락에 따른 구성 언어이며 특정 수치로 보장되는 심리 법칙은 아니다.",
+      "example": "커다란 원을 포스터 가장자리에 가까이 두어 화면 밖으로 움직일 듯한 인상을 만든다.",
+      "aliases": ["visual tension", "시각적 긴장감"],
+      "topic": "visual",
+      "essential": "긴장감을 만드는 관계와 전달 목적을 함께 설명한다.",
+      "application": {
+        "scenario": "정적인 전시 포스터에 움직임을 느끼게 하고 싶다.",
+        "decision": "원 하나를 프레임에 가깝게 옮기되 제목과 날짜의 읽기 순서는 안정시킨다."
+      },
+      "critique": {
+        "tradeoff": "표현적 긴장감이 정보의 가독성이나 서비스 신뢰를 해칠 수 있다.",
+        "evidence": "중앙 배치 안과 비교해 원하는 인상과 읽기 순서를 따로 평가한다."
+      },
+      "confusedWith": [
+        {
+          "id": "visual-balance",
+          "difference": "균형이 무게 분포의 안정감을 다룬다면 긴장감은 그 관계의 불안정함이나 당김에 주목한다."
+        }
+      ],
+      "sourceIds": ["visual-tension"],
+      "figure": {
+        "kind": "comparison",
+        "title": "시각적 긴장감의 핵심 구조",
+        "subtitle": "긴장감을 만드는 관계와 전달 목적을 함께 설명한다.",
+        "items": [
+          {
+            "label": "안정된 배치",
+            "text": "중심과 넉넉한 가장자리"
+          },
+          {
+            "label": "긴장된 배치",
+            "text": "경계에 가까워진 큰 형태"
+          }
+        ],
+        "focus": "긴장감을 만드는 관계와 전달 목적을 함께 설명한다.",
+        "caption": "커다란 원을 포스터 가장자리에 가까이 두어 화면 밖으로 움직일 듯한 인상을 만든다."
+      }
+    },
+    {
+      "id": "typographic-scale",
+      "english": "Typographic scale",
+      "korean": "타입 스케일",
+      "pronunciation": "타이포그래픽 스케일",
+      "description": "제목·본문·캡션 등 텍스트 역할에 사용할 크기의 단계와 관계를 정한 체계다. 일정 배율로 계산할 수 있지만 모든 프로젝트가 같은 비율을 사용할 필요는 없다.",
+      "example": "전시 사이트에서 40·28·18·14px를 서로 다른 텍스트 역할에 배정한다.",
+      "aliases": ["typographic scale", "타입 스케일"],
+      "topic": "visual",
+      "essential": "크기 숫자보다 각 단계의 역할과 관계가 우선이다.",
+      "application": {
+        "scenario": "페이지마다 비슷한 제목 크기가 여러 개 생겨 위계가 흐려졌다.",
+        "decision": "역할을 정리한 뒤 필요한 크기 단계만 남기고 행간과 굵기를 함께 지정한다."
+      },
+      "critique": {
+        "tradeoff": "큰 배율은 모바일에서 공간을 많이 차지하고 작은 배율은 역할 차이를 약하게 만든다.",
+        "evidence": "긴 제목·한영 혼합·모바일 폭에서도 제목과 본문을 구분할 수 있는지 확인한다."
+      },
+      "confusedWith": [
+        {
+          "id": "typographic-hierarchy",
+          "difference": "스케일은 크기 단계의 체계이고 타이포그래피 위계는 위치·굵기·여백까지 포함한다."
+        }
+      ],
+      "sourceIds": ["visual-scale"],
+      "figure": {
+        "kind": "typography",
+        "title": "타입 스케일의 핵심 구조",
+        "subtitle": "크기 숫자보다 각 단계의 역할과 관계가 우선이다.",
+        "items": [
+          {
+            "label": "40 / 제목",
+            "text": "페이지의 주제"
+          },
+          {
+            "label": "18 / 본문",
+            "text": "설명과 읽기 흐름"
+          }
+        ],
+        "focus": "크기 숫자보다 각 단계의 역할과 관계가 우선이다.",
+        "caption": "전시 사이트에서 40·28·18·14px를 서로 다른 텍스트 역할에 배정한다."
+      }
+    },
+    {
+      "id": "baseline",
+      "english": "Baseline",
+      "korean": "베이스라인",
+      "pronunciation": "베이스라인",
+      "description": "글자의 주요 몸체가 놓이는 가상의 기준선이다. 글자 외곽의 최하단과 같지 않으며 디센더는 이 선 아래로 내려갈 수 있다.",
+      "example": "서로 다른 크기의 영문 가격과 단위를 베이스라인 기준으로 정렬한다.",
+      "aliases": ["baseline", "베이스라인"],
+      "topic": "visual",
+      "essential": "문자 상자의 아래쪽과 글자 기준선을 구분한다.",
+      "application": {
+        "scenario": "큰 가격과 작은 통화 단위의 아래쪽 상자를 맞추니 글자가 어긋나 보인다.",
+        "decision": "각 텍스트의 베이스라인을 맞추고 필요한 광학적 조정을 더한다."
+      },
+      "critique": {
+        "tradeoff": "서체별 오버슈트나 문자 체계의 차이 때문에 기계적 일치만으로 충분하지 않을 수 있다.",
+        "evidence": "상자 경계선을 숨긴 상태에서도 가격과 단위가 자연스럽게 읽히는지 본다."
+      },
+      "confusedWith": [
+        {
+          "id": "baseline-grid",
+          "difference": "베이스라인은 한 줄의 기준선이고 베이스라인 그리드는 여러 줄을 정렬하는 반복 기준이다."
+        }
+      ],
+      "sourceIds": ["visual-anatomy"],
+      "figure": {
+        "kind": "typography",
+        "title": "베이스라인의 핵심 구조",
+        "subtitle": "문자 상자의 아래쪽과 글자 기준선을 구분한다.",
+        "items": [
+          {
+            "label": "기준선",
+            "text": "글자 몸체가 놓이는 선"
+          },
+          {
+            "label": "디센더",
+            "text": "기준선 아래로 내려간 부분"
+          }
+        ],
+        "focus": "문자 상자의 아래쪽과 글자 기준선을 구분한다.",
+        "caption": "서로 다른 크기의 영문 가격과 단위를 베이스라인 기준으로 정렬한다."
+      }
+    },
+    {
+      "id": "baseline-grid",
+      "english": "Baseline grid",
+      "korean": "베이스라인 그리드",
+      "pronunciation": "베이스라인 그리드",
+      "description": "본문의 줄 기준선을 일정 간격으로 반복해 여러 단이나 페이지의 텍스트를 정렬하는 그리드다. 컬럼 폭을 나누는 레이아웃 그리드와 역할이 다르다.",
+      "example": "두 단짜리 전시 도록의 본문 줄을 같은 수평 기준에 맞춘다.",
+      "aliases": ["baseline grid", "베이스라인 그리드"],
+      "topic": "visual",
+      "essential": "다른 단의 줄들이 공통 높이에 놓이는지 확인한다.",
+      "application": {
+        "scenario": "사진과 인용문이 있는 도록에서 좌우 본문의 줄 위치가 계속 어긋난다.",
+        "decision": "본문 행간에 맞는 기준 간격을 정하고 제목 뒤 여백도 그 관계 안에서 조정한다."
+      },
+      "critique": {
+        "tradeoff": "모든 텍스트를 억지로 그리드에 맞추면 캡션이나 큰 제목의 행간이 부자연스러워진다.",
+        "evidence": "펼침면으로 출력해 본문 정렬과 캡션의 독립적인 읽기성을 함께 본다."
+      },
+      "confusedWith": [
+        {
+          "id": "layout-grid",
+          "difference": "레이아웃 그리드는 영역과 열을, 베이스라인 그리드는 텍스트 줄의 수직 리듬을 정리한다."
+        }
+      ],
+      "sourceIds": ["visual-grid"],
+      "figure": {
+        "kind": "typography",
+        "title": "베이스라인 그리드의 핵심 구조",
+        "subtitle": "다른 단의 줄들이 공통 높이에 놓이는지 확인한다.",
+        "items": [
+          {
+            "label": "반복 기준",
+            "text": "일정한 간격의 수평선"
+          },
+          {
+            "label": "다단 정렬",
+            "text": "각 단의 본문 줄이 만남"
+          }
+        ],
+        "focus": "다른 단의 줄들이 공통 높이에 놓이는지 확인한다.",
+        "caption": "두 단짜리 전시 도록의 본문 줄을 같은 수평 기준에 맞춘다."
+      }
+    },
+    {
+      "id": "x-height",
+      "english": "X-height",
+      "korean": "엑스 하이트",
+      "pronunciation": "엑스 하이트",
+      "description": "라틴 소문자 x의 몸체 높이를 기준으로 설명하는 서체의 소문자 높이다. 같은 포인트 크기라도 x-height의 비율에 따라 글자가 더 크거나 작게 보일 수 있다.",
+      "example": "같은 16px의 두 서체를 소문자 본문으로 비교해 체감 크기를 살핀다.",
+      "aliases": ["x-height", "엑스 하이트"],
+      "topic": "visual",
+      "essential": "포인트 크기와 실제 소문자 몸체 높이를 구분한다.",
+      "application": {
+        "scenario": "한글과 영문을 같은 크기로 설정했지만 영문 본문이 작게 느껴진다.",
+        "decision": "영문 서체의 몸체 높이와 한글의 시각적 크기를 비교해 크기와 행간을 조정한다."
+      },
+      "critique": {
+        "tradeoff": "x-height만 키우면 어센더와의 구별이나 전체 비례가 약해질 수 있다.",
+        "evidence": "실제 혼합 문장과 작은 화면에서 글자 구분과 읽기 흐름을 확인한다."
+      },
+      "confusedWith": [
+        {
+          "id": "cap-height",
+          "difference": "x-height는 주로 소문자의 몸체 높이, cap height는 대문자 높이를 뜻한다."
+        }
+      ],
+      "sourceIds": ["visual-type-glossary"],
+      "figure": {
+        "kind": "typography",
+        "title": "엑스 하이트의 핵심 구조",
+        "subtitle": "포인트 크기와 실제 소문자 몸체 높이를 구분한다.",
+        "items": [
+          {
+            "label": "소문자 몸체",
+            "text": "x의 높이"
+          },
+          {
+            "label": "전체 문자",
+            "text": "어센더와 디센더는 별도"
+          }
+        ],
+        "focus": "포인트 크기와 실제 소문자 몸체 높이를 구분한다.",
+        "caption": "같은 16px의 두 서체를 소문자 본문으로 비교해 체감 크기를 살핀다."
+      }
+    },
+    {
+      "id": "cap-height",
+      "english": "Cap height",
+      "korean": "캡 하이트",
+      "pronunciation": "캡 하이트",
+      "description": "베이스라인에서 대문자의 기준 높이까지의 거리다. 서체의 전체 상자 높이나 소문자 어센더 높이와 항상 일치하지 않는다.",
+      "example": "대문자 제목 H와 옆 아이콘의 시각적 높이를 비교해 배치한다.",
+      "aliases": ["cap height", "캡 하이트"],
+      "topic": "visual",
+      "essential": "대문자 높이와 텍스트 프레임 높이는 다르다.",
+      "application": {
+        "scenario": "대문자 메뉴와 아이콘을 같은 상자 높이로 맞추니 아이콘이 커 보인다.",
+        "decision": "대문자의 실제 높이를 기준으로 아이콘의 비례와 위치를 조절한다."
+      },
+      "critique": {
+        "tradeoff": "원형 글자의 오버슈트 등 세부 형태는 기준 높이를 약간 넘을 수 있다.",
+        "evidence": "H·O처럼 서로 다른 대문자를 넣어 시각적으로 안정적인지 확인한다."
+      },
+      "confusedWith": [
+        {
+          "id": "ascender",
+          "difference": "캡 하이트는 대문자 기준 높이이고 어센더는 소문자의 몸체 위로 올라가는 부분이다."
+        }
+      ],
+      "sourceIds": ["visual-anatomy"],
+      "figure": {
+        "kind": "typography",
+        "title": "캡 하이트의 핵심 구조",
+        "subtitle": "대문자 높이와 텍스트 프레임 높이는 다르다.",
+        "items": [
+          {
+            "label": "대문자 위",
+            "text": "H의 상단 기준"
+          },
+          {
+            "label": "베이스라인",
+            "text": "높이를 재는 시작선"
+          }
+        ],
+        "focus": "대문자 높이와 텍스트 프레임 높이는 다르다.",
+        "caption": "대문자 제목 H와 옆 아이콘의 시각적 높이를 비교해 배치한다."
+      }
+    },
+    {
+      "id": "ascender",
+      "english": "Ascender",
+      "korean": "어센더",
+      "pronunciation": "어센더",
+      "description": "라틴 소문자에서 x-height 위로 올라오는 부분이다. b·d·h 등의 세로 획이 대표적이며 대문자 전체를 어센더라고 부르지는 않는다.",
+      "example": "소문자 x와 h를 함께 놓아 h에서 위로 솟은 획을 표시한다.",
+      "aliases": ["ascender", "어센더"],
+      "topic": "visual",
+      "essential": "소문자 몸체 위로 올라가는 부분을 찾는다.",
+      "application": {
+        "scenario": "좁은 배너에서 줄 간격을 줄이니 h의 위쪽 획과 윗줄이 붙어 보인다.",
+        "decision": "어센더가 긴 문장으로 줄 간섭을 확인하고 행간과 상단 여백을 확보한다."
+      },
+      "critique": {
+        "tradeoff": "같은 크기라도 서체별 어센더 비례가 달라 결과가 달라진다.",
+        "evidence": "b·d·h가 포함된 실제 문장으로 잘림과 행 간섭을 확인한다."
+      },
+      "confusedWith": [
+        {
+          "id": "descender",
+          "difference": "어센더는 몸체 위로, 디센더는 베이스라인 아래로 뻗는다."
+        }
+      ],
+      "sourceIds": ["visual-type-glossary"],
+      "figure": {
+        "kind": "typography",
+        "title": "어센더의 핵심 구조",
+        "subtitle": "소문자 몸체 위로 올라가는 부분을 찾는다.",
+        "items": [
+          {
+            "label": "x-height",
+            "text": "몸체 높이의 기준"
+          },
+          {
+            "label": "어센더",
+            "text": "h의 위로 솟은 획"
+          }
+        ],
+        "focus": "소문자 몸체 위로 올라가는 부분을 찾는다.",
+        "caption": "소문자 x와 h를 함께 놓아 h에서 위로 솟은 획을 표시한다."
+      }
+    },
+    {
+      "id": "descender",
+      "english": "Descender",
+      "korean": "디센더",
+      "pronunciation": "디센더",
+      "description": "라틴 소문자에서 베이스라인 아래로 내려오는 부분이다. g·p·q·y 등에 나타나며 글자 상자 밖으로 나간 오류를 뜻하지 않는다.",
+      "example": "소문자 p와 x의 기준선을 맞추고 p의 아래 획을 표시한다.",
+      "aliases": ["descender", "디센더"],
+      "topic": "visual",
+      "essential": "글자의 실제 최하단과 베이스라인을 구분한다.",
+      "application": {
+        "scenario": "버튼 높이를 제목 글자만 보고 정해 g와 y의 아래쪽이 잘린다.",
+        "decision": "디센더가 있는 문자열과 확대 상태로 높이·패딩·overflow를 검토한다."
+      },
+      "critique": {
+        "tradeoff": "디센더를 고려하지 않은 수직 가운데 정렬은 글자별로 달라 보일 수 있다.",
+        "evidence": "gyp가 포함된 문구와 한영 혼합 문구를 같은 컴포넌트에서 확인한다."
+      },
+      "confusedWith": [
+        {
+          "id": "baseline",
+          "difference": "베이스라인은 기준선이고 디센더는 그 선 아래로 내려가는 글자의 일부다."
+        }
+      ],
+      "sourceIds": ["visual-anatomy"],
+      "figure": {
+        "kind": "typography",
+        "title": "디센더의 핵심 구조",
+        "subtitle": "글자의 실제 최하단과 베이스라인을 구분한다.",
+        "items": [
+          {
+            "label": "베이스라인",
+            "text": "x가 놓이는 기준"
+          },
+          {
+            "label": "디센더",
+            "text": "p의 아래로 내려간 획"
+          }
+        ],
+        "focus": "글자의 실제 최하단과 베이스라인을 구분한다.",
+        "caption": "소문자 p와 x의 기준선을 맞추고 p의 아래 획을 표시한다."
+      }
+    },
+    {
+      "id": "counter",
+      "english": "Counter",
+      "korean": "카운터",
+      "pronunciation": "카운터",
+      "description": "글자 획으로 완전히 또는 부분적으로 둘러싸인 내부 공간이다. o의 닫힌 속공간과 c의 열린 속공간을 관찰하면 글자 형태와 가독성을 비교할 수 있다.",
+      "example": "같은 크기의 o와 e에서 획 사이의 공간이 작은 크기에서도 남는지 본다.",
+      "aliases": ["counter", "카운터"],
+      "topic": "visual",
+      "essential": "획의 두께뿐 아니라 글자 안의 빈 공간을 본다.",
+      "application": {
+        "scenario": "작은 라벨에 두꺼운 서체를 쓰니 e와 a의 속공간이 뭉개진다.",
+        "decision": "카운터가 유지되는 굵기·크기·서체를 비교해 선택한다."
+      },
+      "critique": {
+        "tradeoff": "속공간이 크다고 모든 글자의 식별이 좋은 것은 아니며 획과 전체 비례도 중요하다.",
+        "evidence": "실제 출력 크기나 저해상도 화면에서 e·a·o가 구분되는지 확인한다."
+      },
+      "confusedWith": [
+        {
+          "id": "negative-white-space",
+          "difference": "여백은 화면 전반의 빈 공간이고 카운터는 글자 내부의 특정 공간이다."
+        }
+      ],
+      "sourceIds": ["visual-anatomy"],
+      "figure": {
+        "kind": "typography",
+        "title": "카운터의 핵심 구조",
+        "subtitle": "획의 두께뿐 아니라 글자 안의 빈 공간을 본다.",
+        "items": [
+          {
+            "label": "닫힌 공간",
+            "text": "o 안의 흰 영역"
+          },
+          {
+            "label": "열린 공간",
+            "text": "c 내부에서 바깥으로 열린 영역"
+          }
+        ],
+        "focus": "획의 두께뿐 아니라 글자 안의 빈 공간을 본다.",
+        "caption": "같은 크기의 o와 e에서 획 사이의 공간이 작은 크기에서도 남는지 본다."
+      }
+    },
+    {
+      "id": "kerning",
+      "english": "Kerning",
+      "korean": "커닝",
+      "pronunciation": "커닝",
+      "description": "특정 글자쌍 사이의 간격을 조절해 시각적 간격을 맞추는 작업이다. 문자열 전체의 간격을 일괄 조정하는 트래킹과 구분한다.",
+      "example": "로고의 AV 사이가 벌어져 보일 때 그 두 글자 사이만 조정한다.",
+      "aliases": ["kerning", "커닝"],
+      "topic": "visual",
+      "essential": "같은 숫자 간격보다 글자 형태 사이의 시각적 공간을 본다.",
+      "application": {
+        "scenario": "AVEN이라는 영문 로고에서 A와 V 사이만 비어 보인다.",
+        "decision": "다른 글자쌍과 비교하면서 AV의 간격만 조절한다."
+      },
+      "critique": {
+        "tradeoff": "과도하게 줄이면 글자가 겹치거나 다른 형태로 읽힐 수 있다.",
+        "evidence": "실제 사용 크기와 작은 크기에서 글자 구별과 단어의 리듬을 확인한다."
+      },
+      "confusedWith": [
+        {
+          "id": "tracking",
+          "difference": "커닝은 특정 글자쌍, 트래킹은 선택한 문자열 전체의 간격 조정이다."
+        }
+      ],
+      "sourceIds": ["visual-kerning"],
+      "figure": {
+        "kind": "typography",
+        "title": "커닝의 핵심 구조",
+        "subtitle": "같은 숫자 간격보다 글자 형태 사이의 시각적 공간을 본다.",
+        "items": [
+          {
+            "label": "A ↔ V",
+            "text": "특정 두 글자 사이"
+          },
+          {
+            "label": "나머지 간격",
+            "text": "기존 간격을 유지"
+          }
+        ],
+        "focus": "같은 숫자 간격보다 글자 형태 사이의 시각적 공간을 본다.",
+        "caption": "로고의 AV 사이가 벌어져 보일 때 그 두 글자 사이만 조정한다."
+      }
+    },
+    {
+      "id": "tracking",
+      "english": "Tracking",
+      "korean": "트래킹",
+      "pronunciation": "트래킹",
+      "description": "선택한 문자열의 글자 간격을 전체적으로 늘리거나 줄이는 조정이다. 특정 글자쌍의 문제를 해결하는 커닝과 목적과 범위가 다르다.",
+      "example": "대문자 카테고리 레이블의 전체 간격을 조금 넓혀 표제와 다른 리듬을 만든다.",
+      "aliases": ["tracking", "트래킹"],
+      "topic": "visual",
+      "essential": "조정 범위가 한 글자쌍인지 문자열 전체인지 확인한다.",
+      "application": {
+        "scenario": "짧은 대문자 분류명이 굵은 제목과 붙어 보여 역할이 섞인다.",
+        "decision": "분류명의 전체 간격을 조정하고 제목과의 크기·위치 차이를 함께 준다."
+      },
+      "critique": {
+        "tradeoff": "넓은 트래킹은 긴 본문의 단어 형태와 줄바꿈을 해칠 수 있다.",
+        "evidence": "짧은 레이블뿐 아니라 긴 번역문과 모바일 폭에서도 읽어 본다."
+      },
+      "confusedWith": [
+        {
+          "id": "kerning",
+          "difference": "트래킹은 전체 간격 조정이며 AV 같은 개별 쌍의 불균형은 커닝으로 검토한다."
+        }
+      ],
+      "sourceIds": ["visual-kerning"],
+      "figure": {
+        "kind": "typography",
+        "title": "트래킹의 핵심 구조",
+        "subtitle": "조정 범위가 한 글자쌍인지 문자열 전체인지 확인한다.",
+        "items": [
+          {
+            "label": "기본 문자열",
+            "text": "자연스러운 단어 형태"
+          },
+          {
+            "label": "전체 간격 확대",
+            "text": "모든 글자 사이에 같은 추가 간격"
+          }
+        ],
+        "focus": "조정 범위가 한 글자쌍인지 문자열 전체인지 확인한다.",
+        "caption": "대문자 카테고리 레이블의 전체 간격을 조금 넓혀 표제와 다른 리듬을 만든다."
+      }
+    },
+    {
+      "id": "leading",
+      "english": "Leading",
+      "korean": "행간",
+      "pronunciation": "레딩",
+      "description": "연속된 텍스트 줄의 베이스라인 사이 거리를 뜻한다. 문단과 문단 사이의 간격이나 글자 사이 간격과 구분해 설정한다.",
+      "example": "16px 본문에 26px 줄 높이를 적용하고 여러 줄을 실제로 읽어 본다.",
+      "aliases": ["leading", "행간"],
+      "topic": "visual",
+      "essential": "행 사이의 거리와 문단 사이의 거리를 따로 정한다.",
+      "application": {
+        "scenario": "긴 안내문이 빽빽해 다음 줄을 찾기 어렵다.",
+        "decision": "글자 크기와 행 길이에 맞춰 행간을 조정하고 문단 구분은 별도의 간격으로 만든다."
+      },
+      "critique": {
+        "tradeoff": "너무 넓으면 한 문단의 줄이 서로 떨어진 항목처럼 보일 수 있다.",
+        "evidence": "긴 문단·링크·한영 혼합 문장에서 줄을 건너뛰거나 다시 찾는지 관찰한다."
+      },
+      "confusedWith": [
+        {
+          "id": "tracking",
+          "difference": "행간은 줄 사이 거리이고 트래킹은 글자 사이 간격이다."
+        }
+      ],
+      "sourceIds": ["visual-leading"],
+      "figure": {
+        "kind": "typography",
+        "title": "행간의 핵심 구조",
+        "subtitle": "행 사이의 거리와 문단 사이의 거리를 따로 정한다.",
+        "items": [
+          {
+            "label": "같은 줄 높이",
+            "text": "반복되는 베이스라인 간격"
+          },
+          {
+            "label": "문단 여백",
+            "text": "문단 사이의 별도 공간"
+          }
+        ],
+        "focus": "행 사이의 거리와 문단 사이의 거리를 따로 정한다.",
+        "caption": "16px 본문에 26px 줄 높이를 적용하고 여러 줄을 실제로 읽어 본다."
+      }
+    },
+    {
+      "id": "line-length",
+      "english": "Line length",
+      "korean": "행 길이",
+      "pronunciation": "라인 렝스",
+      "description": "한 줄에 들어가는 텍스트의 가로 길이다. 컬럼 폭·서체·글자 크기에 따라 달라지며 언어와 읽기 목적을 고려해 정한다.",
+      "example": "넓은 모니터에서도 본문이 화면 전체로 늘어나지 않도록 읽기 폭을 제한한다.",
+      "aliases": ["line length", "행 길이"],
+      "topic": "visual",
+      "essential": "컨테이너 폭과 실제 한 줄의 문자 수를 함께 본다.",
+      "application": {
+        "scenario": "보고서를 큰 화면에서 열면 줄이 길어 다음 줄의 시작을 찾기 어렵다.",
+        "decision": "본문의 최대 폭을 제한하고 보조 자료는 별도 영역으로 배치한다."
+      },
+      "critique": {
+        "tradeoff": "너무 짧은 행은 줄바꿈을 잦게 만들며 숫자만으로 모든 언어의 최적 길이를 정할 수 없다.",
+        "evidence": "실제 한글·영문 본문, 확대 상태와 모바일 폭에서 읽는 흐름을 확인한다."
+      },
+      "confusedWith": [
+        {
+          "id": "leading",
+          "difference": "행 길이는 가로 방향의 읽기 폭이고 행간은 줄 사이의 세로 거리다."
+        }
+      ],
+      "sourceIds": ["visual-line-length"],
+      "figure": {
+        "kind": "typography",
+        "title": "행 길이의 핵심 구조",
+        "subtitle": "컨테이너 폭과 실제 한 줄의 문자 수를 함께 본다.",
+        "items": [
+          {
+            "label": "긴 행",
+            "text": "한 줄에서 오래 이동"
+          },
+          {
+            "label": "조절한 행",
+            "text": "다음 줄 시작을 찾기 쉬운 폭 검토"
+          }
+        ],
+        "focus": "컨테이너 폭과 실제 한 줄의 문자 수를 함께 본다.",
+        "caption": "넓은 모니터에서도 본문이 화면 전체로 늘어나지 않도록 읽기 폭을 제한한다."
+      }
+    },
+    {
+      "id": "rag",
+      "english": "Rag",
+      "korean": "래그",
+      "pronunciation": "래그",
+      "description": "양쪽 맞춤을 하지 않은 텍스트에서 줄 끝이 만드는 불규칙한 외곽선이다. 강한 계단 모양이나 지나치게 짧은 줄이 내용의 읽기 흐름을 방해하는지 살핀다.",
+      "example": "왼쪽 정렬 소개문의 오른쪽 줄 끝을 보며 유난히 튀어나오거나 짧은 줄을 조정한다.",
+      "aliases": ["rag", "래그"],
+      "topic": "visual",
+      "essential": "글자 하나보다 문단의 바깥 윤곽을 함께 본다.",
+      "application": {
+        "scenario": "포스터 소개문이 계단처럼 짧아져 장식적인 삼각형으로 보인다.",
+        "decision": "문장 의미를 유지하면서 텍스트 폭과 줄바꿈을 조정한다."
+      },
+      "critique": {
+        "tradeoff": "웹에서 고정 줄바꿈을 넣으면 좁은 화면이나 번역문에서 더 나쁜 결과가 생길 수 있다.",
+        "evidence": "인쇄물은 최종 폭으로, 웹은 여러 폭과 확대 상태로 확인한다."
+      },
+      "confusedWith": [
+        {
+          "id": "alignment",
+          "difference": "정렬은 시작·끝 기준을 정하는 방식이고 래그는 정렬되지 않은 쪽의 외곽 형태다."
+        }
+      ],
+      "sourceIds": ["visual-rag"],
+      "figure": {
+        "kind": "typography",
+        "title": "래그의 핵심 구조",
+        "subtitle": "글자 하나보다 문단의 바깥 윤곽을 함께 본다.",
+        "items": [
+          {
+            "label": "불규칙한 외곽",
+            "text": "줄 끝이 만든 모양"
+          },
+          {
+            "label": "문장 단위",
+            "text": "외형뿐 아니라 의미의 끊김 확인"
+          }
+        ],
+        "focus": "글자 하나보다 문단의 바깥 윤곽을 함께 본다.",
+        "caption": "왼쪽 정렬 소개문의 오른쪽 줄 끝을 보며 유난히 튀어나오거나 짧은 줄을 조정한다."
+      }
+    },
+    {
+      "id": "widows-orphans",
+      "english": "Widows & orphans",
+      "korean": "외톨이 행·고아행",
+      "pronunciation": "위도즈 앤 오펀즈",
+      "description": "문단의 일부가 페이지·단의 끝이나 시작에 홀로 떨어지거나 매우 짧은 마지막 줄로 남는 조판 문제다. widow와 orphan의 세부 명칭은 출판 관행에 따라 달라 위치와 상태를 함께 설명하는 것이 정확하다.",
+      "example": "다음 페이지 맨 위에 문단의 마지막 한 줄만 남지 않도록 앞뒤 문단을 조정한다.",
+      "aliases": ["widows & orphans", "외톨이 행·고아행"],
+      "topic": "visual",
+      "essential": "어느 문단의 어떤 줄이 어디에 홀로 남았는지 표시한다.",
+      "application": {
+        "scenario": "도록의 다음 단 맨 위에 앞 문단의 마지막 한 단어만 놓인다.",
+        "decision": "문단 유지 옵션과 앞뒤 간격·문장 길이를 검토해 의미 단위를 묶는다."
+      },
+      "critique": {
+        "tradeoff": "문제 한 줄을 없애려고 트래킹을 과하게 줄이면 본문 전체의 질감이 달라진다.",
+        "evidence": "수정한 페이지뿐 아니라 앞뒤 페이지의 공백과 줄 흐름도 확인한다."
+      },
+      "confusedWith": [
+        {
+          "id": "rag",
+          "difference": "래그는 텍스트 외곽선이고 외톨이 행은 문단의 일부가 고립되는 조판 상태다."
+        }
+      ],
+      "sourceIds": ["visual-rag"],
+      "figure": {
+        "kind": "typography",
+        "title": "외톨이 행·고아행의 핵심 구조",
+        "subtitle": "어느 문단의 어떤 줄이 어디에 홀로 남았는지 표시한다.",
+        "items": [
+          {
+            "label": "앞 단의 문단",
+            "text": "여러 줄의 설명"
+          },
+          {
+            "label": "다음 단의 외톨이 행",
+            "text": "마지막 한 줄만 고립"
+          }
+        ],
+        "focus": "어느 문단의 어떤 줄이 어디에 홀로 남았는지 표시한다.",
+        "caption": "다음 페이지 맨 위에 문단의 마지막 한 줄만 남지 않도록 앞뒤 문단을 조정한다."
+      }
+    },
+    {
+      "id": "ligature",
+      "english": "Ligature",
+      "korean": "합자",
+      "pronunciation": "리거처",
+      "description": "둘 이상의 문자를 하나의 글리프로 결합해 표현하는 서체 기능이다. 문자 내용 자체를 지우는 것이 아니라 특정 조합에 맞는 형태로 표시하는 경우가 일반적이다.",
+      "example": "영문 fi 조합에서 f의 끝과 i의 점이 충돌하지 않도록 합자 형태를 사용한다.",
+      "aliases": ["ligature", "합자"],
+      "topic": "visual",
+      "essential": "문자의 개수와 화면에 그려지는 글리프의 개수를 구분한다.",
+      "application": {
+        "scenario": "세리프 제목의 fi가 붙어 어색한 덩어리처럼 보인다.",
+        "decision": "서체의 표준 합자 지원을 확인하고 실제 제목에 적용해 비교한다."
+      },
+      "critique": {
+        "tradeoff": "장식 합자는 낯선 글자처럼 보일 수 있으며 코드나 식별자에서는 개별 문자 구분이 중요하다.",
+        "evidence": "텍스트 복사·검색·읽기 순서를 확인하고 작은 크기에서도 단어가 읽히는지 본다."
+      },
+      "confusedWith": [
+        {
+          "id": "typeface",
+          "difference": "서체는 전체 형태 체계이고 합자는 그 안에 포함될 수 있는 특정 글리프 기능이다."
+        }
+      ],
+      "sourceIds": ["visual-type-glossary"],
+      "figure": {
+        "kind": "typography",
+        "title": "합자의 핵심 구조",
+        "subtitle": "문자의 개수와 화면에 그려지는 글리프의 개수를 구분한다.",
+        "items": [
+          {
+            "label": "문자 조합",
+            "text": "f + i"
+          },
+          {
+            "label": "합자 글리프",
+            "text": "조합에 맞춰 함께 그린 형태"
+          }
+        ],
+        "focus": "문자의 개수와 화면에 그려지는 글리프의 개수를 구분한다.",
+        "caption": "영문 fi 조합에서 f의 끝과 i의 점이 충돌하지 않도록 합자 형태를 사용한다."
+      }
+    },
+    {
+      "id": "variable-font",
+      "english": "Variable font",
+      "korean": "가변 폰트",
+      "pronunciation": "베리어블 폰트",
+      "description": "한 폰트 파일 안에서 굵기·너비·기울기 등 지원하는 축의 값을 바꾸어 여러 형태를 사용할 수 있는 폰트다. 모든 가변 폰트가 같은 축을 제공하거나 모든 값을 지원하는 것은 아니다.",
+      "example": "한 서체의 wght 축에서 400과 650을 골라 본문과 제목의 굵기를 정한다.",
+      "aliases": ["variable font", "가변 폰트"],
+      "topic": "visual",
+      "essential": "해당 폰트가 실제로 제공하는 축과 범위를 확인한다.",
+      "application": {
+        "scenario": "화면마다 필요한 굵기가 늘어나 여러 정적 폰트 파일을 불러오게 된다.",
+        "decision": "가변 폰트의 지원 축과 파일 크기를 확인하고 필요한 인스턴스를 역할별로 정한다."
+      },
+      "critique": {
+        "tradeoff": "하나의 가변 파일이 언제나 한 개의 정적 파일보다 작은 것은 아니며 지원 환경도 확인해야 한다.",
+        "evidence": "실제 배포 파일, 로딩 시간, 대체 폰트 상태와 각 축의 글자 변화를 검토한다."
+      },
+      "confusedWith": [
+        {
+          "id": "weight-axis",
+          "difference": "가변 폰트는 여러 형태를 담는 형식이고 웨이트 축은 가능한 조정 축 중 하나다."
+        }
+      ],
+      "sourceIds": ["visual-variable"],
+      "figure": {
+        "kind": "typography",
+        "title": "가변 폰트의 핵심 구조",
+        "subtitle": "해당 폰트가 실제로 제공하는 축과 범위를 확인한다.",
+        "items": [
+          {
+            "label": "하나의 파일",
+            "text": "여러 굵기를 담는 축"
+          },
+          {
+            "label": "선택한 인스턴스",
+            "text": "본문 400 · 제목 650"
+          }
+        ],
+        "focus": "해당 폰트가 실제로 제공하는 축과 범위를 확인한다.",
+        "caption": "한 서체의 wght 축에서 400과 650을 골라 본문과 제목의 굵기를 정한다."
+      }
+    },
+    {
+      "id": "weight-axis",
+      "english": "Weight axis",
+      "korean": "웨이트 축",
+      "pronunciation": "웨이트 액시스",
+      "description": "글자 획의 두께와 관련 세부 형태를 조정하는 등록 축으로 OpenType 태그는 wght다. 가변 폰트에서 지원 범위 안의 값을 선택할 수 있으며 단순히 외곽선을 덧칠하는 효과와 다르다.",
+      "example": "제목의 wght 값을 400·550·700으로 비교해 필요한 강조 강도를 고른다.",
+      "aliases": ["weight axis", "웨이트 축"],
+      "topic": "visual",
+      "essential": "같은 서체의 굵기 변화가 폭과 내부 공간도 바꾸는지 본다.",
+      "application": {
+        "scenario": "중간 강조에 700은 너무 강하고 400은 본문과 구분되지 않는다.",
+        "decision": "지원하는 가변 폰트에서 중간 값을 선택하고 제목의 줄바꿈을 다시 확인한다."
+      },
+      "critique": {
+        "tradeoff": "굵기를 바꾸면 글자 폭과 카운터가 달라질 수 있어 고정 레이아웃이 흔들릴 수 있다.",
+        "evidence": "최소·중간·최대 사용값에서 길이가 긴 제목과 버튼 레이블을 확인한다."
+      },
+      "confusedWith": [
+        {
+          "id": "visual-weight",
+          "difference": "웨이트 축은 폰트의 조정 축이고 시각적 무게는 크기·위치·색까지 포함한 인상이다."
+        }
+      ],
+      "sourceIds": ["visual-weight"],
+      "figure": {
+        "kind": "typography",
+        "title": "웨이트 축의 핵심 구조",
+        "subtitle": "같은 서체의 굵기 변화가 폭과 내부 공간도 바꾸는지 본다.",
+        "items": [
+          {
+            "label": "400",
+            "text": "보통 굵기"
+          },
+          {
+            "label": "700",
+            "text": "더 굵은 획과 달라지는 내부 공간"
+          }
+        ],
+        "focus": "같은 서체의 굵기 변화가 폭과 내부 공간도 바꾸는지 본다.",
+        "caption": "제목의 wght 값을 400·550·700으로 비교해 필요한 강조 강도를 고른다."
+      }
+    },
+    {
+      "id": "optical-size",
+      "english": "Optical size",
+      "korean": "옵티컬 사이즈",
+      "pronunciation": "옵티컬 사이즈",
+      "description": "글자가 사용될 크기에 맞게 비례·획·간격 등 형태를 조정한 디자인 차이다. 가변 폰트의 opsz 축으로 제공되기도 하며 글자 크기를 단순 확대·축소하는 것과 다르다.",
+      "example": "같은 서체에서 본문용과 큰 제목용 형태를 비교해 작은 크기의 세부 표현을 살핀다.",
+      "aliases": ["optical size", "옵티컬 사이즈"],
+      "topic": "visual",
+      "essential": "크기 변화와 형태 조정을 구분한다.",
+      "application": {
+        "scenario": "큰 제목용 글자를 작은 캡션으로 줄이니 가는 획과 속공간이 약해진다.",
+        "decision": "서체가 지원하는 옵티컬 사이즈나 본문용 스타일을 사용해 작은 크기를 검토한다."
+      },
+      "critique": {
+        "tradeoff": "모든 서체에 opsz 축이 있는 것은 아니며 조정 방향과 정도도 서체마다 다르다.",
+        "evidence": "같은 표시 크기로 형태 차이를 비교한 뒤 실제 사용 크기에서도 읽어 본다."
+      },
+      "confusedWith": [
+        {
+          "id": "typographic-scale",
+          "difference": "타입 스케일은 크기 단계이고 옵티컬 사이즈는 사용 크기에 맞춘 글자 형태의 변화다."
+        }
+      ],
+      "sourceIds": ["visual-optical"],
+      "figure": {
+        "kind": "typography",
+        "title": "옵티컬 사이즈의 핵심 구조",
+        "subtitle": "크기 변화와 형태 조정을 구분한다.",
+        "items": [
+          {
+            "label": "작은 크기용",
+            "text": "세부 획과 공간을 읽기 좋게 조정"
+          },
+          {
+            "label": "큰 크기용",
+            "text": "큰 표시 크기에 맞춘 세부 형태"
+          }
+        ],
+        "focus": "크기 변화와 형태 조정을 구분한다.",
+        "caption": "같은 서체에서 본문용과 큰 제목용 형태를 비교해 작은 크기의 세부 표현을 살핀다."
+      }
+    },
+    {
+      "id": "hue",
+      "english": "Hue",
+      "korean": "색상",
+      "pronunciation": "휴",
+      "description": "빨강·초록·파랑처럼 색을 계열로 구별하는 속성이다. HSL 같은 색 모델에서는 각도로 표현하지만 각도 차이가 같은 지각적 차이를 보장하지는 않는다.",
+      "example": "HSL의 채도와 명도 값을 고정하고 색상 각도만 바꾸어 세 계열을 비교한다.",
+      "aliases": ["hue", "색상"],
+      "topic": "visual",
+      "essential": "색의 계열과 밝기·선명함을 구분한다.",
+      "application": {
+        "scenario": "카테고리별 색을 골랐지만 색이 달라도 명도가 비슷해 구별이 어렵다.",
+        "decision": "색상 차이에 텍스트 레이블과 형태 단서를 더하고 필요한 밝기 차이를 확인한다."
+      },
+      "critique": {
+        "tradeoff": "색상만으로 상태를 전달하면 색각 차이가 있는 사용자에게 정보가 사라질 수 있다.",
+        "evidence": "색 없이도 상태가 구분되는지, 배경과의 대비는 충분한지 별도로 검사한다."
+      },
+      "confusedWith": [
+        {
+          "id": "saturation",
+          "difference": "색상은 색의 계열, 채도는 색 모델에서 표현하는 선명함의 정도다."
+        }
+      ],
+      "sourceIds": ["visual-hsl"],
+      "figure": {
+        "kind": "palette",
+        "title": "색상의 핵심 구조",
+        "subtitle": "색의 계열과 밝기·선명함을 구분한다.",
+        "items": [
+          {
+            "label": "H 60° · S 50% · L 50%",
+            "text": "#bfbf40",
+            "detail": "#bfbf40"
+          },
+          {
+            "label": "H 180° · S 50% · L 50%",
+            "text": "#40bfbf",
+            "detail": "#40bfbf"
+          },
+          {
+            "label": "H 300° · S 50% · L 50%",
+            "text": "#bf40bf",
+            "detail": "#bf40bf"
+          }
+        ],
+        "focus": "색의 계열과 밝기·선명함을 구분한다.",
+        "caption": "HSL의 채도와 명도 값을 고정하고 색상 각도만 바꾸어 세 계열을 비교한다."
+      }
+    },
+    {
+      "id": "saturation",
+      "english": "Saturation",
+      "korean": "채도",
+      "pronunciation": "새처레이션",
+      "description": "색이 무채색에서 얼마나 선명하게 구별되는지를 설명하는 속성으로, 수치의 의미는 색 모델에 따라 다르다. HSL에서 S를 바꾸는 것과 불투명도를 낮추는 것은 다른 조작이다.",
+      "example": "같은 HSL 색상·명도에서 채도만 0·40·80%로 바꾸어 비교한다.",
+      "aliases": ["saturation", "채도"],
+      "topic": "visual",
+      "essential": "회색에 가까워지는 변화와 투명해지는 변화를 구분한다.",
+      "application": {
+        "scenario": "보조 배지를 덜 튀게 만들려고 불투명도를 낮추니 배경에 따라 색이 달라진다.",
+        "decision": "불투명도를 유지한 채 색 좌표를 조절하고 텍스트 대비를 다시 확인한다."
+      },
+      "critique": {
+        "tradeoff": "낮은 채도가 자동으로 차분하거나 접근성 높은 결과를 보장하지는 않는다.",
+        "evidence": "흰색과 회색 배경에서 같은 색을 확인하고 역할을 글자로도 표시한다."
+      },
+      "confusedWith": [
+        {
+          "id": "lightness",
+          "difference": "채도는 선명함의 정도이며 명도는 밝고 어두운 정도를 다룬다."
+        }
+      ],
+      "sourceIds": ["visual-hsl"],
+      "figure": {
+        "kind": "palette",
+        "title": "채도의 핵심 구조",
+        "subtitle": "회색에 가까워지는 변화와 투명해지는 변화를 구분한다.",
+        "items": [
+          {
+            "label": "H 170° · S 0% · L 45%",
+            "text": "#737373",
+            "detail": "#737373"
+          },
+          {
+            "label": "H 170° · S 40% · L 45%",
+            "text": "#45a191",
+            "detail": "#45a191"
+          },
+          {
+            "label": "H 170° · S 80% · L 45%",
+            "text": "#17cfb0",
+            "detail": "#17cfb0"
+          }
+        ],
+        "focus": "회색에 가까워지는 변화와 투명해지는 변화를 구분한다.",
+        "caption": "같은 HSL 색상·명도에서 채도만 0·40·80%로 바꾸어 비교한다."
+      }
+    },
+    {
+      "id": "lightness",
+      "english": "Lightness",
+      "korean": "명도",
+      "pronunciation": "라이트니스",
+      "description": "색의 밝고 어두운 정도를 설명하는 속성이다. HSL의 L과 지각에 기반한 색 공간의 L은 계산 방식이 다르므로 같은 숫자를 같은 밝기로 보아서는 안 된다.",
+      "example": "HSL의 색상·채도를 고정하고 L만 바꾸어 배경과 전경의 밝기 관계를 비교한다.",
+      "aliases": ["lightness", "명도"],
+      "topic": "visual",
+      "essential": "사용한 색 공간과 실제 보이는 밝기를 함께 확인한다.",
+      "application": {
+        "scenario": "서로 다른 색을 같은 HSL L 값으로 정했는데 한 색이 훨씬 밝게 보인다.",
+        "decision": "지각적으로 더 균일한 색 공간을 참고하되 최종 화면에서 대비를 별도로 측정한다."
+      },
+      "critique": {
+        "tradeoff": "명도 숫자의 일치나 차이만으로 접근성 대비율을 판정할 수 없다.",
+        "evidence": "실제 전경·배경 조합의 대비율과 밝은·어두운 테마를 함께 확인한다."
+      },
+      "confusedWith": [
+        {
+          "id": "contrast",
+          "difference": "명도는 색의 속성이고 대비는 두 요소 사이의 관계다."
+        }
+      ],
+      "sourceIds": ["visual-hsl"],
+      "figure": {
+        "kind": "palette",
+        "title": "명도의 핵심 구조",
+        "subtitle": "사용한 색 공간과 실제 보이는 밝기를 함께 확인한다.",
+        "items": [
+          {
+            "label": "H 170° · S 40% · L 25%",
+            "text": "#265951",
+            "detail": "#265951"
+          },
+          {
+            "label": "H 170° · S 40% · L 50%",
+            "text": "#4db2a2",
+            "detail": "#4db2a2"
+          },
+          {
+            "label": "H 170° · S 40% · L 75%",
+            "text": "#a6d9d0",
+            "detail": "#a6d9d0"
+          }
+        ],
+        "focus": "사용한 색 공간과 실제 보이는 밝기를 함께 확인한다.",
+        "caption": "HSL의 색상·채도를 고정하고 L만 바꾸어 배경과 전경의 밝기 관계를 비교한다."
+      }
+    }
+  ]
+}

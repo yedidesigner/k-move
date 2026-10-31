@@ -1,0 +1,1602 @@
+{
+  "sources": [
+    {
+      "id": "interaction-accordion",
+      "title": "W3C WAI APG · Accordion Pattern",
+      "url": "https://www.w3.org/WAI/ARIA/apg/patterns/accordion/",
+      "note": "공식 패턴의 역할·상태·키보드 동작을 확인했습니다. 예시는 K-Move가 새로 구성했습니다."
+    },
+    {
+      "id": "interaction-tabs",
+      "title": "W3C WAI APG · Tabs Pattern",
+      "url": "https://www.w3.org/WAI/ARIA/apg/patterns/tabs/",
+      "note": "공식 패턴의 역할·상태·키보드 동작을 확인했습니다. 예시는 K-Move가 새로 구성했습니다."
+    },
+    {
+      "id": "interaction-breadcrumbs",
+      "title": "W3C WAI APG · Breadcrumb Pattern",
+      "url": "https://www.w3.org/WAI/ARIA/apg/patterns/breadcrumb/",
+      "note": "공식 패턴의 역할·상태·키보드 동작을 확인했습니다. 예시는 K-Move가 새로 구성했습니다."
+    },
+    {
+      "id": "interaction-modal",
+      "title": "W3C WAI APG · Dialog (Modal) Pattern",
+      "url": "https://www.w3.org/WAI/ARIA/apg/patterns/dialog-modal/",
+      "note": "공식 패턴의 역할·상태·키보드 동작을 확인했습니다. 예시는 K-Move가 새로 구성했습니다."
+    },
+    {
+      "id": "interaction-tooltip",
+      "title": "W3C WAI APG · Tooltip Pattern",
+      "url": "https://www.w3.org/WAI/ARIA/apg/patterns/tooltip/",
+      "note": "공식 패턴의 역할·상태·키보드 동작을 확인했습니다. 예시는 K-Move가 새로 구성했습니다."
+    },
+    {
+      "id": "interaction-checkbox",
+      "title": "W3C WAI APG · Checkbox Pattern",
+      "url": "https://www.w3.org/WAI/ARIA/apg/patterns/checkbox/",
+      "note": "공식 패턴의 역할·상태·키보드 동작을 확인했습니다. 예시는 K-Move가 새로 구성했습니다."
+    },
+    {
+      "id": "interaction-radio",
+      "title": "W3C WAI APG · Radio Group Pattern",
+      "url": "https://www.w3.org/WAI/ARIA/apg/patterns/radio/",
+      "note": "공식 패턴의 역할·상태·키보드 동작을 확인했습니다. 예시는 K-Move가 새로 구성했습니다."
+    },
+    {
+      "id": "interaction-switch",
+      "title": "W3C WAI APG · Switch Pattern",
+      "url": "https://www.w3.org/WAI/ARIA/apg/patterns/switch/",
+      "note": "공식 패턴의 역할·상태·키보드 동작을 확인했습니다. 예시는 K-Move가 새로 구성했습니다."
+    },
+    {
+      "id": "interaction-combobox",
+      "title": "W3C WAI APG · Combobox Pattern",
+      "url": "https://www.w3.org/WAI/ARIA/apg/patterns/combobox/",
+      "note": "공식 패턴의 역할·상태·키보드 동작을 확인했습니다. 예시는 K-Move가 새로 구성했습니다."
+    },
+    {
+      "id": "interaction-menu",
+      "title": "W3C WAI APG · Menu Button Pattern",
+      "url": "https://www.w3.org/WAI/ARIA/apg/patterns/menu-button/",
+      "note": "공식 패턴의 역할·상태·키보드 동작을 확인했습니다. 예시는 K-Move가 새로 구성했습니다."
+    },
+    {
+      "id": "interaction-feed",
+      "title": "W3C WAI APG · Feed Pattern",
+      "url": "https://www.w3.org/WAI/ARIA/apg/patterns/feed/",
+      "note": "공식 패턴의 역할·상태·키보드 동작을 확인했습니다. 예시는 K-Move가 새로 구성했습니다."
+    },
+    {
+      "id": "interaction-popover",
+      "title": "MDN · Popover API",
+      "url": "https://developer.mozilla.org/en-US/docs/Web/API/Popover_API",
+      "note": "HTML Popover API의 비모달 동작과 일반적인 오버레이 용어의 차이를 확인했습니다."
+    },
+    {
+      "id": "interaction-toast",
+      "title": "Carbon · Notifications",
+      "url": "https://www.carbondesignsystem.com/building-blocks/core/patterns/notifications",
+      "note": "알림의 위치·긴급성·방해 정도를 구분하는 참고 자료입니다. Carbon의 규칙을 모든 제품의 규칙으로 적용하지 않습니다."
+    },
+    {
+      "id": "interaction-skeleton",
+      "title": "Carbon · Loading",
+      "url": "https://www.carbondesignsystem.com/building-blocks/core/patterns/loading",
+      "note": "스켈레톤·인라인 로딩·점진적 로딩을 구분했습니다."
+    },
+    {
+      "id": "interaction-empty",
+      "title": "Carbon · Empty states",
+      "url": "https://www.carbondesignsystem.com/building-blocks/core/patterns/empty-states",
+      "note": "콘텐츠가 없는 이유와 다음 행동을 연결하는 패턴을 참고했습니다."
+    },
+    {
+      "id": "interaction-error",
+      "title": "GOV.UK · Error message",
+      "url": "https://design-system.service.gov.uk/components/error-message/",
+      "note": "입력 검증 오류와 서비스 문제를 구분하고, 입력값을 보존하는 원칙을 참고했습니다."
+    },
+    {
+      "id": "interaction-select",
+      "title": "GOV.UK · Select",
+      "url": "https://design-system.service.gov.uk/components/select/",
+      "note": "값 선택을 위한 select와 펼쳐진 명령 메뉴를 구분하기 위한 자료입니다."
+    },
+    {
+      "id": "interaction-progress",
+      "title": "MDN · ARIA progressbar role",
+      "url": "https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Reference/Roles/progressbar_role",
+      "note": "진행률을 아는 경우와 알 수 없는 경우의 값 표현을 확인했습니다."
+    },
+    {
+      "id": "interaction-loading",
+      "title": "MDN · aria-busy",
+      "url": "https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Reference/Attributes/aria-busy",
+      "note": "진행 중인 갱신과 완료 후 안내를 보조기술에 전달하는 근거입니다."
+    },
+    {
+      "id": "interaction-focus",
+      "title": "W3C WAI · Understanding Focus Visible",
+      "url": "https://www.w3.org/WAI/WCAG22/Understanding/focus-visible.html",
+      "note": "WCAG 2.2의 2.4.7(AA): 키보드 포커스의 위치를 알아볼 수 있어야 한다는 기준입니다."
+    },
+    {
+      "id": "interaction-disabled",
+      "title": "MDN · disabled HTML attribute",
+      "url": "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Attributes/disabled",
+      "note": "네이티브 disabled와 readonly의 포커스·입력·폼 제출 차이를 확인했습니다."
+    },
+    {
+      "id": "interaction-pagination",
+      "title": "GOV.UK · Pagination",
+      "url": "https://design-system.service.gov.uk/components/pagination/",
+      "note": "여러 페이지 사이의 이동과 현재 위치 표현을 참고했습니다."
+    },
+    {
+      "id": "interaction-disclosure",
+      "title": "Jakob Nielsen · Progressive Disclosure",
+      "url": "https://www.nngroup.com/articles/progressive-disclosure/",
+      "note": "빈번한 핵심 작업과 요청할 때 보이는 추가 옵션의 구분을 참고했습니다. 모든 정보를 숨기라는 원칙이 아닙니다."
+    },
+    {
+      "id": "interaction-affordance",
+      "title": "Don Norman · Affordances and Design",
+      "url": "https://jnd.org/affordances-and-design/",
+      "note": "행위자와 대상 사이의 행동 가능성, 지각된 가능성, 관습을 구분하는 저자 설명입니다."
+    },
+    {
+      "id": "interaction-signifier",
+      "title": "Don Norman · Signifiers, not affordances",
+      "url": "https://jnd.org/signifiers-not-affordances/",
+      "note": "행동·상태를 해석하게 하는 지각 가능한 단서의 개념을 확인했습니다."
+    },
+    {
+      "id": "interaction-token",
+      "title": "DTCG · Design Tokens Format Module 2025.10",
+      "url": "https://www.designtokens.org/tr/2025.10/format/",
+      "note": "확정된 Community Group Report의 이름·값·타입·참조 개념입니다. W3C 권고 표준과는 구분합니다."
+    },
+    {
+      "id": "interaction-variant",
+      "title": "Figma Learn · Create and use variants",
+      "url": "https://help.figma.com/hc/en-us/articles/360056440594-Create-and-use-variants",
+      "note": "컴포넌트 집합의 속성과 값, 유효한 조합을 관리하는 개념을 확인했습니다."
+    },
+    {
+      "id": "interaction-layout",
+      "title": "Figma Learn · Guide to auto layout in Figma",
+      "url": "https://help.figma.com/hc/en-us/articles/360040451373-Guide-to-auto-layout-in-Figma",
+      "note": "방향·간격·패딩·정렬에 따라 자식과 컨테이너가 조정되는 방식을 확인했습니다."
+    },
+    {
+      "id": "interaction-breakpoint",
+      "title": "MDN · Responsive web design",
+      "url": "https://developer.mozilla.org/en-US/docs/Learn_web_development/Core/CSS_layout/Responsive_Design",
+      "note": "레이아웃 전환 지점과 유연한 레이아웃을 구분했습니다. 예시 너비는 제품별 결정입니다."
+    },
+    {
+      "id": "interaction-target",
+      "title": "W3C WAI · Understanding Target Size (Minimum)",
+      "url": "https://www.w3.org/WAI/WCAG22/Understanding/target-size-minimum.html",
+      "note": "WCAG 2.2 2.5.8(AA)의 24×24 CSS px 기준과 간격·인라인 등의 예외를 함께 확인했습니다."
+    },
+    {
+      "id": "interaction-motion",
+      "title": "W3C WAI · Understanding Animation from Interactions",
+      "url": "https://www.w3.org/WAI/WCAG22/Understanding/animation-from-interactions.html",
+      "note": "WCAG 2.2 2.3.3(AAA)의 비필수 상호작용 애니메이션 중단 기준을 참고했습니다."
+    }
+  ],
+  "terms": [
+    {
+      "id": "accordion",
+      "english": "Accordion",
+      "korean": "아코디언",
+      "pronunciation": "어코디언",
+      "description": "제목을 눌러 연결된 내용 영역을 펼치거나 접는 세로형 인터페이스 패턴이다. 여러 항목을 동시에 열지, 하나만 열지는 내용과 과업에 따라 결정한다.",
+      "example": "배송 안내와 교환 안내를 각각 펼쳐 읽는 상품 상세 페이지.",
+      "aliases": [],
+      "topic": "interaction",
+      "essential": "제목은 내용을 예측하게 하고 펼침 상태를 분명히 보여야 한다.",
+      "application": {
+        "scenario": "서로 다른 배송 조건을 비교해야 하는 안내 화면이다.",
+        "decision": "각 제목에 조건을 구분할 이름을 붙이고 비교를 위해 여러 패널을 함께 열 수 있게 한다."
+      },
+      "critique": {
+        "tradeoff": "화면은 짧아지지만 숨긴 내용을 발견하고 비교하려면 추가 조작이 필요하다.",
+        "evidence": "제목만 보고 원하는 설명을 찾을 수 있는지, 키보드로 열고 닫을 수 있는지 확인한다."
+      },
+      "confusedWith": [
+        {
+          "id": "tabs",
+          "difference": "탭은 같은 영역의 패널을 전환하고, 아코디언은 세로 목록의 각 패널을 펼친다."
+        }
+      ],
+      "sourceIds": ["interaction-accordion"],
+      "figure": {
+        "kind": "anatomy",
+        "title": "아코디언의 핵심 구조",
+        "subtitle": "핵심 요소를 구분하고 아래의 가상 화면과 연결해 보세요.",
+        "items": [
+          {
+            "label": "헤더",
+            "text": "배송 안내 ∨"
+          },
+          {
+            "label": "펼친 패널",
+            "text": "출고 후 2–3일 소요"
+          },
+          {
+            "label": "접힌 헤더",
+            "text": "교환 안내 ›"
+          }
+        ],
+        "focus": "제목과 패널이 바로 붙어 있는 구조를 보세요.",
+        "caption": "접기 자체가 목표가 아니라 필요한 내용을 쉽게 찾는 것이 목표다."
+      }
+    },
+    {
+      "id": "tabs",
+      "english": "Tabs",
+      "korean": "탭",
+      "pronunciation": "탭스",
+      "description": "관련 콘텐츠를 여러 패널로 나누고 탭을 선택해 같은 영역에서 전환하는 패턴이다. 현재 선택된 탭과 포커스가 놓인 탭은 서로 다른 상태일 수 있다.",
+      "example": "상품의 상세 정보·이용 안내·리뷰를 같은 영역에서 바꿔 본다.",
+      "aliases": [],
+      "topic": "interaction",
+      "essential": "활성 탭 하나와 그에 대응하는 패널이 한 쌍을 이룬다.",
+      "application": {
+        "scenario": "리뷰를 보다가 상품 규격을 확인하는 화면이다.",
+        "decision": "짧고 구분되는 탭 이름을 쓰고 선택 상태를 밑줄과 글자 굵기로 함께 표시한다."
+      },
+      "critique": {
+        "tradeoff": "한 번에 보이는 내용은 줄지만 다른 패널의 내용을 동시에 비교하기 어렵다.",
+        "evidence": "방향키 이동과 활성화 방식, 패널의 이름 연결, 전환 후 콘텐츠 인지를 검수한다."
+      },
+      "confusedWith": [
+        {
+          "id": "navigation",
+          "difference": "내비게이션은 더 넓은 이동 구조이며, 탭은 보통 인접한 패널을 전환하는 특정 패턴이다."
+        }
+      ],
+      "sourceIds": ["interaction-tabs"],
+      "figure": {
+        "kind": "anatomy",
+        "title": "탭의 핵심 구조",
+        "subtitle": "핵심 요소를 구분하고 아래의 가상 화면과 연결해 보세요.",
+        "items": [
+          {
+            "label": "탭 목록",
+            "text": "상세 정보 / 이용 안내 / 리뷰"
+          },
+          {
+            "label": "선택 상태",
+            "text": "이용 안내"
+          },
+          {
+            "label": "연결된 패널",
+            "text": "체크인 15:00 · 체크아웃 11:00"
+          }
+        ],
+        "focus": "강조된 탭 이름과 바로 아래의 본문이 대응합니다.",
+        "caption": "장식적인 밑줄만으로 탭의 역할과 키보드 동작이 구현되지는 않는다."
+      }
+    },
+    {
+      "id": "breadcrumbs",
+      "english": "Breadcrumbs",
+      "korean": "브레드크럼",
+      "pronunciation": "브레드크럼즈",
+      "description": "현재 페이지가 사이트의 계층 안에서 어디에 있는지 상위 경로로 보여주는 탐색 요소다. 사용자가 실제로 방문한 모든 페이지의 기록을 뜻하지 않는다.",
+      "example": "홈 › 자료실 › 타이포그래피 › 가독성 가이드.",
+      "aliases": [],
+      "topic": "interaction",
+      "essential": "현재 위치와 한 단계 위 범주를 동시에 이해하게 한다.",
+      "application": {
+        "scenario": "검색으로 세부 문서에 직접 도착한 사용자가 다른 같은 분야 문서를 찾는다.",
+        "decision": "부모 범주를 경로로 제공하고 현재 문서는 링크와 시각적으로 구분한다."
+      },
+      "critique": {
+        "tradeoff": "깊은 계층에서 유용하지만 얕은 사이트에서는 다른 탐색과 중복될 수 있다.",
+        "evidence": "경로가 실제 정보 구조와 일치하는지, 긴 이름이 모바일에서 읽히는지 확인한다."
+      },
+      "confusedWith": [
+        {
+          "id": "user-journey",
+          "difference": "유저 저니는 시간에 따른 경험 흐름이며 브레드크럼은 사이트 계층의 현재 위치다."
+        }
+      ],
+      "sourceIds": ["interaction-breadcrumbs"],
+      "figure": {
+        "kind": "anatomy",
+        "title": "브레드크럼의 핵심 구조",
+        "subtitle": "핵심 요소를 구분하고 아래의 가상 화면과 연결해 보세요.",
+        "items": [
+          {
+            "label": "상위",
+            "text": "홈"
+          },
+          {
+            "label": "부모 범주",
+            "text": "자료실 › 타이포그래피"
+          },
+          {
+            "label": "현재 문서",
+            "text": "가독성 가이드"
+          }
+        ],
+        "focus": "브레드크럼을 뒤로가기 기록과 구분하세요.",
+        "caption": "상위 범주의 링크와 현재 위치를 알아볼 수 있어야 한다."
+      }
+    },
+    {
+      "id": "modal-dialog",
+      "english": "Modal dialog",
+      "korean": "모달 다이얼로그",
+      "pronunciation": "모덜 다이얼로그",
+      "description": "열려 있는 동안 배경의 다른 UI 조작을 막고 특정 작업에 집중하게 하는 대화상자다. 배경을 어둡게 그리는 것만으로 모달이 완성되지는 않는다.",
+      "example": "작성 중인 문서를 삭제하기 전 대상 이름과 취소·삭제를 확인한다.",
+      "aliases": [],
+      "topic": "interaction",
+      "essential": "배경 조작 제한, 내부 포커스 이동, 명확한 닫기 경로가 함께 필요하다.",
+      "application": {
+        "scenario": "실수로 누르면 되돌리기 어려운 항목 삭제를 확인해야 한다.",
+        "decision": "삭제 대상을 명시하고 취소를 제공하며 종료 뒤 원래 작업 위치로 포커스를 돌린다."
+      },
+      "critique": {
+        "tradeoff": "중요한 결정에는 도움이 되지만 사소한 알림에도 쓰면 작업을 반복해서 끊는다.",
+        "evidence": "Tab이 배경으로 빠지지 않는지, Escape와 닫기 버튼이 작동하는지 검수한다."
+      },
+      "confusedWith": [
+        {
+          "id": "popover",
+          "difference": "팝오버는 연결된 요소 주변의 보조 레이어이며, 모달처럼 배경을 반드시 막지는 않는다."
+        }
+      ],
+      "sourceIds": ["interaction-modal"],
+      "figure": {
+        "kind": "anatomy",
+        "title": "모달 다이얼로그의 핵심 구조",
+        "subtitle": "핵심 요소를 구분하고 아래의 가상 화면과 연결해 보세요.",
+        "items": [
+          {
+            "label": "배경",
+            "text": "현재 작업 화면 · 조작 제한"
+          },
+          {
+            "label": "대화상자",
+            "text": "문서 삭제 확인"
+          },
+          {
+            "label": "결정",
+            "text": "취소 / 삭제"
+          }
+        ],
+        "focus": "대화상자 바깥이 일시적으로 비활성이라는 점이 핵심입니다.",
+        "caption": "닫기 아이콘이 있다는 사실만으로 모달의 접근성이 보장되지는 않는다."
+      }
+    },
+    {
+      "id": "popover",
+      "english": "Popover",
+      "korean": "팝오버",
+      "pronunciation": "팝오버",
+      "description": "트리거 주변에 띄워 관련 정보나 짧은 조작을 제공하는 보조 레이어다. 구체적인 동작은 제품마다 다르며 HTML Popover API로 만든 팝오버는 비모달이다.",
+      "example": "일정의 날짜를 선택하면 그 옆에 달력 선택기가 나타난다.",
+      "aliases": [],
+      "topic": "interaction",
+      "essential": "트리거와 펼쳐진 내용의 시각적·동작상 관계를 유지한다.",
+      "application": {
+        "scenario": "문서 공유 범위를 빠르게 수정하되 본문 맥락도 보아야 한다.",
+        "decision": "공유 버튼 바로 아래에 작은 설정 영역을 연결하고 닫은 뒤 트리거로 자연스럽게 돌아가게 한다."
+      },
+      "critique": {
+        "tradeoff": "맥락 유지에 유리하지만 좁은 화면에서는 내용이 잘리거나 다른 요소를 가릴 수 있다.",
+        "evidence": "열기·외부 클릭·Escape 정책과 포커스 이동을 실제 콘텐츠 길이로 검수한다."
+      },
+      "confusedWith": [
+        {
+          "id": "tooltip",
+          "difference": "툴팁은 짧은 보조 설명이고, 팝오버에는 선택이나 입력 같은 조작이 들어갈 수 있다."
+        }
+      ],
+      "sourceIds": ["interaction-popover"],
+      "figure": {
+        "kind": "anatomy",
+        "title": "팝오버의 핵심 구조",
+        "subtitle": "핵심 요소를 구분하고 아래의 가상 화면과 연결해 보세요.",
+        "items": [
+          {
+            "label": "트리거",
+            "text": "공유 범위 ∨"
+          },
+          {
+            "label": "연결",
+            "text": "트리거 가까이에 배치"
+          },
+          {
+            "label": "내용",
+            "text": "초대된 사람만 열람"
+          }
+        ],
+        "focus": "팝오버가 어떤 컨트롤에서 열렸는지 쉽게 추적할 수 있어야 합니다.",
+        "caption": "팝오버라는 이름만으로 모달 여부나 접근성 역할을 결정할 수 없다."
+      }
+    },
+    {
+      "id": "tooltip",
+      "english": "Tooltip",
+      "korean": "툴팁",
+      "pronunciation": "툴팁",
+      "description": "요소에 포인터를 올리거나 키보드 포커스를 두었을 때 나타나는 짧은 보조 설명이다. 필수 안내를 툴팁 안에만 숨기거나 내부에 복잡한 조작을 넣지 않는다.",
+      "example": "아이콘에 포커스를 두면 ‘링크 복사’라는 설명이 나타난다.",
+      "aliases": [],
+      "topic": "interaction",
+      "essential": "짧은 설명은 원래 컨트롤의 의미를 보완한다.",
+      "application": {
+        "scenario": "도구 모음에서 낯선 아이콘의 의미를 알려야 한다.",
+        "decision": "아이콘에 접근 가능한 이름을 제공하고 툴팁은 마우스와 키보드 모두에서 확인할 수 있게 한다."
+      },
+      "critique": {
+        "tradeoff": "시각적 혼잡은 줄지만 터치 환경이나 툴팁을 발견하지 못한 사용자에게 설명이 전달되지 않을 수 있다.",
+        "evidence": "포커스 시 노출, Escape로 닫기, 필요한 경우 포인터를 설명 위로 이동할 수 있는지 확인한다."
+      },
+      "confusedWith": [
+        {
+          "id": "popover",
+          "difference": "클릭 가능한 링크나 여러 조작이 필요하다면 툴팁보다 적절한 팝오버·다이얼로그를 검토한다."
+        }
+      ],
+      "sourceIds": ["interaction-tooltip"],
+      "figure": {
+        "kind": "anatomy",
+        "title": "툴팁의 핵심 구조",
+        "subtitle": "핵심 요소를 구분하고 아래의 가상 화면과 연결해 보세요.",
+        "items": [
+          {
+            "label": "대상 요소",
+            "text": "체인 모양 아이콘"
+          },
+          {
+            "label": "보조 설명",
+            "text": "링크 복사"
+          },
+          {
+            "label": "노출 계기",
+            "text": "포인터 또는 키보드 포커스"
+          }
+        ],
+        "focus": "설명과 컨트롤을 별개의 요소로 구분하세요.",
+        "caption": "툴팁을 접근 가능한 이름이나 필수 도움말의 유일한 대안으로 삼지 않는다."
+      }
+    },
+    {
+      "id": "toast",
+      "english": "Toast",
+      "korean": "토스트 알림",
+      "pronunciation": "토스트",
+      "description": "현재 작업을 크게 가리지 않고 화면 위에 짧게 나타나 결과나 상태를 알리는 메시지다. 확인이 필수이거나 오래 읽어야 하는 정보에는 다른 알림 방식이 더 적합할 수 있다.",
+      "example": "즐겨찾기를 저장한 뒤 화면 구석에 ‘저장했습니다’가 나타난다.",
+      "aliases": [],
+      "topic": "interaction",
+      "essential": "작업 결과를 짧게 알려 주되 사용자의 주의를 과도하게 빼앗지 않는다.",
+      "application": {
+        "scenario": "목록을 계속 둘러보는 중 저장 결과를 확인해야 한다.",
+        "decision": "대상과 결과를 명시하고 중요한 결과는 목록의 저장 상태에도 남긴다."
+      },
+      "critique": {
+        "tradeoff": "짧은 노출은 흐름을 지키지만 사용자가 메시지를 놓칠 수 있다.",
+        "evidence": "스크린 리더의 상태 안내와 화면 내 결과 표시를 함께 확인하고 메시지 시간만으로 완료를 판단하지 않게 한다."
+      },
+      "confusedWith": [
+        {
+          "id": "modal-dialog",
+          "difference": "모달은 결정을 요구하며 배경을 막을 수 있지만 토스트는 일반적으로 흐름을 계속 유지한다."
+        }
+      ],
+      "sourceIds": ["interaction-toast"],
+      "figure": {
+        "kind": "anatomy",
+        "title": "토스트 알림의 핵심 구조",
+        "subtitle": "핵심 요소를 구분하고 아래의 가상 화면과 연결해 보세요.",
+        "items": [
+          {
+            "label": "사용자 행동",
+            "text": "문서를 즐겨찾기에 추가"
+          },
+          {
+            "label": "메시지",
+            "text": "저장했습니다"
+          },
+          {
+            "label": "영속 상태",
+            "text": "목록의 저장 표시"
+          }
+        ],
+        "focus": "잠깐 보이는 알림과 계속 남는 결과 상태를 구분하세요.",
+        "caption": "처리 실패 원인과 복구 방법을 토스트에만 담아 사라지게 하지 않는다."
+      }
+    },
+    {
+      "id": "dropdown",
+      "english": "Dropdown",
+      "korean": "드롭다운",
+      "pronunciation": "드롭다운",
+      "description": "펼치면 선택지나 명령이 보이는 UI를 넓게 부르는 표현이다. 값을 고르는 select, 명령을 실행하는 메뉴, 입력을 돕는 콤보박스는 목적과 키보드 동작이 서로 다르다.",
+      "example": "정렬 기준은 값 선택, ‘더 보기’의 복제·삭제는 명령 메뉴다.",
+      "aliases": [],
+      "topic": "interaction",
+      "essential": "펼쳐지는 외형보다 무엇을 선택하거나 실행하는지 먼저 구분한다.",
+      "application": {
+        "scenario": "리뷰 정렬과 리뷰 관리 명령이 같은 모양으로 제안됐다.",
+        "decision": "정렬에는 현재 값이 보이는 선택 요소를, 복제·삭제에는 명령 메뉴를 사용한다."
+      },
+      "critique": {
+        "tradeoff": "옵션을 접으면 공간을 줄일 수 있지만 가능한 선택지를 한눈에 비교하기 어렵다.",
+        "evidence": "레이블·선택값·명령명을 읽었을 때 결과를 예측할 수 있는지 확인한다."
+      },
+      "confusedWith": [
+        {
+          "id": "combobox",
+          "difference": "콤보박스는 연결된 팝업에서 입력값을 정하거나 제안받는 구체적인 입력 패턴이다."
+        }
+      ],
+      "sourceIds": ["interaction-menu", "interaction-select"],
+      "figure": {
+        "kind": "anatomy",
+        "title": "드롭다운의 핵심 구조",
+        "subtitle": "핵심 요소를 구분하고 아래의 가상 화면과 연결해 보세요.",
+        "items": [
+          {
+            "label": "값 선택",
+            "text": "정렬 기준: 최신순"
+          },
+          {
+            "label": "명령 실행",
+            "text": "문서 복제 / 삭제"
+          },
+          {
+            "label": "공통 외형",
+            "text": "누르면 목록이 펼쳐짐"
+          }
+        ],
+        "focus": "같은 아래 화살표라도 입력과 명령의 의미는 다릅니다.",
+        "caption": "드롭다운이라는 이름만으로 구현 역할을 menu로 지정하지 않는다."
+      }
+    },
+    {
+      "id": "checkbox",
+      "english": "Checkbox",
+      "korean": "체크박스",
+      "pronunciation": "체크박스",
+      "description": "각 항목을 독립적으로 선택하거나 해제하는 입력 요소다. 여러 항목을 동시에 선택할 수 있으며 상위 그룹에는 일부만 선택된 중간 상태를 나타낼 수도 있다.",
+      "example": "관심 분야에서 브랜딩과 UX 리서치를 함께 선택한다.",
+      "aliases": [],
+      "topic": "interaction",
+      "essential": "각 선택은 다른 항목의 선택을 자동으로 해제하지 않는다.",
+      "application": {
+        "scenario": "사용자가 원하는 여러 뉴스레터 분야를 선택한다.",
+        "decision": "그룹 이름과 항목 레이블을 제공하고 다중 선택이 가능함을 문맥으로 알린다."
+      },
+      "critique": {
+        "tradeoff": "선택지를 모두 보여 주면 비교하기 좋지만 항목이 많으면 긴 목록이 된다.",
+        "evidence": "레이블 클릭 영역, Space 조작, 선택·미선택·부분 선택의 전달을 확인한다."
+      },
+      "confusedWith": [
+        {
+          "id": "radio-button",
+          "difference": "라디오 버튼은 같은 그룹에서 하나를 고르고 체크박스는 항목별로 독립 선택한다."
+        }
+      ],
+      "sourceIds": ["interaction-checkbox"],
+      "figure": {
+        "kind": "anatomy",
+        "title": "체크박스의 핵심 구조",
+        "subtitle": "핵심 요소를 구분하고 아래의 가상 화면과 연결해 보세요.",
+        "items": [
+          {
+            "label": "그룹",
+            "text": "관심 분야 · 여러 개 선택"
+          },
+          {
+            "label": "선택",
+            "text": "✓ 브랜딩 / ✓ UX 리서치"
+          },
+          {
+            "label": "미선택",
+            "text": "□ 모션"
+          }
+        ],
+        "focus": "한 항목을 선택해도 다른 체크는 유지됩니다.",
+        "caption": "‘전체 선택’의 부분 선택 상태는 ‘모두 선택’과 다르다."
+      }
+    },
+    {
+      "id": "radio-button",
+      "english": "Radio button",
+      "korean": "라디오 버튼",
+      "pronunciation": "레이디오 버튼",
+      "description": "같은 질문의 상호 배타적인 옵션 중 하나를 고르는 입력 요소다. 한 그룹의 새 옵션을 선택하면 기존 선택이 해제된다.",
+      "example": "배송 방식에서 일반 배송 또는 매장 수령 중 하나를 선택한다.",
+      "aliases": [],
+      "topic": "interaction",
+      "essential": "하나의 질문에 속한 선택지라는 관계를 명확히 한다.",
+      "application": {
+        "scenario": "배송 옵션 세 개의 가격과 기간을 비교해야 한다.",
+        "decision": "선택지를 펼쳐 보여 주고 각 옵션에 가격·도착 조건을 붙인다."
+      },
+      "critique": {
+        "tradeoff": "적은 옵션의 비교에는 좋지만 긴 목록에서는 화면을 많이 차지한다.",
+        "evidence": "그룹 레이블, 선택 상태, 방향키 이동과 실제 제출값의 일치를 확인한다."
+      },
+      "confusedWith": [
+        {
+          "id": "checkbox",
+          "difference": "동시에 적용 가능한 여러 항목이라면 라디오보다 체크박스가 알맞다."
+        }
+      ],
+      "sourceIds": ["interaction-radio"],
+      "figure": {
+        "kind": "anatomy",
+        "title": "라디오 버튼의 핵심 구조",
+        "subtitle": "핵심 요소를 구분하고 아래의 가상 화면과 연결해 보세요.",
+        "items": [
+          {
+            "label": "질문",
+            "text": "어떻게 받으시겠어요?"
+          },
+          {
+            "label": "선택",
+            "text": "● 일반 배송"
+          },
+          {
+            "label": "다른 옵션",
+            "text": "○ 매장 수령"
+          }
+        ],
+        "focus": "여러 원 중 하나만 채워진 상태를 보세요.",
+        "caption": "시각적으로 원형이어도 그룹 관계가 없으면 올바른 라디오 입력이 아니다."
+      }
+    },
+    {
+      "id": "toggle-switch",
+      "english": "Toggle switch",
+      "korean": "토글 스위치",
+      "pronunciation": "토글 스위치",
+      "description": "설정의 켜짐과 꺼짐을 바꾸는 이진 입력 요소다. 체크 여부보다 on/off 의미가 명확한 설정에 적합하며 레이블은 상태가 바뀌어도 유지한다.",
+      "example": "‘새 댓글 알림’ 설정을 켜거나 끈다.",
+      "aliases": [],
+      "topic": "interaction",
+      "essential": "설정 이름과 현재 on/off 상태를 분리해서 읽을 수 있어야 한다.",
+      "application": {
+        "scenario": "알림을 끄려는 사용자가 ‘알림 끄기’라는 레이블 때문에 현재 상태를 혼동한다.",
+        "decision": "레이블을 ‘댓글 알림’으로 고정하고 켜짐·꺼짐 상태를 별도로 표시한다."
+      },
+      "critique": {
+        "tradeoff": "간결하지만 상태 표시가 색이나 손잡이 위치에만 의존하면 의미가 모호할 수 있다.",
+        "evidence": "키보드 조작과 보조기술의 on/off 안내, 저장 시점이 사용자 기대와 맞는지 확인한다."
+      },
+      "confusedWith": [
+        {
+          "id": "checkbox",
+          "difference": "체크박스는 선택됨을, 스위치는 설정의 켜짐을 표현하는 데 초점을 둔다."
+        }
+      ],
+      "sourceIds": ["interaction-switch"],
+      "figure": {
+        "kind": "anatomy",
+        "title": "토글 스위치의 핵심 구조",
+        "subtitle": "핵심 요소를 구분하고 아래의 가상 화면과 연결해 보세요.",
+        "items": [
+          {
+            "label": "고정 레이블",
+            "text": "댓글 알림"
+          },
+          {
+            "label": "꺼짐",
+            "text": "손잡이 왼쪽 · 꺼짐"
+          },
+          {
+            "label": "켜짐",
+            "text": "손잡이 오른쪽 · 켜짐"
+          }
+        ],
+        "focus": "스위치 상태가 달라져도 설정 이름은 같습니다.",
+        "caption": "스위치가 항상 즉시 서버에 저장된다고 가정하지 말고 적용 시점을 명시한다."
+      }
+    },
+    {
+      "id": "combobox",
+      "english": "Combobox",
+      "korean": "콤보박스",
+      "pronunciation": "콤보박스",
+      "description": "입력 요소와 연결된 팝업을 통해 값을 고르거나 제안받는 패턴이다. 직접 입력할 수 있는 형식과 목록에서만 선택하는 형식이 모두 있다.",
+      "example": "‘서울’을 입력하면 관련 지역 후보가 제시되고 한 항목을 선택한다.",
+      "aliases": [],
+      "topic": "interaction",
+      "essential": "입력값, 후보 목록, 확정한 선택을 구분한다.",
+      "application": {
+        "scenario": "지역 목록이 길어 사용자가 스크롤만으로 찾기 어렵다.",
+        "decision": "검색 가능한 콤보박스로 후보를 좁히되 일치 결과가 없을 때의 안내도 설계한다."
+      },
+      "critique": {
+        "tradeoff": "검색 효율은 좋아지지만 포커스·선택·자동완성 규칙이 복잡해진다.",
+        "evidence": "문자 입력, 방향키 후보 탐색, Enter 선택, Escape 취소와 현재 값 보존을 확인한다."
+      },
+      "confusedWith": [
+        {
+          "id": "dropdown",
+          "difference": "드롭다운은 펼쳐지는 UI의 넓은 이름이며 콤보박스는 입력값과 팝업이 연결된 패턴이다."
+        }
+      ],
+      "sourceIds": ["interaction-combobox"],
+      "figure": {
+        "kind": "anatomy",
+        "title": "콤보박스의 핵심 구조",
+        "subtitle": "핵심 요소를 구분하고 아래의 가상 화면과 연결해 보세요.",
+        "items": [
+          {
+            "label": "입력",
+            "text": "서울"
+          },
+          {
+            "label": "후보",
+            "text": "서울 강남 / 서울 서초"
+          },
+          {
+            "label": "확정값",
+            "text": "서울 서초"
+          }
+        ],
+        "focus": "타이핑 중인 문자와 선택된 항목은 같지 않을 수 있습니다.",
+        "caption": "콤보박스를 ‘검색창이 있는 드롭다운’ 한 가지 형태로만 한정하지 않는다."
+      }
+    },
+    {
+      "id": "progress-indicator",
+      "english": "Progress indicator",
+      "korean": "진행 표시",
+      "pronunciation": "프로그레스 인디케이터",
+      "description": "작업이 진행 중임을 알리거나 완료된 정도를 보여주는 표시다. 전체량을 알면 진행률을, 알 수 없으면 불확정 상태를 사용하고 근거 없는 퍼센트를 만들지 않는다.",
+      "example": "파일 10개 중 6개가 업로드되어 60%를 표시한다.",
+      "aliases": [],
+      "topic": "interaction",
+      "essential": "진행 여부와 진행 정도는 서로 다른 정보다.",
+      "application": {
+        "scenario": "큰 포트폴리오 파일을 보내는 동안 사용자가 기다려야 한다.",
+        "decision": "계산 가능한 진행률과 업로드 대상을 함께 표시하고 완료·실패 상태로 연결한다."
+      },
+      "critique": {
+        "tradeoff": "세밀한 수치는 안심을 주지만 실제 작업과 다르면 신뢰를 떨어뜨린다.",
+        "evidence": "진행값의 산정 기준, 완료 전환, 보조기술에 전달되는 이름과 값을 확인한다."
+      },
+      "confusedWith": [
+        {
+          "id": "loading-state",
+          "difference": "로딩 상태는 기다리는 UI 전체 상태이며 진행 표시는 그 상태를 전달하는 표현 중 하나다."
+        }
+      ],
+      "sourceIds": ["interaction-progress"],
+      "figure": {
+        "kind": "anatomy",
+        "title": "진행 표시의 핵심 구조",
+        "subtitle": "핵심 요소를 구분하고 아래의 가상 화면과 연결해 보세요.",
+        "items": [
+          {
+            "label": "작업",
+            "text": "포트폴리오 업로드"
+          },
+          {
+            "label": "알려진 진행률",
+            "text": "6 / 10개 · 60%"
+          },
+          {
+            "label": "모르는 진행률",
+            "text": "처리 중 · 수치 없음"
+          }
+        ],
+        "focus": "수치가 있을 때는 계산 근거가 있어야 합니다.",
+        "caption": "움직이는 막대가 있다고 실제 진행률을 나타내는 것은 아니다."
+      }
+    },
+    {
+      "id": "skeleton-screen",
+      "english": "Skeleton screen",
+      "korean": "스켈레톤 화면",
+      "pronunciation": "스켈레튼 스크린",
+      "description": "콘텐츠가 로드될 자리를 단순한 형태로 먼저 보여주는 로딩 표현이다. 최종 콘텐츠의 구조를 예고하지만 실제 내용이나 완료 시점을 알려 주지는 않는다.",
+      "example": "프로필 사진과 문서 제목이 들어올 자리를 회색 블록으로 먼저 보여 준다.",
+      "aliases": [],
+      "topic": "interaction",
+      "essential": "도착할 콘텐츠의 위치와 크기를 미리 이해하게 한다.",
+      "application": {
+        "scenario": "문서 목록을 받아오는 동안 전체 화면이 비어 보인다.",
+        "decision": "리스트 행과 제목 영역을 닮은 스켈레톤을 두고 데이터가 도착하면 같은 자리에서 교체한다."
+      },
+      "critique": {
+        "tradeoff": "배치 안정감은 줄 수 있지만 오래 지속되면 멈춘 화면으로 보일 수 있다.",
+        "evidence": "실제 배치와의 차이, 지연·실패 시 전환, 불필요한 움직임과 반복 안내를 확인한다."
+      },
+      "confusedWith": [
+        {
+          "id": "empty-state",
+          "difference": "빈 상태는 표시할 내용이 없는 결과이고 스켈레톤은 내용을 기다리는 중이다."
+        }
+      ],
+      "sourceIds": ["interaction-skeleton"],
+      "figure": {
+        "kind": "anatomy",
+        "title": "스켈레톤 화면의 핵심 구조",
+        "subtitle": "핵심 요소를 구분하고 아래의 가상 화면과 연결해 보세요.",
+        "items": [
+          {
+            "label": "구조 예고",
+            "text": "사진 자리 / 제목 자리"
+          },
+          {
+            "label": "대기",
+            "text": "내용은 아직 없음"
+          },
+          {
+            "label": "교체",
+            "text": "실제 문서 목록"
+          }
+        ],
+        "focus": "자리 표시를 결과가 없는 상태와 구분하세요.",
+        "caption": "로딩 실패 뒤에도 스켈레톤을 무기한 유지하지 않는다."
+      }
+    },
+    {
+      "id": "empty-state",
+      "english": "Empty state",
+      "korean": "빈 상태",
+      "pronunciation": "엠프티 스테이트",
+      "description": "현재 화면에 표시할 데이터나 콘텐츠가 없는 상태다. 첫 사용, 검색 결과 없음, 삭제 후 비어 있음처럼 원인을 구분하고 적절한 다음 행동을 안내한다.",
+      "example": "처음 연 프로젝트 목록에 ‘첫 프로젝트를 만들어 보세요’와 생성 경로를 보여 준다.",
+      "aliases": [],
+      "topic": "interaction",
+      "essential": "빈 이유와 사용자가 할 수 있는 다음 행동을 연결한다.",
+      "application": {
+        "scenario": "필터 때문에 결과가 없는데 새 문서를 만들라는 메시지가 나온다.",
+        "decision": "첫 사용에는 만들기를, 필터 결과 없음에는 조건 해제를 안내하도록 분리한다."
+      },
+      "critique": {
+        "tradeoff": "안내를 많이 넣으면 빈 공간이 다시 복잡해지므로 지금 필요한 행동을 우선한다.",
+        "evidence": "실제 데이터가 없는 경우와 불러오기 실패를 구분하고, 안내가 문제를 해결하는지 확인한다."
+      },
+      "confusedWith": [
+        {
+          "id": "error-state",
+          "difference": "오류 상태는 작업이나 처리의 실패이며 정상적으로 결과가 0개인 상황과 다르다."
+        }
+      ],
+      "sourceIds": ["interaction-empty"],
+      "figure": {
+        "kind": "anatomy",
+        "title": "빈 상태의 핵심 구조",
+        "subtitle": "핵심 요소를 구분하고 아래의 가상 화면과 연결해 보세요.",
+        "items": [
+          {
+            "label": "이유",
+            "text": "조건에 맞는 문서가 없습니다"
+          },
+          {
+            "label": "설명",
+            "text": "선택한 태그를 줄여 보세요"
+          },
+          {
+            "label": "다음 행동",
+            "text": "필터 초기화"
+          }
+        ],
+        "focus": "빈 화면의 문구가 그 원인에 맞는지 보세요.",
+        "caption": "빈 상태를 모두 같은 환영 메시지로 처리하지 않는다."
+      }
+    },
+    {
+      "id": "error-state",
+      "english": "Error state",
+      "korean": "오류 상태",
+      "pronunciation": "에러 스테이트",
+      "description": "입력 검증이나 시스템 처리에 문제가 생겨 기대한 작업을 완료하지 못한 상태다. 원인·영향·회복 방법을 구체적으로 보여 주고 사용자 입력은 가능한 한 보존한다.",
+      "example": "잘못 입력한 이메일 옆에 수정 방법을 표시하고 다른 입력값은 유지한다.",
+      "aliases": [],
+      "topic": "interaction",
+      "essential": "사용자가 수정할 수 있는 오류와 서비스 측 실패를 구분한다.",
+      "application": {
+        "scenario": "서버에 연결되지 않았는데 이메일 형식 오류가 표시된다.",
+        "decision": "필드 오류는 해당 입력에 연결하고 서비스 장애는 별도 상태와 재시도 경로로 설명한다."
+      },
+      "critique": {
+        "tradeoff": "자세한 기술 오류는 사용자에게 도움이 되지 않을 수 있으므로 실행 가능한 정보를 우선한다.",
+        "evidence": "틀린 값·빈 값·통신 실패를 각각 재현해 메시지와 복구가 일치하는지 확인한다."
+      },
+      "confusedWith": [
+        {
+          "id": "empty-state",
+          "difference": "검색 결과 0개는 정상 결과일 수 있어 처리 실패와 구분해야 한다."
+        }
+      ],
+      "sourceIds": ["interaction-error"],
+      "figure": {
+        "kind": "anatomy",
+        "title": "오류 상태의 핵심 구조",
+        "subtitle": "핵심 요소를 구분하고 아래의 가상 화면과 연결해 보세요.",
+        "items": [
+          {
+            "label": "문제 위치",
+            "text": "이메일 입력"
+          },
+          {
+            "label": "보존된 값",
+            "text": "hello.example.com"
+          },
+          {
+            "label": "회복 안내",
+            "text": "@를 포함해 입력해 주세요"
+          }
+        ],
+        "focus": "문제와 수정 방법이 같은 입력 영역에 연결되어 있습니다.",
+        "caption": "빨간색만으로 오류를 전달하거나 모든 실패를 사용자 잘못으로 표현하지 않는다."
+      }
+    },
+    {
+      "id": "loading-state",
+      "english": "Loading state",
+      "korean": "로딩 상태",
+      "pronunciation": "로딩 스테이트",
+      "description": "요청한 데이터나 작업 결과가 아직 준비되지 않은 대기 상태다. 무엇을 기다리는지, 현재 가능한 조작은 무엇인지, 이후 성공·실패가 어떻게 이어지는지 함께 설계한다.",
+      "example": "문서를 저장하는 동안 ‘저장 중’을 표시하고 중복 제출을 막는다.",
+      "aliases": [],
+      "topic": "interaction",
+      "essential": "시작·진행·종료가 이어지는 상태 전이를 설계한다.",
+      "application": {
+        "scenario": "저장 클릭 후 화면이 그대로여서 사용자가 여러 번 누른다.",
+        "decision": "요청 직후 처리 중임을 알리고 결과가 확인되면 저장 완료 또는 재시도 가능한 실패로 전환한다."
+      },
+      "critique": {
+        "tradeoff": "전체 화면을 막으면 다른 작업도 중단되므로 필요한 범위만 제한한다.",
+        "evidence": "지연과 실패를 인위적으로 재현해 중복 요청·취소·완료 안내와 aria-busy 갱신을 확인한다."
+      },
+      "confusedWith": [
+        {
+          "id": "disabled-state",
+          "difference": "비활성은 조작 불가 상태이며 반드시 처리가 진행 중이라는 뜻은 아니다."
+        }
+      ],
+      "sourceIds": ["interaction-loading"],
+      "figure": {
+        "kind": "anatomy",
+        "title": "로딩 상태의 핵심 구조",
+        "subtitle": "핵심 요소를 구분하고 아래의 가상 화면과 연결해 보세요.",
+        "items": [
+          {
+            "label": "요청 시작",
+            "text": "저장"
+          },
+          {
+            "label": "처리 중",
+            "text": "저장 중 · 중복 요청 제한"
+          },
+          {
+            "label": "결과",
+            "text": "완료 또는 실패 안내"
+          }
+        ],
+        "focus": "비활성 버튼만 두지 말고 기다리는 이유를 알려야 합니다.",
+        "caption": "로딩이 끝났다는 사실과 저장이 성공했다는 사실은 다르다."
+      }
+    },
+    {
+      "id": "focus-state",
+      "english": "Focus state",
+      "korean": "포커스 상태",
+      "pronunciation": "포커스 스테이트",
+      "description": "키보드 등의 입력을 현재 받을 요소가 지정된 상태다. 포커스 표시는 사용자가 자신의 조작 위치를 알게 하며 hover나 선택 완료 상태와 구분된다.",
+      "example": "Tab으로 이동한 ‘다음’ 버튼 둘레에 선이 나타난다.",
+      "aliases": [],
+      "topic": "accessibility",
+      "essential": "현재 조작 위치가 주변 요소와 구별되어야 한다.",
+      "application": {
+        "scenario": "선택된 필터와 키보드 포커스가 같은 색으로 표현된다.",
+        "decision": "선택은 채움, 포커스는 분명한 외곽선처럼 겹쳐도 구분되는 표식을 설계한다."
+      },
+      "critique": {
+        "tradeoff": "강한 표시는 눈에 띄지만 장식적 균형 때문에 없애면 키보드 탐색이 어려워진다.",
+        "evidence": "Tab 순서, 가려진 포커스, 다양한 배경에서 표시가 보이는지 확인한다."
+      },
+      "confusedWith": [
+        {
+          "id": "initial-focus",
+          "difference": "기존 용어의 초기 시선 집중은 시각적 주목을 설명하며 여기의 키보드 포커스와 구별한다."
+        }
+      ],
+      "sourceIds": ["interaction-focus"],
+      "figure": {
+        "kind": "anatomy",
+        "title": "포커스 상태의 핵심 구조",
+        "subtitle": "핵심 요소를 구분하고 아래의 가상 화면과 연결해 보세요.",
+        "items": [
+          {
+            "label": "선택됨",
+            "text": "현재 사용 중인 필터"
+          },
+          {
+            "label": "포커스",
+            "text": "지금 키 입력을 받는 위치"
+          },
+          {
+            "label": "hover",
+            "text": "포인터가 올라간 위치"
+          }
+        ],
+        "focus": "선택과 포커스는 동시에 존재할 수 있습니다.",
+        "caption": "포커스 스타일을 없애서 화면을 깔끔하게 만드는 것은 조작 위치를 지우는 일이다."
+      }
+    },
+    {
+      "id": "disabled-state",
+      "english": "Disabled state",
+      "korean": "비활성 상태",
+      "pronunciation": "디세이블드 스테이트",
+      "description": "현재 조건에서 요소를 조작할 수 없도록 한 상태다. 흐리게 보이는 외형뿐 아니라 실제 동작 제한이 필요하며 읽기 전용 상태와도 다르다.",
+      "example": "필수 선택을 마치기 전 제출 버튼을 사용할 수 없고 필요한 조건이 옆에 안내된다.",
+      "aliases": [],
+      "topic": "accessibility",
+      "essential": "사용할 수 없는 이유와 사용할 수 있게 되는 조건을 이해하게 한다.",
+      "application": {
+        "scenario": "사용자는 제출 버튼이 왜 작동하지 않는지 알 수 없다.",
+        "decision": "조건을 가까운 텍스트로 안내하거나 제출 시 구체적 오류를 알려 주는 대안도 비교한다."
+      },
+      "critique": {
+        "tradeoff": "오류를 미리 막을 수 있지만 비활성 요소는 발견과 설명 접근이 어려울 수 있다.",
+        "evidence": "네이티브 disabled의 포커스·폼 제출 제외 동작을 확인하고 단순 CSS 처리와 구분한다."
+      },
+      "confusedWith": [
+        {
+          "id": "loading-state",
+          "difference": "로딩은 처리 중이라는 이유가 있는 상태이고 비활성은 조작 불가라는 속성이다."
+        }
+      ],
+      "sourceIds": ["interaction-disabled"],
+      "figure": {
+        "kind": "anatomy",
+        "title": "비활성 상태의 핵심 구조",
+        "subtitle": "핵심 요소를 구분하고 아래의 가상 화면과 연결해 보세요.",
+        "items": [
+          {
+            "label": "현재 조건",
+            "text": "동의 미완료"
+          },
+          {
+            "label": "사용 불가",
+            "text": "제출 버튼 비활성"
+          },
+          {
+            "label": "안내",
+            "text": "필수 항목을 확인해 주세요"
+          }
+        ],
+        "focus": "희미한 색보다 현재 불가능한 행동과 이유가 핵심입니다.",
+        "caption": "disabled와 readonly는 포커스·편집·제출 동작이 같지 않다."
+      }
+    },
+    {
+      "id": "pagination",
+      "english": "Pagination",
+      "korean": "페이지네이션",
+      "pronunciation": "페이지네이션",
+      "description": "긴 목록이나 문서를 여러 페이지로 나누고 앞뒤 또는 특정 페이지로 이동하게 하는 탐색 방식이다. 현재 위치와 이동 가능 범위를 함께 표시한다.",
+      "example": "검색 결과 120개를 20개씩 나누고 3페이지를 보고 있음을 보여 준다.",
+      "aliases": [],
+      "topic": "interaction",
+      "essential": "페이지를 바꾸어도 검색 조건과 위치 맥락을 유지한다.",
+      "application": {
+        "scenario": "검색 결과를 검토한 뒤 상세 문서에서 목록으로 돌아온다.",
+        "decision": "검색어·필터·페이지를 URL 또는 상태로 보존하고 현재 페이지를 명확히 표시한다."
+      },
+      "critique": {
+        "tradeoff": "특정 위치에 다시 가기 좋지만 페이지 전환마다 작업 흐름이 끊길 수 있다.",
+        "evidence": "이전·다음의 경계, 현재 페이지 안내, 뒤로가기 후 복원과 모바일 숫자 배열을 확인한다."
+      },
+      "confusedWith": [
+        {
+          "id": "infinite-scroll",
+          "difference": "무한 스크롤은 스크롤에 맞춰 목록을 이어 붙이고 페이지네이션은 구간을 명시적으로 전환한다."
+        }
+      ],
+      "sourceIds": ["interaction-pagination"],
+      "figure": {
+        "kind": "anatomy",
+        "title": "페이지네이션의 핵심 구조",
+        "subtitle": "핵심 요소를 구분하고 아래의 가상 화면과 연결해 보세요.",
+        "items": [
+          {
+            "label": "결과 범위",
+            "text": "41–60 / 120개"
+          },
+          {
+            "label": "현재 페이지",
+            "text": "3"
+          },
+          {
+            "label": "이동",
+            "text": "이전 / 1 2 3 4 / 다음"
+          }
+        ],
+        "focus": "현재 위치와 전후 이동을 한 묶음으로 읽으세요.",
+        "caption": "페이지 수를 줄이기 위해 결과나 사용자의 선택을 잃게 해서는 안 된다."
+      }
+    },
+    {
+      "id": "infinite-scroll",
+      "english": "Infinite scroll",
+      "korean": "무한 스크롤",
+      "pronunciation": "인피니트 스크롤",
+      "description": "목록의 끝에 가까워질 때 다음 묶음의 콘텐츠를 계속 불러오는 탐색 방식이다. 실제 콘텐츠가 무한하다는 뜻은 아니며 종료·복원·접근성도 설계해야 한다.",
+      "example": "이미지 피드를 내려보면 다음 이미지 묶음이 이어서 추가된다.",
+      "aliases": [],
+      "topic": "interaction",
+      "essential": "사용자의 현재 읽는 위치를 잃지 않고 콘텐츠를 추가한다.",
+      "application": {
+        "scenario": "영감 이미지를 훑는 도중 한 항목을 열었다가 뒤로 돌아온다.",
+        "decision": "기존 목록과 스크롤 위치를 복원하고 끝에 도달하면 종료 상태를 알린다."
+      },
+      "critique": {
+        "tradeoff": "연속 탐색에는 유리하지만 정확한 위치 복귀나 하단 링크 접근에는 불리할 수 있다.",
+        "evidence": "키보드·스크린 리더 탐색, 중복 로드, 위치 복원, 마지막 항목을 확인한다."
+      },
+      "confusedWith": [
+        {
+          "id": "pagination",
+          "difference": "페이지네이션은 구간 경계와 위치를 명시해 비교와 재방문을 돕는다."
+        }
+      ],
+      "sourceIds": ["interaction-feed"],
+      "figure": {
+        "kind": "anatomy",
+        "title": "무한 스크롤의 핵심 구조",
+        "subtitle": "핵심 요소를 구분하고 아래의 가상 화면과 연결해 보세요.",
+        "items": [
+          {
+            "label": "현재 묶음",
+            "text": "이미지 01–12"
+          },
+          {
+            "label": "추가 조건",
+            "text": "목록 끝에 가까워짐"
+          },
+          {
+            "label": "이어 붙임",
+            "text": "이미지 13–24"
+          }
+        ],
+        "focus": "기존 콘텐츠를 바꾸는 것이 아니라 뒤에 더합니다.",
+        "caption": "모든 긴 목록에 무한 스크롤이 가장 효율적인 것은 아니다."
+      }
+    },
+    {
+      "id": "progressive-disclosure",
+      "english": "Progressive disclosure",
+      "korean": "점진적 공개",
+      "pronunciation": "프로그레시브 디스클로저",
+      "description": "자주 필요한 핵심 정보를 먼저 보여 주고, 부가 정보나 덜 쓰는 기능은 요청할 때 드러내는 설계 원칙이다. 필수 조건을 숨겨 사용자의 판단을 방해하는 방식과 구분된다.",
+      "example": "내보내기 화면에서 파일 형식은 바로 보이고 압축 세부 옵션은 펼쳐 본다.",
+      "aliases": [],
+      "topic": "interaction",
+      "essential": "첫 화면에는 현재 과업의 핵심 판단만 남긴다.",
+      "application": {
+        "scenario": "내보내기 설정이 너무 많아 사용자가 파일 형식조차 찾기 어렵다.",
+        "decision": "형식·크기·저장 위치를 우선하고 드물게 쓰는 항목을 이름이 분명한 추가 설정으로 묶는다."
+      },
+      "critique": {
+        "tradeoff": "초기 부담은 줄지만 숨긴 기능을 찾는 비용이 생긴다.",
+        "evidence": "주요 과업의 완료와 추가 옵션의 발견을 모두 관찰해 어떤 정보를 먼저 보여 줄지 조정한다."
+      },
+      "confusedWith": [
+        {
+          "id": "accordion",
+          "difference": "아코디언은 점진적 공개를 구현하는 여러 UI 방법 중 하나다."
+        }
+      ],
+      "sourceIds": ["interaction-disclosure"],
+      "figure": {
+        "kind": "anatomy",
+        "title": "점진적 공개의 핵심 구조",
+        "subtitle": "핵심 요소를 구분하고 아래의 가상 화면과 연결해 보세요.",
+        "items": [
+          {
+            "label": "처음",
+            "text": "형식 / 크기 / 내보내기"
+          },
+          {
+            "label": "요청",
+            "text": "추가 설정 펼치기"
+          },
+          {
+            "label": "나중",
+            "text": "압축·메타데이터 설정"
+          }
+        ],
+        "focus": "중요도의 순서와 정보를 여는 경로가 함께 있어야 합니다.",
+        "caption": "정보가 많다는 이유만으로 모두 접으면 중요한 내용도 발견되지 않는다."
+      }
+    },
+    {
+      "id": "affordance",
+      "english": "Affordance",
+      "korean": "어포던스",
+      "pronunciation": "어포던스",
+      "description": "사람의 능력과 대상의 특성 사이에서 성립하는 행동 가능성이다. 행동을 알려 주는 시각적 단서인 시그니파이어와 구분하며, 실제 가능성과 사용자가 가능하다고 느끼는 것이 다를 수 있다.",
+      "example": "손으로 잡을 수 있는 손잡이는 잡기라는 행동을 가능하게 하고 ‘당기세요’ 표지는 행동을 알려 준다.",
+      "aliases": [],
+      "topic": "interaction",
+      "essential": "가능한 행동과 그 행동을 알아차리게 하는 단서를 분리한다.",
+      "application": {
+        "scenario": "드래그로 순서를 바꿀 수 있지만 화면에는 이를 알리는 단서가 없다.",
+        "decision": "실제 조작 경로를 마련한 뒤 핸들과 설명으로 가능성을 드러내고 대체 조작도 제공한다."
+      },
+      "critique": {
+        "tradeoff": "익숙한 형태는 이해를 돕지만 단서만 추가하고 실제 동작이 없으면 잘못된 기대를 만든다.",
+        "evidence": "설명 없이 사용자가 가능한 행동을 발견하는지와 실제로 수행할 수 있는지를 따로 확인한다."
+      },
+      "confusedWith": [
+        {
+          "id": "signifier",
+          "difference": "시그니파이어는 행동 가능성을 전달하는 단서이며 어포던스 그 자체가 아니다."
+        }
+      ],
+      "sourceIds": ["interaction-affordance"],
+      "figure": {
+        "kind": "anatomy",
+        "title": "어포던스의 핵심 구조",
+        "subtitle": "핵심 요소를 구분하고 아래의 가상 화면과 연결해 보세요.",
+        "items": [
+          {
+            "label": "행위자",
+            "text": "잡을 수 있는 손"
+          },
+          {
+            "label": "대상",
+            "text": "손을 넣을 수 있는 손잡이"
+          },
+          {
+            "label": "가능한 행동",
+            "text": "잡고 당기기"
+          }
+        ],
+        "focus": "대상의 모양만이 아니라 사용자와 대상 사이의 관계입니다.",
+        "caption": "‘버튼처럼 생겼다’를 어포던스의 전체 정의로 쓰지 않는다."
+      }
+    },
+    {
+      "id": "signifier",
+      "english": "Signifier",
+      "korean": "시그니파이어",
+      "pronunciation": "시그니파이어",
+      "description": "어디서 무엇을 할 수 있는지 또는 어떤 상태인지 해석하게 하는 지각 가능한 단서다. 아이콘·레이블·밑줄·배치처럼 의도한 표현뿐 아니라 우연히 생긴 흔적도 단서가 될 수 있다.",
+      "example": "밑줄이 있는 ‘이용 안내’ 텍스트가 링크임을 알려 준다.",
+      "aliases": [],
+      "topic": "interaction",
+      "essential": "단서가 약속하는 행동과 실제 결과가 일치해야 한다.",
+      "application": {
+        "scenario": "일반 텍스트와 링크가 똑같이 보여 사용자가 이동 경로를 찾지 못한다.",
+        "decision": "링크에 일관된 밑줄을 제공하고 목적을 설명하는 문구를 사용한다."
+      },
+      "critique": {
+        "tradeoff": "단서를 늘리면 발견은 쉬워지지만 모든 요소를 강조하면 구분 효과가 줄어든다.",
+        "evidence": "처음 보는 사용자가 무엇을 누를 수 있다고 생각하는지 묻고 실제 조작 결과와 비교한다."
+      },
+      "confusedWith": [
+        {
+          "id": "affordance",
+          "difference": "어포던스는 행동 가능성이며 시그니파이어는 그것을 알아차리게 하는 신호다."
+        }
+      ],
+      "sourceIds": ["interaction-signifier"],
+      "figure": {
+        "kind": "anatomy",
+        "title": "시그니파이어의 핵심 구조",
+        "subtitle": "핵심 요소를 구분하고 아래의 가상 화면과 연결해 보세요.",
+        "items": [
+          {
+            "label": "표현",
+            "text": "이용 안내에 밑줄"
+          },
+          {
+            "label": "해석",
+            "text": "눌러서 이동할 수 있음"
+          },
+          {
+            "label": "결과",
+            "text": "안내 페이지 열림"
+          }
+        ],
+        "focus": "단서·예상·실제 결과가 연결되는지 보세요.",
+        "caption": "시그니파이어는 아이콘만을 뜻하지 않는다."
+      }
+    },
+    {
+      "id": "design-token",
+      "english": "Design token",
+      "korean": "디자인 토큰",
+      "pronunciation": "디자인 토큰",
+      "description": "색·간격·타이포그래피 같은 디자인 결정을 이름과 값으로 표현한 재사용 가능한 데이터다. 의미 있는 이름과 참조 관계를 두면 여러 도구·테마·플랫폼에서 같은 결정을 연결할 수 있다.",
+      "example": "color.text.primary라는 이름이 밝은 테마와 어두운 테마에서 서로 다른 값으로 연결된다.",
+      "aliases": [],
+      "topic": "systems",
+      "essential": "값을 복제하는 대신 의도와 사용 위치를 이름으로 연결한다.",
+      "application": {
+        "scenario": "같은 본문 색이 여러 파일에 직접 입력되어 변경이 누락된다.",
+        "decision": "기본 색 값과 의미 토큰을 구분하고 컴포넌트는 역할에 맞는 의미 토큰을 참조하게 한다."
+      },
+      "critique": {
+        "tradeoff": "일관성을 높이지만 이름과 참조 계층이 지나치면 추적 비용이 커진다.",
+        "evidence": "테마 변경 후 대비·참조 누락·코드와 디자인의 값 일치를 확인한다."
+      },
+      "confusedWith": [
+        {
+          "id": "design-system",
+          "difference": "토큰은 디자인 시스템의 구성 요소이며 운영·패턴·문서 전체를 대신하지 않는다."
+        }
+      ],
+      "sourceIds": ["interaction-token"],
+      "figure": {
+        "kind": "code",
+        "title": "디자인 토큰의 핵심 구조",
+        "subtitle": "핵심 요소를 구분하고 아래의 가상 화면과 연결해 보세요.",
+        "items": [
+          {
+            "label": "의미 이름",
+            "text": "color.text.primary"
+          },
+          {
+            "label": "참조",
+            "text": "기본 팔레트 토큰"
+          },
+          {
+            "label": "값",
+            "text": "밝은 테마 #171717"
+          }
+        ],
+        "focus": "토큰 이름은 실제 색상 코드와 같은 것이 아닙니다.",
+        "caption": "도구에서 변수를 만들었다고 자동으로 모든 제품의 토큰 동기화가 완성되지는 않는다."
+      }
+    },
+    {
+      "id": "component-variant",
+      "english": "Component variant",
+      "korean": "컴포넌트 베리언트",
+      "pronunciation": "컴포넌트 베리언트",
+      "description": "같은 컴포넌트의 상태·크기·강조 정도처럼 의도된 차이를 속성과 값의 조합으로 관리한 변형이다. 관계없는 UI를 한 집합으로 묶는 것과 다르다.",
+      "example": "버튼의 Size=Small·Large와 Emphasis=Primary·Secondary를 조합한다.",
+      "aliases": [],
+      "topic": "systems",
+      "essential": "같은 역할을 유지하면서 어떤 속성이 달라지는지 정의한다.",
+      "application": {
+        "scenario": "팀원이 화면마다 다른 크기의 버튼을 새로 그린다.",
+        "decision": "사용 가능한 크기와 강조 유형을 명명하고 실제 필요한 조합만 제공한다."
+      },
+      "critique": {
+        "tradeoff": "변형은 재사용을 돕지만 속성을 무작정 조합하면 관리할 상태가 폭증한다.",
+        "evidence": "긴 레이블·아이콘 유무·비활성 상태에서 유효한 조합과 코드 대응을 확인한다."
+      },
+      "confusedWith": [
+        {
+          "id": "design-token",
+          "difference": "토큰은 값과 의미를 관리하고 베리언트는 컴포넌트의 의도된 형태·상태 조합을 관리한다."
+        }
+      ],
+      "sourceIds": ["interaction-variant"],
+      "figure": {
+        "kind": "matrix",
+        "title": "컴포넌트 베리언트의 핵심 구조",
+        "subtitle": "핵심 요소를 구분하고 아래의 가상 화면과 연결해 보세요.",
+        "items": [
+          {
+            "label": "컴포넌트",
+            "text": "Button"
+          },
+          {
+            "label": "속성",
+            "text": "Size / Emphasis"
+          },
+          {
+            "label": "변형",
+            "text": "Small·Primary / Large·Secondary"
+          }
+        ],
+        "focus": "변형 간 공통 역할과 달라지는 속성을 비교하세요.",
+        "caption": "가능한 모든 속성 조합을 실제 베리언트로 만들 필요는 없다."
+      }
+    },
+    {
+      "id": "auto-layout",
+      "english": "Auto layout",
+      "korean": "오토 레이아웃",
+      "pronunciation": "오토 레이아웃",
+      "description": "방향·간격·패딩·정렬과 크기 규칙에 따라 내부 요소의 배치를 자동 조정하는 Figma 레이아웃 기능이다. 텍스트나 요소 수가 바뀌어도 관계를 유지하도록 설계한다.",
+      "example": "버튼 문구가 길어져도 좌우 패딩을 유지하며 버튼 너비가 늘어난다.",
+      "aliases": [],
+      "topic": "systems",
+      "essential": "픽셀 위치보다 요소 사이의 관계와 크기 규칙을 지정한다.",
+      "application": {
+        "scenario": "한국어 버튼을 영어로 바꾸자 텍스트가 프레임 밖으로 나온다.",
+        "decision": "텍스트와 컨테이너의 고정·내용 맞춤·남는 공간 채움 규칙을 상황에 맞게 정한다."
+      },
+      "critique": {
+        "tradeoff": "변경에 강해지지만 모든 크기를 고정하거나 채움으로 두면 예상과 다른 결과가 생긴다.",
+        "evidence": "짧은 문구·긴 문구·줄바꿈·항목 추가와 좁은 너비를 함께 시험한다."
+      },
+      "confusedWith": [
+        {
+          "id": "responsive-web-design",
+          "difference": "오토 레이아웃은 디자인 도구의 배치 기능이며 완성된 웹 반응형 코드와 동일하지 않다."
+        }
+      ],
+      "sourceIds": ["interaction-layout"],
+      "figure": {
+        "kind": "comparison",
+        "title": "오토 레이아웃의 핵심 구조",
+        "subtitle": "핵심 요소를 구분하고 아래의 가상 화면과 연결해 보세요.",
+        "items": [
+          {
+            "label": "패딩",
+            "text": "좌우 16px"
+          },
+          {
+            "label": "내용",
+            "text": "문구 길이 변화"
+          },
+          {
+            "label": "결과",
+            "text": "내용에 맞춰 버튼 너비 조정"
+          }
+        ],
+        "focus": "문구가 바뀌어도 유지되는 여백에 주목하세요.",
+        "caption": "오토 레이아웃을 설정했다고 모든 해상도와 번역을 자동으로 해결하지는 않는다."
+      }
+    },
+    {
+      "id": "breakpoint",
+      "english": "Breakpoint",
+      "korean": "브레이크포인트",
+      "pronunciation": "브레이크포인트",
+      "description": "화면 조건에 따라 레이아웃이나 표현 규칙이 달라지는 전환 지점이다. 특정 기기 이름에만 맞추기보다 콘텐츠가 더 이상 자연스럽게 배치되지 않는 조건을 기준으로 정한다.",
+      "example": "목록의 제목과 가격이 겹치기 전에 3열을 1열로 바꾼다.",
+      "aliases": [],
+      "topic": "interaction",
+      "essential": "어떤 콘텐츠 문제가 생겨 배치를 바꾸는지 설명할 수 있어야 한다.",
+      "application": {
+        "scenario": "태블릿과 작은 노트북 사이 너비에서 카드 제목이 잘린다.",
+        "decision": "여러 중간 너비를 확인해 전환 지점을 정하고 유연한 폭과 줄바꿈을 함께 사용한다."
+      },
+      "critique": {
+        "tradeoff": "전환이 많으면 세밀하지만 관리·검수할 조합도 늘어난다.",
+        "evidence": "경계 바로 전후의 너비, 확대, 긴 텍스트에서 순서와 주요 행동의 접근을 확인한다."
+      },
+      "confusedWith": [
+        {
+          "id": "responsive-web-design",
+          "difference": "브레이크포인트는 반응형 설계의 수단 중 하나이며 반응형 전체를 뜻하지 않는다."
+        }
+      ],
+      "sourceIds": ["interaction-breakpoint"],
+      "figure": {
+        "kind": "comparison",
+        "title": "브레이크포인트의 핵심 구조",
+        "subtitle": "핵심 요소를 구분하고 아래의 가상 화면과 연결해 보세요.",
+        "items": [
+          {
+            "label": "넓은 영역",
+            "text": "카드 3열"
+          },
+          {
+            "label": "전환 조건",
+            "text": "내용이 좁아지는 지점"
+          },
+          {
+            "label": "좁은 영역",
+            "text": "카드 1열"
+          }
+        ],
+        "focus": "그림의 기기 모양보다 콘텐츠가 버틸 수 있는 폭을 보세요.",
+        "caption": "모든 사이트가 동일한 브레이크포인트 값을 사용할 필요는 없다."
+      }
+    },
+    {
+      "id": "touch-target",
+      "english": "Touch target",
+      "korean": "터치 타깃",
+      "pronunciation": "터치 타깃",
+      "description": "터치나 포인터로 실제 활성화할 수 있는 영역이다. 보이는 아이콘 크기와 같을 필요가 없으며 인접 요소와의 간격도 조작 정확도에 영향을 준다.",
+      "example": "작은 닫기 아이콘 주위에 더 넓은 클릭 영역을 둔다.",
+      "aliases": [],
+      "topic": "accessibility",
+      "essential": "아이콘의 외형과 실제 조작 영역을 따로 설계한다.",
+      "application": {
+        "scenario": "작은 삭제 아이콘이 편집 아이콘 바로 옆에 있어 오조작이 생긴다.",
+        "decision": "타깃 영역과 간격을 늘리고 파괴적 행동의 위치·확인·되돌리기까지 검토한다."
+      },
+      "critique": {
+        "tradeoff": "넓은 영역은 조작을 돕지만 이웃 타깃과 겹치면 오히려 충돌한다.",
+        "evidence": "WCAG 2.2 AA의 24×24 CSS px 최소 기준과 예외를 확인하고 실제 사용 환경에서는 더 여유 있는 크기도 시험한다."
+      },
+      "confusedWith": [
+        {
+          "id": "iconography",
+          "difference": "아이콘은 의미를 나타내는 시각 표현이며 터치 타깃은 활성화되는 영역이다."
+        }
+      ],
+      "sourceIds": ["interaction-target"],
+      "figure": {
+        "kind": "comparison",
+        "title": "터치 타깃의 핵심 구조",
+        "subtitle": "핵심 요소를 구분하고 아래의 가상 화면과 연결해 보세요.",
+        "items": [
+          {
+            "label": "보이는 아이콘",
+            "text": "20px 기호"
+          },
+          {
+            "label": "활성 영역",
+            "text": "예시: 44×44px"
+          },
+          {
+            "label": "이웃과 간격",
+            "text": "타깃끼리 겹치지 않음"
+          }
+        ],
+        "focus": "점선이 실제 누를 수 있는 영역을 나타냅니다.",
+        "caption": "44px 예시는 설계 선택이며 WCAG AA의 모든 경우에 적용되는 단일 의무값이 아니다."
+      }
+    },
+    {
+      "id": "reduced-motion",
+      "english": "Reduced motion",
+      "korean": "모션 줄이기",
+      "pronunciation": "리듀스트 모션",
+      "description": "사용자의 움직임 감소 선호를 반영해 불필요한 이동·확대 등의 애니메이션을 줄이거나 대체하는 설계다. 상태 변화의 의미와 피드백까지 없애는 것은 아니다.",
+      "example": "카드가 크게 이동하는 전환을 줄이고 새 상태를 즉시 표시한다.",
+      "aliases": [],
+      "topic": "accessibility",
+      "essential": "움직임을 줄여도 무엇이 바뀌었는지는 남겨야 한다.",
+      "application": {
+        "scenario": "섹션 전환 시 화면 전체가 밀려 움직여 일부 사용자가 불편함을 느낀다.",
+        "decision": "운영체제의 reduced motion 선호를 반영하고 비필수 공간 이동을 짧거나 즉각적인 상태 변화로 대체한다."
+      },
+      "critique": {
+        "tradeoff": "방향감 전달이 줄 수 있으므로 제목·선택 상태 등 정적인 단서로 맥락을 보완한다.",
+        "evidence": "선호를 켜고 끈 환경에서 동작을 비교하고 자동 움직임과 사용자 유발 움직임도 나누어 검수한다."
+      },
+      "confusedWith": [
+        {
+          "id": "motion",
+          "difference": "모션은 시간에 따른 변화 전반이며 reduced motion은 그 사용을 사용자 선호와 필요에 맞게 조정한다."
+        }
+      ],
+      "sourceIds": ["interaction-motion"],
+      "figure": {
+        "kind": "comparison",
+        "title": "모션 줄이기의 핵심 구조",
+        "subtitle": "핵심 요소를 구분하고 아래의 가상 화면과 연결해 보세요.",
+        "items": [
+          {
+            "label": "일반 전환",
+            "text": "화면 이동·확대"
+          },
+          {
+            "label": "줄인 전환",
+            "text": "즉시 상태 교체"
+          },
+          {
+            "label": "유지할 정보",
+            "text": "현재 항목과 변경 결과"
+          }
+        ],
+        "focus": "이 예시는 움직이지 않는 비교 도해입니다.",
+        "caption": "모션 감소를 ‘모든 피드백 제거’나 ‘모든 사용자에게 동일한 무애니메이션’으로 해석하지 않는다."
+      }
+    }
+  ]
+}

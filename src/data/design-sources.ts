@@ -6,7 +6,9 @@ export type TopicId =
   | "systems"
   | "accessibility"
   | "strategy"
-  | "career";
+  | "career"
+  | "production"
+  | "branding";
 export type SourceCitation = {
   sourceId: string;
   pdfPages: number[];
@@ -31,6 +33,8 @@ export const TOPICS: { id: TopicId; label: string }[] = [
   { id: "accessibility", label: "접근성·포용적 디자인" },
   { id: "strategy", label: "제품 전략·AI 워크플로" },
   { id: "career", label: "협업·포트폴리오" },
+  { id: "production", label: "그래픽·인쇄 제작" },
+  { id: "branding", label: "브랜딩·아트 디렉션" },
 ];
 export const DESIGN_SOURCES: DesignSource[] = [
   {

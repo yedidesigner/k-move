@@ -8,10 +8,11 @@ export const Route = createFileRoute("/_app/glossary")({
       : {},
   head: () => ({
     meta: [
-      { title: "UX/UI 용어집 | K-Move LMS" },
+      { title: "디자인 용어집 | K-Move LMS" },
       {
         name: "description",
-        content: "영어 용어를 클릭해 한국어 뜻과 설명을 확인하는 UX/UI 학습 카드",
+        content:
+          "타이포그래피, 색상, UX·UI, 리서치, 브랜딩과 제작을 정의·시각 예시·실습으로 연결하는 디자인 용어집",
       },
     ],
   }),

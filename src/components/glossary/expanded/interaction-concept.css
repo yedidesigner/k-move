@@ -1,0 +1,30 @@
+.xc-interaction-concept {
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  background: #fff;
+  color: #222c26;
+  padding: 8px 0 10px;
+  overflow: hidden;
+}
+.xc-interaction-concept > svg {
+  display: block;
+  width: 100%;
+  max-width: 460px;
+  height: 230px;
+  margin: 0 auto;
+  font-family: inherit;
+}
+.xc-interaction-concept .xc-interaction-static {
+  display: block;
+  text-align: center;
+  font-size: 10px;
+  line-height: 1.5;
+  color: #6b776f;
+  padding: 0 12px;
+}
+@media (max-width: 400px) {
+  .xc-interaction-concept > svg {
+    height: 218px;
+  }
+}

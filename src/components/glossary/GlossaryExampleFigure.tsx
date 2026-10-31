@@ -7,6 +7,12 @@ import { GlossaryPrincipleFigure } from "./GlossaryPrincipleFigure";
 import { GLOSSARY } from "@/data/glossary";
 import { ContextualExample, hasContextualExample } from "./contextual/ContextualExample";
 import "./glossary-learning.css";
+import { ExpandedExample } from "./expanded/ExpandedExample";
+import expansionManifest from "@/data/expansion/manifest.json";
+import { ExpandedConcept } from "./expanded/ExpandedConcept";
+
+const expandedIds = new Set(Object.values(expansionManifest).flat());
+const hasExpandedExample = (id: string) => expandedIds.has(id);
 
 type FigureItem = LearningFigure["items"][number];
 type FigureProps = { figure: LearningFigure; termId?: string | undefined };
@@ -945,6 +951,7 @@ function ConceptFigure({ figure, termId }: FigureProps) {
 }
 
 function FigureBody({ figure, termId }: FigureProps) {
+  if (termId && hasExpandedExample(termId)) return <ExpandedConcept termId={termId} />;
   if (figure.variant) return <GlossaryPrincipleFigure figure={figure} />;
   switch (figure.kind) {
     case "preset":
@@ -1001,10 +1008,48 @@ function FigureBody({ figure, termId }: FigureProps) {
   }
 }
 
-export function GlossaryExampleFigure({ figure, termId }: FigureProps) {
+export function GlossaryExampleFigure({
+  figure,
+  termId,
+  presentation = "full",
+}: FigureProps & { presentation?: "full" | "structure" | "context" }) {
   const titleId = useId();
   const contextual = Boolean(termId && hasContextualExample(termId));
   const term = contextual ? GLOSSARY.find((entry) => entry.id === termId) : undefined;
+  if (presentation === "structure")
+    return (
+      <figure
+        className={`gl-example gl-example-${figure.kind} gl-structure-only`}
+        data-figure-kind={figure.kind}
+        aria-label={figure.title}
+      >
+        <div className="gl-example-body">
+          <FigureBody figure={figure} termId={termId} />
+        </div>
+        <figcaption>{figure.caption}</figcaption>
+      </figure>
+    );
+  if (termId && hasExpandedExample(termId))
+    return (
+      <figure
+        className="gl-example gl-context-only"
+        data-figure-kind={figure.kind}
+        aria-label={figure.title}
+      >
+        <ExpandedExample termId={termId} />
+        {!expansionManifest.visual.includes(termId) && <figcaption>{figure.focus}</figcaption>}
+      </figure>
+    );
+  if (presentation === "context" && contextual && termId)
+    return (
+      <figure
+        className="gl-example gl-context-only"
+        data-figure-kind={figure.kind}
+        aria-label={figure.title}
+      >
+        <ContextualExample termId={termId} figure={figure} />
+      </figure>
+    );
   return (
     <figure
       className={`gl-example gl-example-${figure.kind}`}

@@ -4,6 +4,7 @@ import {
   Home,
   CalendarDays,
   BookOpen,
+  Library,
   ClipboardList,
   Briefcase,
   MessageSquareText,
@@ -19,13 +20,14 @@ const NAV = [
   { to: "/", label: "홈", icon: Home },
   { to: "/sessions", label: "전체 수업", icon: CalendarDays },
   { to: "/glossary", label: "용어집", icon: BookOpen },
+  { to: "/materials", label: "학습자료", icon: Library },
   { to: "/assignments", label: "과제", icon: ClipboardList },
   { to: "/portfolio", label: "내 포트폴리오", icon: Briefcase },
   { to: "/feedback", label: "피드백", icon: MessageSquareText },
   { to: "/tools", label: "실습 도구", icon: Wrench },
 ] as const;
 
-const MOBILE = ["/", "/sessions", "/glossary", "/assignments", "/portfolio"];
+const MOBILE = ["/", "/sessions", "/glossary", "/materials", "/assignments"];
 
 export function AppShell({ children }: { children: ReactNode }) {
   const { status, user, signOut } = useAuth();
@@ -92,40 +94,49 @@ export function AppShell({ children }: { children: ReactNode }) {
       <header className="border-b border-border bg-card px-4 py-3 md:hidden">
         <p className="text-sm font-bold leading-snug text-foreground break-keep">{SITE_NAME}</p>
         <p className="text-xs text-muted-foreground break-keep">{COURSE_NAME}</p>
-        <div className="mt-2 flex flex-wrap gap-2">
-          <Link
-            to="/tools"
-            className="border border-border px-3 py-2 text-xs transition-colors hover:bg-muted"
-          >
-            실습 도구
-          </Link>
-          <Link
-            to="/password"
-            className="border border-border px-3 py-2 text-xs transition-colors hover:bg-muted"
-          >
-            비밀번호 변경
-          </Link>
-          <Link
-            to="/feedback"
-            className="border border-border px-3 py-2 text-xs transition-colors hover:bg-muted"
-          >
-            피드백
-          </Link>
-          {isInstructor && (
+        <details className="mt-2">
+          <summary className="min-h-11 cursor-pointer py-3 text-xs font-medium">추가 메뉴</summary>
+          <div className="flex flex-wrap gap-2 pb-2">
             <Link
-              to="/admin"
+              to="/portfolio"
               className="border border-border px-3 py-2 text-xs transition-colors hover:bg-muted"
             >
-              관리자
+              내 포트폴리오
             </Link>
-          )}
-          <button
-            onClick={() => void signOut()}
-            className="border border-border px-3 py-2 text-xs transition-colors hover:bg-muted"
-          >
-            로그아웃
-          </button>
-        </div>
+            <Link
+              to="/tools"
+              className="border border-border px-3 py-2 text-xs transition-colors hover:bg-muted"
+            >
+              실습 도구
+            </Link>
+            <Link
+              to="/password"
+              className="border border-border px-3 py-2 text-xs transition-colors hover:bg-muted"
+            >
+              비밀번호 변경
+            </Link>
+            <Link
+              to="/feedback"
+              className="border border-border px-3 py-2 text-xs transition-colors hover:bg-muted"
+            >
+              피드백
+            </Link>
+            {isInstructor && (
+              <Link
+                to="/admin"
+                className="border border-border px-3 py-2 text-xs transition-colors hover:bg-muted"
+              >
+                관리자
+              </Link>
+            )}
+            <button
+              onClick={() => void signOut()}
+              className="border border-border px-3 py-2 text-xs transition-colors hover:bg-muted"
+            >
+              로그아웃
+            </button>
+          </div>
+        </details>
       </header>
 
       <main

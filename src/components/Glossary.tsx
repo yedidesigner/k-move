@@ -17,15 +17,13 @@ import {
   type GlossaryEntry,
   type GlossaryFilter,
 } from "@/data/glossary";
-import { VisualGlossaryLesson, VISUAL_LESSONS } from "./glossary/VisualGlossaryLesson";
+import { VISUAL_LESSONS } from "./glossary/VisualGlossaryLesson";
 import { getGlossaryPractice, hasGlossaryPractice } from "@/data/glossary-practice";
 import { getGlossaryLearning, LEARNING_LABELS } from "@/data/glossary-learning";
 import "./glossary.css";
 import { getGlossaryDepth } from "@/data/glossary-depth";
 import { GlossaryNavigationContext } from "./glossary/navigation-context";
 import { TOPICS } from "@/data/design-sources";
-import { GlossaryGuideLibrary, RelatedDesignGuides } from "./StudyMaterials";
-import { GlossaryDepthPanel, GlossarySourceDetails } from "./glossary/GlossaryDepthPanel";
 
 const GlossaryLearningLesson = lazy(() =>
   import("./glossary/GlossaryLearningLesson").then((module) => ({
@@ -33,7 +31,7 @@ const GlossaryLearningLesson = lazy(() =>
   })),
 );
 
-const PAGE_SIZE = 24;
+const PAGE_SIZE = 12;
 const ALPHABET = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("");
 const AVAILABLE_LETTERS = new Set(GLOSSARY.map((entry) => entry.letter));
 
@@ -182,7 +180,7 @@ export function Glossary({ initialQuery = "" }: { initialQuery?: string } = {}) 
       <section aria-labelledby="glossary-title">
         <header className="mb-7 border-b border-foreground pb-6">
           <p className="mb-3 text-[11px] font-medium tracking-[0.18em] text-muted-foreground">
-            UX / UI GLOSSARY
+            DESIGN GLOSSARY
           </p>
           <div className="flex items-end justify-between gap-4">
             <h1 id="glossary-title" className="text-3xl font-bold tracking-tight md:text-4xl">
@@ -196,8 +194,7 @@ export function Glossary({ initialQuery = "" }: { initialQuery?: string } = {}) 
             </span>
           </div>
           <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
-            카드를 뒤집어 뜻을 읽고, 시각 예시로 이해해 보세요. 조작이 도움이 되는 용어에는 실습이
-            함께 있습니다. 실무 해설에서 적용 상황과 판단 기준까지 살펴보세요.
+            하나의 용어를, 정의부터 실제 예시까지. 필요한 개념을 찾아 차근히 살펴보세요.
           </p>
         </header>
 
@@ -266,44 +263,50 @@ export function Glossary({ initialQuery = "" }: { initialQuery?: string } = {}) 
           </select>
         </div>
 
-        <div role="group" aria-label="학습 유형 필터" className="glossary-type-filters">
-          {LEARNING_FILTERS.map(({ value, label, count }) => (
-            <button
-              key={value}
-              type="button"
-              aria-pressed={filter === value}
-              onClick={() => {
-                setFilter(value);
-                setPage(1);
-              }}
-            >
-              {label} <span>{count}</span>
-            </button>
-          ))}
-        </div>
+        <details className="glossary-advanced-filters">
+          <summary>
+            상세 필터{" "}
+            <span>{filter !== "all" || letter !== "ALL" ? "적용 중" : "학습 유형 · 알파벳"}</span>
+          </summary>
+          <div role="group" aria-label="학습 유형 필터" className="glossary-type-filters">
+            {LEARNING_FILTERS.map(({ value, label, count }) => (
+              <button
+                key={value}
+                type="button"
+                aria-pressed={filter === value}
+                onClick={() => {
+                  setFilter(value);
+                  setPage(1);
+                }}
+              >
+                {label} <span>{count}</span>
+              </button>
+            ))}
+          </div>
 
-        <div
-          role="group"
-          aria-label="알파벳 필터"
-          className="flex gap-1.5 overflow-x-auto border-b border-border pb-5 sm:flex-wrap sm:overflow-visible"
-        >
-          {["ALL", ...ALPHABET].map((item) => (
-            <button
-              key={item}
-              type="button"
-              aria-label={item === "ALL" ? "전체 알파벳" : `${item}로 시작하는 용어`}
-              aria-pressed={letter === item}
-              disabled={item !== "ALL" && !AVAILABLE_LETTERS.has(item)}
-              onClick={() => {
-                setLetter(item);
-                setPage(1);
-              }}
-              className={`flex min-h-11 min-w-11 shrink-0 items-center justify-center border px-2.5 text-xs font-medium transition-colors disabled:cursor-default disabled:opacity-25 ${letter === item ? "border-primary bg-primary text-primary-foreground" : "border-transparent hover:enabled:border-border hover:enabled:bg-card"}`}
-            >
-              {item === "ALL" ? "전체" : item}
-            </button>
-          ))}
-        </div>
+          <div
+            role="group"
+            aria-label="알파벳 필터"
+            className="flex gap-1.5 overflow-x-auto border-b border-border pb-5 sm:flex-wrap sm:overflow-visible"
+          >
+            {["ALL", ...ALPHABET].map((item) => (
+              <button
+                key={item}
+                type="button"
+                aria-label={item === "ALL" ? "전체 알파벳" : `${item}로 시작하는 용어`}
+                aria-pressed={letter === item}
+                disabled={item !== "ALL" && !AVAILABLE_LETTERS.has(item)}
+                onClick={() => {
+                  setLetter(item);
+                  setPage(1);
+                }}
+                className={`flex min-h-11 min-w-11 shrink-0 items-center justify-center border px-2.5 text-xs font-medium transition-colors disabled:cursor-default disabled:opacity-25 ${letter === item ? "border-primary bg-primary text-primary-foreground" : "border-transparent hover:enabled:border-border hover:enabled:bg-card"}`}
+              >
+                {item === "ALL" ? "전체" : item}
+              </button>
+            ))}
+          </div>
+        </details>
 
         <div ref={resultsRef} tabIndex={-1} aria-label="용어 검색 결과" className="scroll-mt-6">
           <div className="flex min-h-16 items-center justify-between gap-3 text-xs text-muted-foreground">
@@ -381,7 +384,6 @@ export function Glossary({ initialQuery = "" }: { initialQuery?: string } = {}) 
           </nav>
         )}
 
-        <GlossaryGuideLibrary />
         <footer className="glossary-editorial-footer">
           <details>
             <summary>출처·제작 정보</summary>
@@ -390,7 +392,7 @@ export function Glossary({ initialQuery = "" }: { initialQuery?: string } = {}) 
               설명의 출처는 각 학습 화면 하단에서 확인할 수 있습니다.
             </p>
             <a href={GLOSSARY_SOURCE_URL} target="_blank" rel="noopener noreferrer">
-              용어 목록 원본 <span className="sr-only">(새 탭)</span>
+              초기 용어 목록 <span className="sr-only">(새 탭)</span>
             </a>
           </details>
         </footer>
@@ -444,16 +446,7 @@ export function Glossary({ initialQuery = "" }: { initialQuery?: string } = {}) 
                 용어에 맞는 시각 예시와 관찰 포인트를 보고 이해하는 학습 화면입니다. 조작이 도움이
                 되는 용어에는 실습이 함께 제공됩니다.
               </Dialog.Description>
-              {activeEntry?.lessonId && activeLearning?.mode === "practice" ? (
-                <>
-                  <VisualGlossaryLesson key={activeEntry.id} lessonId={activeEntry.lessonId} />
-                  <div className="gd-standalone">
-                    <GlossaryDepthPanel termId={activeEntry.id} />
-                    <RelatedDesignGuides termId={activeEntry.id} />
-                    <GlossarySourceDetails termId={activeEntry.id} />
-                  </div>
-                </>
-              ) : activeEntry && activeLearning ? (
+              {activeEntry && activeLearning ? (
                 <Suspense
                   fallback={
                     <p className="p-8" role="status">

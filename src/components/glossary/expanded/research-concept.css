@@ -1,0 +1,81 @@
+.xe-research-concept {
+  width: 100%;
+  min-width: 0;
+  display: flex;
+  justify-content: center;
+  color: #18231e;
+  background: #fff;
+  overflow: hidden;
+}
+.xe-research-concept svg {
+  display: block;
+  width: 100%;
+  max-height: 260px;
+  height: auto;
+  overflow: visible;
+}
+.xe-research-concept text {
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 500;
+  fill: #24372d;
+}
+.xe-research-concept .xe-research-concept-accenttext {
+  fill: #0b6552;
+  font-weight: 600;
+}
+.xe-research-concept-outline {
+  fill: white;
+  stroke: #899b91;
+  stroke-width: 1.3;
+}
+.xe-research-concept-highlight {
+  fill: #eaf5ef;
+  stroke: #39816a;
+  stroke-width: 1.4;
+}
+.xe-research-concept-soft {
+  fill: #edf5f0;
+  stroke: none;
+}
+.xe-research-concept-line {
+  fill: none;
+  stroke: #61746b;
+  stroke-width: 1.3;
+}
+.xe-research-concept-accentline {
+  fill: none;
+  stroke: #237254;
+  stroke-width: 2.5;
+}
+.xe-research-concept-dashed {
+  fill: #fbfdfb;
+  stroke: #a6b8ac;
+  stroke-width: 1.4;
+  stroke-dasharray: 5 4;
+}
+.xe-research-concept-person {
+  fill: #fff;
+  stroke: #536c5f;
+  stroke-width: 1.5;
+}
+.xe-research-concept-personaccent {
+  fill: #e9f5ed;
+  stroke: #237254;
+  stroke-width: 1.5;
+}
+.xe-research-concept-dot {
+  fill: #fff;
+  stroke: #849b8d;
+  stroke-width: 1.3;
+}
+.xe-research-concept-dotaccent {
+  fill: #318163;
+  stroke: #318163;
+  stroke-width: 1.3;
+}
+.xe-research-concept-cursor {
+  fill: #143c2b;
+  stroke: white;
+  stroke-width: 1.2;
+}

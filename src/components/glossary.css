@@ -387,3 +387,72 @@
   outline: 2px solid #171717;
   outline-offset: 3px;
 }
+
+/* Search is primary; less frequent filters stay behind one clear disclosure. */
+.glossary-advanced-filters {
+  border-top: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+  margin: 0 0 8px;
+}
+.glossary-advanced-filters > summary {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 48px;
+  width: fit-content;
+  cursor: pointer;
+  color: var(--foreground);
+  font-size: 12px;
+  font-weight: 600;
+}
+.glossary-advanced-filters > summary::after {
+  content: "+";
+  font-size: 18px;
+  font-weight: 400;
+  margin-left: 8px;
+}
+.glossary-advanced-filters[open] > summary::after {
+  content: "−";
+}
+.glossary-advanced-filters > summary > span {
+  color: var(--muted-foreground);
+  font-size: 11px;
+  font-weight: 400;
+}
+.glossary-advanced-filters > div:last-child {
+  border-bottom: 0;
+}
+.glossary-advanced-filters > summary:focus-visible {
+  outline: 2px solid #171717;
+  outline-offset: 3px;
+}
+.glossary-card-face {
+  padding: 22px;
+}
+.glossary-card-term {
+  font-size: clamp(20px, 1.7vw, 24px);
+}
+.glossary-learn-button {
+  background: #fff;
+  border-color: var(--border);
+  color: #4a5c55;
+  font-weight: 500;
+  padding-inline: 22px;
+}
+.glossary-card-shell {
+  min-height: 244px;
+}
+.glossary-card {
+  min-height: 196px;
+}
+.glossary-card-action {
+  border-top: 0;
+}
+.glossary-lesson-dialog {
+  max-width: 880px;
+}
+@media (min-width: 1180px) {
+  .glossary-card-grid {
+    gap: 20px;
+  }
+}
