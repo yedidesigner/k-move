@@ -7,8 +7,10 @@ import {
   SESSIONS,
   TIME_ZONE,
   seoulToday,
+  sessionStatusLabel,
   weekdayKo,
 } from "@/data/schedule";
+import { CURRICULUM_LESSONS } from "@/data/curriculum";
 import { SessionCalendar } from "@/components/SessionCalendar";
 import { defaultCalendarMonth } from "@/lib/session-calendar";
 import { cn } from "@/lib/utils";
@@ -17,9 +19,12 @@ export const Route = createFileRoute("/_app/sessions/")({
   head: () => ({
     meta: [
       { title: "CURRICULUM | K-Move 미국 디자인 실무 취업 연수과정" },
-      { name: "description", content: "24회차 수업 일정" },
+      { name: "description", content: "구글 AI 바이브 코딩 1~19회차 커리큘럼과 전체 수업 일정" },
       { property: "og:title", content: "CURRICULUM" },
-      { property: "og:description", content: "24회차 수업 일정" },
+      {
+        property: "og:description",
+        content: "구글 AI 바이브 코딩 1~19회차 커리큘럼과 전체 수업 일정",
+      },
     ],
   }),
   component: Sessions,
@@ -97,6 +102,27 @@ function Sessions() {
           ))}
         </div>
       </header>
+      <section
+        aria-labelledby="curriculum-overview-title"
+        className="mb-6 border border-border bg-card px-5 py-5 sm:px-6"
+      >
+        <p className="text-xs font-semibold text-muted-foreground">
+          {CURRICULUM_LESSONS.length}회차 커리큘럼 · 6개 사이클 + 파이널 프로젝트
+        </p>
+        <h2
+          id="curriculum-overview-title"
+          className="mt-2 text-lg font-bold tracking-tight sm:text-xl"
+        >
+          구글 AI 바이브 코딩 실무
+        </h2>
+        <p className="mt-2 max-w-3xl text-sm leading-relaxed text-muted-foreground">
+          Gemini AI와 함께 기획부터 UI 제작, 데이터 연동, 배포까지 배우고 7개의 웹사이트를
+          완성합니다.
+        </p>
+        <p className="mt-3 text-xs leading-relaxed text-muted-foreground">
+          1~12회차 프로젝트 실습 · 13회차 중간 점검 및 기획 · 14~19회차 파이널 프로젝트
+        </p>
+      </section>
       {view === "calendar" ? (
         <SessionCalendar month={month} today={today} onMonthChange={setMonth} />
       ) : (
@@ -126,12 +152,34 @@ function SessionList({ today }: { today: string }) {
               <span className="text-[3.6288rem] font-semibold leading-none tracking-[-0.0325em] tabular-nums sm:text-[4.536rem]">
                 {String(s.number).padStart(2, "0")}
               </span>
-              <div className="flex min-w-0 flex-wrap items-baseline gap-x-5 gap-y-1">
-                <p className="text-base font-bold leading-snug">{s.title}</p>
+              <div className="min-w-0">
+                <p className="break-keep text-base font-bold leading-snug [overflow-wrap:anywhere]">
+                  {s.curriculum?.project ?? s.title}
+                </p>
+                {s.curriculum?.stage && (
+                  <p
+                    className={cn(
+                      "mt-1 break-keep text-sm leading-relaxed [overflow-wrap:anywhere]",
+                      state === "today" ? "text-white/90" : "text-foreground/80",
+                    )}
+                  >
+                    {s.curriculum.stage}
+                  </p>
+                )}
+                {s.curriculum && (
+                  <p
+                    className={cn(
+                      "mt-1 text-xs leading-relaxed",
+                      state === "today" ? "text-white/70" : "text-muted-foreground",
+                    )}
+                  >
+                    {s.curriculum.cycle}
+                  </p>
+                )}
                 <time
                   dateTime={s.date}
                   className={cn(
-                    "whitespace-nowrap text-[0.675rem] leading-relaxed tabular-nums",
+                    "mt-1 block text-[0.675rem] leading-relaxed tabular-nums",
                     state === "today" ? "text-white/80" : "text-muted-foreground",
                   )}
                 >
@@ -144,7 +192,7 @@ function SessionList({ today }: { today: string }) {
                   state === "today" ? "text-white" : "text-muted-foreground",
                 )}
               >
-                {state === "today" ? "오늘" : state === "done" ? "수업 완료" : "준비중"}
+                {sessionStatusLabel(s, today)}
               </span>
               <ChevronRight
                 aria-hidden

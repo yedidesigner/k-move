@@ -1,6 +1,13 @@
 import { Link } from "@tanstack/react-router";
 import { ChevronLeft, ChevronRight } from "lucide-react";
-import { CLASS_END, CLASS_START, SESSIONS, TIME_ZONE, formatDateKo } from "@/data/schedule";
+import {
+  CLASS_END,
+  CLASS_START,
+  SESSIONS,
+  TIME_ZONE,
+  formatDateKo,
+  sessionStatusLabel,
+} from "@/data/schedule";
 import type { Session } from "@/data/schedule";
 import { calendarWeeks, SESSION_MONTHS } from "@/lib/session-calendar";
 import type { CalendarDay } from "@/lib/session-calendar";
@@ -29,7 +36,7 @@ function DayCell({
   today: string;
 }) {
   const isToday = day.date === today;
-  const status = isToday ? "오늘" : day.date < today ? "수업 완료" : "준비중";
+  const status = session ? sessionStatusLabel(session, today) : "";
   const content = (
     <>
       <div className="flex flex-wrap items-start justify-between gap-x-1 gap-y-0.5">
@@ -47,9 +54,14 @@ function DayCell({
       </div>
       {session && (
         <div className="mt-2 border-t border-border pt-1.5">
-          <p className="break-keep text-[9px] font-medium leading-snug sm:text-xs">
-            {session.title}
+          <p className="break-keep text-[9px] font-medium leading-snug [overflow-wrap:anywhere] sm:text-xs">
+            {session.curriculum?.project ?? session.title}
           </p>
+          {session.curriculum?.stage && (
+            <p className="mt-1 hidden break-keep text-[10px] leading-snug text-muted-foreground [overflow-wrap:anywhere] sm:block">
+              {session.curriculum.stage}
+            </p>
+          )}
           <p className="mt-1 flex flex-wrap gap-x-1 text-[8px] leading-snug tabular-nums text-muted-foreground sm:text-[10px]">
             <span>{CLASS_START}</span>
             <span>– {CLASS_END}</span>
