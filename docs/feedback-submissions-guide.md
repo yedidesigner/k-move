@@ -9,10 +9,14 @@ Use **과제 업로드** to select images and other files together in a single m
 | Type | Accepted formats | Limit | Feedback |
 | --- | --- | --- | --- |
 | Image | JPG, JPEG, PNG, WebP | 10 MB per image | Existing image preview and position pins |
-| File | PDF, ZIP, TXT, DOCX, PPTX, XLSX, PSD, AI, FIG | 50 MB per file | Download and per-file instructor comments |
+| File | PDF, ZIP, TXT, DOCX, PPTX, XLSX, PSD, AI, FIG | 10 MB per file | Download and per-file instructor comments |
 | Link | HTTP/HTTPS web links, including Figma and Drive | 2,048 URL characters | Open original service and per-link instructor comments |
 
 The original external service still controls a link's sharing permissions. Adding a Figma or Drive link does not grant access there. Large source files and videos can be submitted by link. Archives are downloaded, not extracted; design source files are not rendered in the browser.
+
+Selecting a file larger than 10 MB opens a Drive guidance dialog before any file is uploaded. It lists oversized files, offers the student's own assignment folder from the existing private server mapping, and opens the link-entry form after the user uploads manually to Drive. It never claims to upload to Drive automatically. A mixed selection retains its small files for an explicit “10MB 이하 파일만 업로드” action; large files are never silently skipped. Unmapped or unshared folders do not fall back to a shared root or another student's folder.
+
+Apply `docs/feedback-upload-10mb.sql` after the original attachment migration. Both private upload buckets enforce 10 MB, and the attachment insert policy applies the same ceiling. Existing submissions above that size, if any, retain their read/download access; the older row-shape constraint remains compatible with them. Here MB follows the existing 1,048,576-byte upload limit convention.
 
 ## Storage and access
 

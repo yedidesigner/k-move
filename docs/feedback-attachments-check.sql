@@ -34,8 +34,8 @@ begin
   peer_path := student_b::text||'/02/'||gen_random_uuid()::text||'.zip';
 
   if not exists(select 1 from storage.buckets where id='kmove-feedback-files'
-    and public=false and file_size_limit=52428800 and 'application/zip'=any(allowed_mime_types)) then
-    raise exception 'Expected private 50 MB file bucket';
+    and public=false and file_size_limit=10485760 and 'application/zip'=any(allowed_mime_types)) then
+    raise exception 'Expected private 10 MB file bucket';
   end if;
   if (select count(*) from pg_policies where schemaname='storage' and
     policyname in ('Feedback file read','Feedback file upload','Feedback file delete'))<>3 then

@@ -1,8 +1,10 @@
 import { useEffect, useRef, useState, type FormEvent } from "react";
 import { Download, ExternalLink, FileUp, Link2, Trash2 } from "lucide-react";
+import { FeedbackLargeFileDialog } from "@/components/FeedbackLargeFileDialog";
 import { getSupabase } from "@/lib/supabase";
 import {
   FEEDBACK_FILE_BUCKET,
+  FEEDBACK_FILE_LIMIT,
   FEEDBACK_IMAGE_BUCKET,
   FEEDBACK_UPLOAD_ACCEPT,
   feedbackFileSize,
@@ -54,7 +56,12 @@ export function FeedbackAttachments(props: Props) {
 }
 
 function AttachmentContent({
-  studentId, week, userId, instructor, onImagesUploaded, uploadDisabled = false,
+  studentId,
+  week,
+  userId,
+  instructor,
+  onImagesUploaded,
+  uploadDisabled = false,
   onUploadBusyChange,
 }: Props) {
   const [rows, setRows] = useState<FeedbackAttachment[]>([]);
@@ -75,6 +82,10 @@ function AttachmentContent({
     content: string;
   } | null>(null);
   const fileInput = useRef<HTMLInputElement>(null);
+  const uploadButton = useRef<HTMLButtonElement>(null);
+  const linkInput = useRef<HTMLInputElement>(null);
+  const dialogFocusTarget = useRef<"upload" | "link">("upload");
+  const [pendingFiles, setPendingFiles] = useState<File[]>([]);
   const alive = useRef(true);
   const busyRef = useRef(false);
   useEffect(() => {
@@ -143,8 +154,23 @@ function AttachmentContent({
     if (alive.current) setRevision((value) => value + 1);
   }
 
-  async function upload(files: FileList | null) {
-    if (!files?.length || uploadDisabled || !start()) return;
+  function closeLargeFileDialog() {
+    setPendingFiles([]);
+    if (fileInput.current) fileInput.current.value = "";
+  }
+
+  async function upload(files: FileList | File[] | null) {
+    if (!files?.length || uploadDisabled || busyRef.current) return;
+    const chosen = Array.from(files);
+    if (chosen.some((file) => file.size > FEEDBACK_FILE_LIMIT)) {
+      setError("");
+      setNotice("");
+      dialogFocusTarget.current = "upload";
+      setPendingFiles(chosen);
+      if (fileInput.current) fileInput.current.value = "";
+      return;
+    }
+    if (!start()) return;
     setUploading(true);
     onUploadBusyChange?.(true);
     let saved = 0;
@@ -152,7 +178,10 @@ function AttachmentContent({
     let savedFiles = 0;
     try {
       // Validate the entire mixed selection before uploading any file.
-      const selection = Array.from(files).map((file) => ({ file, ...validateFeedbackUpload(file) }));
+      const selection = Array.from(files).map((file) => ({
+        file,
+        ...validateFeedbackUpload(file),
+      }));
       const db = getSupabase();
       for (const { file, kind, extension, mimeType } of selection) {
         if (!alive.current) break;
@@ -162,23 +191,24 @@ function AttachmentContent({
           .from(bucket)
           .upload(objectPath, file, { upsert: false, contentType: mimeType });
         if (stored.error) throw stored.error;
-        const record = kind === "image"
-          ? await db.from("kmove_feedback_images").insert({
-              student_id: studentId,
-              week,
-              object_path: objectPath,
-              created_by: userId,
-            })
-          : await db.from("kmove_feedback_attachments").insert({
-              student_id: studentId,
-              week,
-              kind: "file",
-              title: file.name,
-              object_path: objectPath,
-              mime_type: mimeType,
-              file_size: file.size,
-              created_by: userId,
-            });
+        const record =
+          kind === "image"
+            ? await db.from("kmove_feedback_images").insert({
+                student_id: studentId,
+                week,
+                object_path: objectPath,
+                created_by: userId,
+              })
+            : await db.from("kmove_feedback_attachments").insert({
+                student_id: studentId,
+                week,
+                kind: "file",
+                title: file.name,
+                object_path: objectPath,
+                mime_type: mimeType,
+                file_size: file.size,
+                created_by: userId,
+              });
         if (record.error) {
           const cleanup = await db.storage.from(bucket).remove([objectPath]);
           if (cleanup.error)
@@ -368,6 +398,7 @@ function AttachmentContent({
             onChange={(event) => void upload(event.target.files)}
           />
           <button
+            ref={uploadButton}
             type="button"
             disabled={busy || uploadDisabled}
             onClick={() => fileInput.current?.click()}
@@ -389,8 +420,33 @@ function AttachmentContent({
         </div>
       </div>
       <p id="feedback-upload-formats" className="text-xs leading-5 text-neutral-500">
-        JPG · JPEG · PNG · WebP는 파일당 최대 10MB, PDF · ZIP · TXT · DOCX · PPTX · XLSX · PSD · AI · FIG는 파일당 최대 50MB입니다.
+        이미지·PDF·ZIP·문서·디자인 원본은 파일당 최대 10MB입니다. 더 큰 파일은 Google Drive에
+        업로드한 뒤 링크로 제출해 주세요.
       </p>
+      {pendingFiles.length > 0 && (
+        <FeedbackLargeFileDialog
+          files={pendingFiles.filter((file) => file.size > FEEDBACK_FILE_LIMIT)}
+          eligibleCount={pendingFiles.filter((file) => file.size <= FEEDBACK_FILE_LIMIT).length}
+          studentId={studentId}
+          userId={userId}
+          instructor={instructor}
+          onClose={closeLargeFileDialog}
+          onRegisterLink={() => {
+            dialogFocusTarget.current = "link";
+            setLinkOpen(true);
+            closeLargeFileDialog();
+          }}
+          onUploadEligible={() => {
+            const eligible = pendingFiles.filter((file) => file.size <= FEEDBACK_FILE_LIMIT);
+            closeLargeFileDialog();
+            void upload(eligible);
+          }}
+          onAfterClose={() => {
+            if (dialogFocusTarget.current === "link") linkInput.current?.focus();
+            else uploadButton.current?.focus();
+          }}
+        />
+      )}
       {linkOpen && (
         <form
           onSubmit={(event) => void saveLink(event)}
@@ -409,6 +465,7 @@ function AttachmentContent({
           <label className="text-xs font-medium">
             URL
             <input
+              ref={linkInput}
               type="url"
               required
               value={linkUrl}
