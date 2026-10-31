@@ -41,9 +41,6 @@ export function GlossaryLearningLesson({
       <LessonSection title="시각 예시">
         <GlossaryExampleFigure figure={learning.figure} termId={entry.id} />
       </LessonSection>
-      <LessonSection title="관찰 포인트">
-        <p className="gl-observation">{learning.figure.focus}</p>
-      </LessonSection>
       {learning.references.length > 0 && (
         <LessonSection title="참고 자료">
           <ul className="gl-references">

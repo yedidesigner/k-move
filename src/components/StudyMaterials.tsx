@@ -48,8 +48,8 @@ function GuideContent({ guide }: { guide: StudyGuide }) {
         </ul>
       </section>
       {visual && (
-        <section className="study-guide-visual" aria-label="눈으로 이해하기">
-          <h3>눈으로 이해하기</h3>
+        <section className="study-guide-visual" aria-label="실제 예시로 이해하기">
+          <h3>실제 예시로 이해하기</h3>
           <div className="gl-lesson gp-lesson">
             <Suspense fallback={<p role="status">시각 예시를 불러오고 있습니다.</p>}>
               <GlossaryExampleFigure figure={visual.figure} termId={visual.id} />
