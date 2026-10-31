@@ -1,7 +1,13 @@
 import entries from "./glossary.json";
+import {
+  getPracticeKind,
+  hasGlossaryPractice,
+  PRACTICE_LABELS,
+  type PracticeKind,
+} from "./glossary-practice";
 
 export type GlossaryLessonId = "cta" | "hamburger" | "carousel";
-export type GlossaryFilter = "all" | "interactive";
+export type GlossaryFilter = "all" | "interactive" | PracticeKind;
 
 export type GlossaryEntry = {
   id: string;
@@ -37,16 +43,28 @@ export const GLOSSARY: GlossaryEntry[] = entries
   })
   .sort((a, b) => a.english.localeCompare(b.english, "en", { sensitivity: "base" }));
 
-export const INTERACTIVE_GLOSSARY_COUNT = GLOSSARY.filter((entry) => entry.lessonId).length;
+export const INTERACTIVE_GLOSSARY_COUNT = GLOSSARY.filter(hasGlossaryPractice).length;
+
+export const PRACTICE_FILTERS: { value: GlossaryFilter; label: string; count: number }[] = [
+  { value: "all", label: "전체", count: GLOSSARY.length },
+  ...Object.entries(PRACTICE_LABELS).map(([value, label]) => ({
+    value: value as PracticeKind,
+    label,
+    count: GLOSSARY.filter((entry) => getPracticeKind(entry) === value).length,
+  })),
+];
 
 export function filterGlossary(query: string, letter: string, filter: GlossaryFilter = "all") {
   const words = query.trim().normalize("NFKC").toLocaleLowerCase().split(/\s+/).filter(Boolean);
   return GLOSSARY.filter((entry) => {
     if (letter !== "ALL" && entry.letter !== letter) return false;
-    if (filter === "interactive" && !entry.lessonId) return false;
-    const text = `${entry.english} ${entry.pronunciation} ${entry.korean} ${entry.description} ${entry.example}`
-      .normalize("NFKC")
-      .toLocaleLowerCase();
+    if (filter === "interactive" && !hasGlossaryPractice(entry)) return false;
+    if (filter !== "all" && filter !== "interactive" && getPracticeKind(entry) !== filter)
+      return false;
+    const text =
+      `${entry.english} ${entry.pronunciation} ${entry.korean} ${entry.description} ${entry.example}`
+        .normalize("NFKC")
+        .toLocaleLowerCase();
     return words.every((word) => text.includes(word));
   });
 }
