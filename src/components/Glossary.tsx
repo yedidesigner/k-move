@@ -21,6 +21,9 @@ import { VisualGlossaryLesson, VISUAL_LESSONS } from "./glossary/VisualGlossaryL
 import { getGlossaryPractice, hasGlossaryPractice } from "@/data/glossary-practice";
 import { getGlossaryLearning, LEARNING_LABELS } from "@/data/glossary-learning";
 import "./glossary.css";
+import { getGlossaryDepth } from "@/data/glossary-depth";
+import { TOPICS } from "@/data/design-sources";
+import { GlossaryDepthPanel } from "./glossary/GlossaryDepthPanel";
 
 const GlossaryLearningLesson = lazy(() =>
   import("./glossary/GlossaryLearningLesson").then((module) => ({
@@ -123,13 +126,16 @@ export function Glossary({ initialQuery = "" }: { initialQuery?: string } = {}) 
   const [query, setQuery] = useState(initialQuery);
   const [letter, setLetter] = useState("ALL");
   const [filter, setFilter] = useState<GlossaryFilter>("all");
+  const [topic, setTopic] = useState("all");
   const [page, setPage] = useState(1);
   const [resetKey, setResetKey] = useState(0);
   const [activeEntry, setActiveEntry] = useState<GlossaryEntry | null>(null);
   const lessonTriggerRef = useRef<HTMLButtonElement | null>(null);
   const resultsRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
-  const results = filterGlossary(query, letter, filter);
+  const results = filterGlossary(query, letter, filter).filter(
+    (entry) => topic === "all" || getGlossaryDepth(entry.id)?.topic === topic,
+  );
   const pageCount = Math.max(1, Math.ceil(results.length / PAGE_SIZE));
   const start = (page - 1) * PAGE_SIZE;
   const visibleEntries = results.slice(start, start + PAGE_SIZE);
@@ -151,6 +157,7 @@ export function Glossary({ initialQuery = "" }: { initialQuery?: string } = {}) 
     setQuery("");
     setLetter("ALL");
     setFilter("all");
+    setTopic("all");
     setPage(1);
     inputRef.current?.focus();
   }
@@ -174,7 +181,7 @@ export function Glossary({ initialQuery = "" }: { initialQuery?: string } = {}) 
         </div>
         <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
           카드를 뒤집어 뜻을 읽고, 시각 예시로 이해해 보세요. 조작이 도움이 되는 용어에는 실습이
-          함께 있습니다.
+          함께 있습니다. 실무 해설에서 적용 상황과 판단 기준까지 살펴보세요.
         </p>
       </header>
 
@@ -222,6 +229,25 @@ export function Glossary({ initialQuery = "" }: { initialQuery?: string } = {}) 
         >
           <RotateCcw className="size-3.5" aria-hidden /> 카드 초기화
         </button>
+      </div>
+
+      <div className="glossary-topic-select">
+        <label htmlFor="glossary-topic">학습 주제</label>
+        <select
+          id="glossary-topic"
+          value={topic}
+          onChange={(event) => {
+            setTopic(event.target.value);
+            setPage(1);
+          }}
+        >
+          <option value="all">전체 주제</option>
+          {TOPICS.map((item) => (
+            <option key={item.id} value={item.id}>
+              {item.label}
+            </option>
+          ))}
+        </select>
       </div>
 
       <div role="group" aria-label="학습 유형 필터" className="glossary-type-filters">
@@ -343,7 +369,7 @@ export function Glossary({ initialQuery = "" }: { initialQuery?: string } = {}) 
         <p>
           용어 목록 원본: Google UX Design Certificate · 비공식 한국어 참고 자료
           <br />
-          실무에서 쓰는 원어·외래어는 살리고, 설명은 한국어로 정리했습니다.
+          실무에서 쓰는 원어·외래어는 살리고, 문헌 근거와 편집 해설은 학습 화면에서 구분했습니다.
         </p>
         <a
           href="/materials"
@@ -407,7 +433,12 @@ export function Glossary({ initialQuery = "" }: { initialQuery?: string } = {}) 
               되는 용어에는 실습이 함께 제공됩니다.
             </Dialog.Description>
             {activeEntry?.lessonId && activeLearning?.mode === "practice" ? (
-              <VisualGlossaryLesson key={activeEntry.id} lessonId={activeEntry.lessonId} />
+              <>
+                <VisualGlossaryLesson key={activeEntry.id} lessonId={activeEntry.lessonId} />
+                <div className="gd-standalone">
+                  <GlossaryDepthPanel termId={activeEntry.id} />
+                </div>
+              </>
             ) : activeEntry && activeLearning ? (
               <Suspense
                 fallback={
