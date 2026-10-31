@@ -1,12 +1,13 @@
-import { useEffect, useRef, useState, type FormEvent, type ReactNode } from "react";
+import { useEffect, useRef, useState, type FormEvent } from "react";
 import { Download, ExternalLink, FileUp, Link2, Trash2 } from "lucide-react";
 import { getSupabase } from "@/lib/supabase";
 import {
-  FEEDBACK_FILE_ACCEPT,
   FEEDBACK_FILE_BUCKET,
+  FEEDBACK_IMAGE_BUCKET,
+  FEEDBACK_UPLOAD_ACCEPT,
   feedbackFileSize,
   normalizeFeedbackUrl,
-  validateFeedbackFile,
+  validateFeedbackUpload,
 } from "@/lib/feedback-attachments";
 
 export type FeedbackAttachment = {
@@ -34,7 +35,9 @@ type Props = {
   week: number;
   userId: string;
   instructor: boolean;
-  imageAction?: ReactNode;
+  onImagesUploaded?: () => void;
+  uploadDisabled?: boolean;
+  onUploadBusyChange?: (busy: boolean) => void;
 };
 const errorText = (error: unknown) =>
   error instanceof Error ? error.message : "요청을 처리하지 못했습니다.";
@@ -50,7 +53,10 @@ export function FeedbackAttachments(props: Props) {
   );
 }
 
-function AttachmentContent({ studentId, week, userId, instructor, imageAction }: Props) {
+function AttachmentContent({
+  studentId, week, userId, instructor, onImagesUploaded, uploadDisabled = false,
+  onUploadBusyChange,
+}: Props) {
   const [rows, setRows] = useState<FeedbackAttachment[]>([]);
   const [comments, setComments] = useState<Comment[]>([]);
   const [loading, setLoading] = useState(true);
@@ -59,6 +65,7 @@ function AttachmentContent({ studentId, week, userId, instructor, imageAction }:
   const [notice, setNotice] = useState("");
   const [revision, setRevision] = useState(0);
   const [busy, setBusy] = useState(false);
+  const [uploading, setUploading] = useState(false);
   const [linkOpen, setLinkOpen] = useState(false);
   const [linkTitle, setLinkTitle] = useState("");
   const [linkUrl, setLinkUrl] = useState("");
@@ -137,44 +144,64 @@ function AttachmentContent({ studentId, week, userId, instructor, imageAction }:
   }
 
   async function upload(files: FileList | null) {
-    if (!files?.length || !start()) return;
+    if (!files?.length || uploadDisabled || !start()) return;
+    setUploading(true);
+    onUploadBusyChange?.(true);
     let saved = 0;
+    let savedImages = 0;
+    let savedFiles = 0;
     try {
-      const selection = Array.from(files).map((file) => ({ file, ...validateFeedbackFile(file) }));
+      // Validate the entire mixed selection before uploading any file.
+      const selection = Array.from(files).map((file) => ({ file, ...validateFeedbackUpload(file) }));
       const db = getSupabase();
-      for (const { file, extension, mimeType } of selection) {
+      for (const { file, kind, extension, mimeType } of selection) {
         if (!alive.current) break;
         const objectPath = `${studentId}/${String(week).padStart(2, "0")}/${crypto.randomUUID()}.${extension}`;
+        const bucket = kind === "image" ? FEEDBACK_IMAGE_BUCKET : FEEDBACK_FILE_BUCKET;
         const stored = await db.storage
-          .from(FEEDBACK_FILE_BUCKET)
+          .from(bucket)
           .upload(objectPath, file, { upsert: false, contentType: mimeType });
         if (stored.error) throw stored.error;
-        const record = await db.from("kmove_feedback_attachments").insert({
-          student_id: studentId,
-          week,
-          kind: "file",
-          title: file.name,
-          object_path: objectPath,
-          mime_type: mimeType,
-          file_size: file.size,
-          created_by: userId,
-        });
+        const record = kind === "image"
+          ? await db.from("kmove_feedback_images").insert({
+              student_id: studentId,
+              week,
+              object_path: objectPath,
+              created_by: userId,
+            })
+          : await db.from("kmove_feedback_attachments").insert({
+              student_id: studentId,
+              week,
+              kind: "file",
+              title: file.name,
+              object_path: objectPath,
+              mime_type: mimeType,
+              file_size: file.size,
+              created_by: userId,
+            });
         if (record.error) {
-          const cleanup = await db.storage.from(FEEDBACK_FILE_BUCKET).remove([objectPath]);
+          const cleanup = await db.storage.from(bucket).remove([objectPath]);
           if (cleanup.error)
             throw new Error("등록에 실패했고 임시 파일 정리가 필요합니다. 강사에게 문의해 주세요.");
           throw record.error;
         }
         saved++;
+        if (kind === "image") savedImages++;
+        else savedFiles++;
       }
-      if (alive.current && saved) setNotice(`${saved}개 파일을 등록했습니다.`);
+      if (alive.current && saved) setNotice(`과제 ${saved}개를 업로드했습니다.`);
     } catch (e) {
       if (alive.current)
         setError(
-          `${saved ? `${saved}개 파일은 등록되었습니다. 나머지 ` : ""}파일 등록 실패: ${errorText(e)}`,
+          `${saved ? `과제 ${saved}개는 업로드되었습니다. 나머지 ` : ""}과제 업로드 실패: ${errorText(e)}`,
         );
     } finally {
-      if (saved) refresh();
+      if (savedFiles) refresh();
+      if (alive.current) {
+        if (savedImages) onImagesUploaded?.();
+        setUploading(false);
+        onUploadBusyChange?.(false);
+      }
       finish();
       if (fileInput.current) fileInput.current.value = "";
     }
@@ -325,28 +352,29 @@ function AttachmentContent({ studentId, week, userId, instructor, imageAction }:
         <div>
           <h4 className="text-sm font-semibold">피드백 자료</h4>
           <p className="mt-1 text-xs leading-5 text-neutral-500">
-            이미지·파일·링크를 이 주차에 함께 등록할 수 있습니다.
+            이미지·문서·압축파일을 한 번에 선택해 이 주차에 등록할 수 있습니다.
           </p>
         </div>
         <div className="flex flex-wrap gap-2">
-          {imageAction}
           <input
             ref={fileInput}
             type="file"
             multiple
-            accept={FEEDBACK_FILE_ACCEPT}
-            aria-label="첨부 파일 선택"
+            accept={FEEDBACK_UPLOAD_ACCEPT}
+            aria-label="과제 파일 선택"
+            aria-describedby="feedback-upload-formats"
+            disabled={busy || uploadDisabled}
             className="sr-only"
             onChange={(event) => void upload(event.target.files)}
           />
           <button
             type="button"
-            disabled={busy}
+            disabled={busy || uploadDisabled}
             onClick={() => fileInput.current?.click()}
-            className={actionClass}
+            className="inline-flex min-h-10 items-center justify-center gap-2 border border-black bg-black px-4 text-xs font-semibold text-white disabled:opacity-50"
           >
             <FileUp className="size-4" aria-hidden="true" />
-            파일 첨부
+            {uploading ? "업로드 중…" : "과제 업로드"}
           </button>
           <button
             type="button"
@@ -360,8 +388,8 @@ function AttachmentContent({ studentId, week, userId, instructor, imageAction }:
           </button>
         </div>
       </div>
-      <p className="text-xs leading-5 text-neutral-500">
-        이미지 최대 10MB · PDF, ZIP, 문서, 디자인 원본 최대 50MB · 대용량 파일은 Drive 링크
+      <p id="feedback-upload-formats" className="text-xs leading-5 text-neutral-500">
+        JPG · JPEG · PNG · WebP는 파일당 최대 10MB, PDF · ZIP · TXT · DOCX · PPTX · XLSX · PSD · AI · FIG는 파일당 최대 50MB입니다.
       </p>
       {linkOpen && (
         <form

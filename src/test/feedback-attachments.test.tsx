@@ -1,16 +1,26 @@
-import { cleanup, fireEvent, render, screen, waitFor } from "@testing-library/react";
+import { act, cleanup, fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { FeedbackAttachments } from "@/components/FeedbackAttachments";
+import { FeedbackWorkspace } from "@/components/FeedbackWorkspace";
 import {
+  FEEDBACK_FILE_BUCKET,
   FEEDBACK_FILE_LIMIT,
+  FEEDBACK_IMAGE_BUCKET,
+  FEEDBACK_IMAGE_LIMIT,
+  FEEDBACK_UPLOAD_ACCEPT,
   normalizeFeedbackUrl,
   validateFeedbackFile,
+  validateFeedbackUpload,
 } from "@/lib/feedback-attachments";
 
 const state = vi.hoisted(() => ({
   rows: [] as Record<string, unknown>[],
   comments: [] as Record<string, unknown>[],
+  images: [] as Record<string, unknown>[],
+  pins: [] as Record<string, unknown>[],
   inserted: [] as { table: string; data: Record<string, unknown> }[],
+  uploads: [] as { bucket: string; path: string; file: File; options: unknown }[],
+  removals: [] as { bucket: string; paths: string[] }[],
   upload: vi.fn(),
   remove: vi.fn(),
   signed: vi.fn(),
@@ -19,22 +29,47 @@ const state = vi.hoisted(() => ({
 vi.mock("@/lib/supabase", () => ({
   getSupabase: () => ({
     storage: {
-      from: () => ({ upload: state.upload, remove: state.remove, createSignedUrl: state.signed }),
+      from: (bucket: string) => ({
+        upload: (path: string, file: File, options: unknown) => {
+          state.uploads.push({ bucket, path, file, options });
+          return state.upload(path, file, options);
+        },
+        remove: (paths: string[]) => {
+          state.removals.push({ bucket, paths });
+          return state.remove(paths);
+        },
+        createSignedUrl: state.signed,
+      }),
     },
     from: (table: string) => {
       let op = "select",
         payload: Record<string, unknown> = {},
         id: string | undefined;
-      const collection = () =>
-        table === "kmove_feedback_attachments" ? state.rows : state.comments;
+      const filters: Record<string, string | number> = {};
+      let inFilter: { key: string; values: string[] } | undefined;
+      const collection = () => {
+        if (table === "kmove_feedback_attachments") return state.rows;
+        if (table === "kmove_feedback_attachment_comments") return state.comments;
+        if (table === "kmove_feedback_images") return state.images;
+        if (table === "kmove_feedback_pins") return state.pins;
+        throw new Error(`Unexpected table: ${table}`);
+      };
+      const matchingRows = () => collection().filter((row) =>
+        Object.entries(filters).every(([key, value]) => row[key] === value)
+        && (!inFilter || inFilter.values.includes(String(row[inFilter.key]))),
+      );
       const query = {
         select: () => query,
-        eq: (key: string, value: string) => {
-          if (key === "id") id = value;
+        eq: (key: string, value: string | number) => {
+          filters[key] = value;
+          if (key === "id") id = String(value);
           return query;
         },
-        in: () => query,
-        order: async () => ({ data: [...collection()], error: null }),
+        in: (key: string, values: string[]) => {
+          inFilter = { key, values };
+          return query;
+        },
+        order: async () => ({ data: [...matchingRows()], error: null }),
         insert: (data: Record<string, unknown>) => {
           op = "insert";
           payload = data;
@@ -96,7 +131,11 @@ const link = (overrides = {}) => ({
 beforeEach(() => {
   state.rows = [];
   state.comments = [];
+  state.images = [];
+  state.pins = [];
   state.inserted = [];
+  state.uploads = [];
+  state.removals = [];
   state.failInsert = false;
   state.upload.mockReset().mockResolvedValue({ data: {}, error: null });
   state.remove.mockReset().mockResolvedValue({ data: {}, error: null });
@@ -116,7 +155,38 @@ async function settle() {
   );
 }
 
+function deferred<T>() {
+  let resolve!: (value: T) => void;
+  const promise = new Promise<T>((complete) => { resolve = complete; });
+  return { promise, resolve };
+}
+
 describe("feedback submission validation", () => {
+  it.each([
+    ["draft.JPG", "image/jpeg", "jpg", "image/jpeg"],
+    ["draft.JPEG", "", "jpg", "image/jpeg"],
+    ["draft.PNG", "application/octet-stream", "png", "image/png"],
+    ["draft.webp", "image/webp", "webp", "image/webp"],
+  ])("accepts raster image %s and normalizes its storage type", (name, type, extension, mimeType) => {
+    expect(validateFeedbackUpload({ name: name!, type: type!, size: 100 })).toEqual({
+      kind: "image", extension, mimeType,
+    });
+  });
+
+  it("enforces image bounds and MIME while keeping design-source files in regular attachments", () => {
+    expect(validateFeedbackUpload({ name: "a.jpg", size: FEEDBACK_IMAGE_LIMIT, type: "image/jpeg" }).kind).toBe("image");
+    expect(() => validateFeedbackUpload({ name: "a.jpg", size: FEEDBACK_IMAGE_LIMIT + 1, type: "image/jpeg" })).toThrow("10MB");
+    expect(() => validateFeedbackUpload({ name: "a.png", size: 0, type: "image/png" })).toThrow("내용이 없는");
+    expect(() => validateFeedbackUpload({ name: "a.png", size: 10, type: "application/pdf" })).toThrow("일치하지");
+    expect(() => validateFeedbackUpload({ name: "a".repeat(240) + ".png", size: 10, type: "image/png" })).toThrow("240자");
+    expect(validateFeedbackUpload({ name: "design.PSD", size: FEEDBACK_FILE_LIMIT, type: "image/vnd.adobe.photoshop" })).toMatchObject({
+      kind: "file", extension: "psd", mimeType: "image/vnd.adobe.photoshop",
+    });
+    expect(() => validateFeedbackUpload({ name: "design.zip", size: FEEDBACK_FILE_LIMIT + 1, type: "application/zip" })).toThrow("50MB");
+    for (const name of ["a.exe", "a.html", "a.svg", "a.constructor"])
+      expect(() => validateFeedbackUpload({ name, size: 3, type: "" })).toThrow("JPG, JPEG, PNG");
+  });
+
   it.each(["pdf", "zip", "txt", "docx", "pptx", "xlsx", "psd", "ai", "fig"])(
     "accepts supported %s with unknown browser MIME",
     (extension) => {
@@ -165,6 +235,107 @@ describe("feedback submission validation", () => {
 });
 
 describe("feedback files and links", () => {
+  it("uses one picker for JPEG, PDF, and ZIP while refreshing the existing image preview", async () => {
+    render(<FeedbackWorkspace {...props} studentName="테스트 수강생" />);
+    await settle();
+    const picker = screen.getByLabelText("과제 파일 선택");
+    expect(document.querySelectorAll('input[type="file"]')).toHaveLength(1);
+    expect(picker).toHaveAttribute("accept", FEEDBACK_UPLOAD_ACCEPT);
+    expect(picker).toHaveAttribute("multiple");
+    expect(screen.getByRole("button", { name: "과제 업로드" })).toBeVisible();
+    expect(screen.queryByRole("button", { name: "이미지 업로드" })).not.toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: "파일 첨부" })).not.toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "링크 추가" })).toBeVisible();
+
+    const files = [
+      new File(["image"], "draft.JPEG", { type: "" }),
+      new File(["pdf"], "brief.pdf", { type: "application/pdf" }),
+      new File(["zip"], "source.zip", { type: "application/zip" }),
+    ];
+    fireEvent.change(picker, { target: { files } });
+    expect(await screen.findByRole("status")).toHaveTextContent("과제 3개를 업로드했습니다.");
+    expect(await screen.findByRole("img", { name: "테스트 수강생 2주차 이미지 1" })).toHaveAttribute("src", "https://example.com/signed-download");
+    expect(screen.getByText("brief.pdf")).toBeVisible();
+    expect(screen.getByText("source.zip")).toBeVisible();
+    expect(state.uploads.map((item) => item.bucket)).toEqual([
+      FEEDBACK_IMAGE_BUCKET, FEEDBACK_FILE_BUCKET, FEEDBACK_FILE_BUCKET,
+    ]);
+    expect(state.uploads[0]).toMatchObject({
+      path: expect.stringMatching(/^student-record\/02\/.+\.jpg$/),
+      file: files[0], options: { upsert: false, contentType: "image/jpeg" },
+    });
+    expect(state.inserted.map((item) => item.table)).toEqual([
+      "kmove_feedback_images", "kmove_feedback_attachments", "kmove_feedback_attachments",
+    ]);
+    for (const { data } of state.inserted) {
+      expect(data).toMatchObject({ student_id: props.studentId, week: 2, created_by: props.userId });
+    }
+    expect(state.images).toHaveLength(1);
+    expect(state.rows).toHaveLength(2);
+  });
+
+  it("validates the entire mixed selection before starting any upload", async () => {
+    render(<FeedbackAttachments {...props} />);
+    await settle();
+    fireEvent.change(screen.getByLabelText("과제 파일 선택"), { target: { files: [
+      new File(["image"], "a.png", { type: "image/png" }),
+      new File(["invalid"], "b.pdf", { type: "text/html" }),
+    ] } });
+    expect(await screen.findByRole("alert")).toHaveTextContent("형식이 일치하지 않습니다");
+    expect(state.upload).not.toHaveBeenCalled();
+    expect(state.inserted).toHaveLength(0);
+    expect(screen.getByRole("button", { name: "과제 업로드" })).toBeEnabled();
+  });
+
+  it("blocks duplicate uploads and respects a busy image-feedback operation", async () => {
+    const pending = deferred<{ error: null }>();
+    state.upload.mockReturnValueOnce(pending.promise);
+    const onUploadBusyChange = vi.fn();
+    const view = render(<FeedbackAttachments {...props} onUploadBusyChange={onUploadBusyChange} />);
+    await settle();
+    const picker = screen.getByLabelText("과제 파일 선택");
+    const files = [new File(["zip"], "a.zip", { type: "application/zip" })];
+    fireEvent.change(picker, { target: { files } });
+    fireEvent.change(picker, { target: { files } });
+    expect(state.upload).toHaveBeenCalledTimes(1);
+    expect(picker).toBeDisabled();
+    expect(screen.getByRole("button", { name: "업로드 중…" })).toBeDisabled();
+    expect(onUploadBusyChange).toHaveBeenCalledWith(true);
+    await act(async () => pending.resolve({ error: null }));
+    await screen.findByText("a.zip");
+    expect(screen.getByRole("button", { name: "과제 업로드" })).toBeEnabled();
+    expect(onUploadBusyChange.mock.calls.map((call) => call[0])).toEqual([true, false]);
+
+    view.rerender(<FeedbackAttachments {...props} uploadDisabled />);
+    expect(screen.getByLabelText("과제 파일 선택")).toBeDisabled();
+    fireEvent.change(screen.getByLabelText("과제 파일 선택"), { target: { files } });
+    expect(state.upload).toHaveBeenCalledTimes(1);
+  });
+
+  it("stops queued files when the account or week changes during an upload", async () => {
+    const pending = deferred<{ error: null }>();
+    state.upload.mockReturnValueOnce(pending.promise);
+    const oldImagesUploaded = vi.fn();
+    const newImagesUploaded = vi.fn();
+    const view = render(<FeedbackAttachments {...props} onImagesUploaded={oldImagesUploaded} />);
+    await settle();
+    fireEvent.change(screen.getByLabelText("과제 파일 선택"), { target: { files: [
+      new File(["image"], "old.png", { type: "image/png" }),
+      new File(["pdf"], "queued.pdf", { type: "application/pdf" }),
+    ] } });
+    expect(state.upload).toHaveBeenCalledTimes(1);
+    view.rerender(<FeedbackAttachments {...props} studentId="other-student" userId="other-user" week={3} onImagesUploaded={newImagesUploaded} />);
+    await settle();
+    await act(async () => pending.resolve({ error: null }));
+    expect(state.upload).toHaveBeenCalledTimes(1);
+    expect(state.inserted.every((item) => item.data["student_id"] === props.studentId && item.data["created_by"] === props.userId)).toBe(true);
+    expect(oldImagesUploaded).not.toHaveBeenCalled();
+    expect(newImagesUploaded).not.toHaveBeenCalled();
+    expect(screen.queryByRole("status")).not.toBeInTheDocument();
+    expect(screen.queryByText("queued.pdf")).not.toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "과제 업로드" })).toBeEnabled();
+  });
+
   it("saves a link under the current student/week and opens it safely", async () => {
     render(<FeedbackAttachments {...props} />);
     await settle();
@@ -197,7 +368,7 @@ describe("feedback files and links", () => {
     render(<FeedbackAttachments {...props} />);
     await settle();
     const file = new File(["fake zip for test"], "portfolio.zip", { type: "application/zip" });
-    fireEvent.change(screen.getByLabelText("첨부 파일 선택"), { target: { files: [file] } });
+    fireEvent.change(screen.getByLabelText("과제 파일 선택"), { target: { files: [file] } });
     await screen.findByText("portfolio.zip");
     expect(state.upload).toHaveBeenCalledWith(
       expect.stringMatching(/^student-record\/02\/.+\.zip$/),
@@ -237,30 +408,42 @@ describe("feedback files and links", () => {
     });
   });
 
-  it("cleans uploaded objects when the database rejects their record", async () => {
+  it.each([
+    ["a.zip", "application/zip", FEEDBACK_FILE_BUCKET],
+    ["a.png", "image/png", FEEDBACK_IMAGE_BUCKET],
+  ])("cleans %s from its correct bucket when the database rejects the record", async (name, type, bucket) => {
     state.failInsert = true;
-    render(<FeedbackAttachments {...props} />);
+    const onImagesUploaded = vi.fn();
+    render(<FeedbackAttachments {...props} onImagesUploaded={onImagesUploaded} />);
     await settle();
-    fireEvent.change(screen.getByLabelText("첨부 파일 선택"), {
-      target: { files: [new File(["zip"], "a.zip", { type: "application/zip" })] },
+    fireEvent.change(screen.getByLabelText("과제 파일 선택"), {
+      target: { files: [new File(["test"], name!, { type: type! })] },
     });
-    expect(await screen.findByRole("alert")).toHaveTextContent("파일 등록 실패");
-    expect(state.remove).toHaveBeenCalledWith([expect.stringMatching(/\.zip$/)]);
+    expect(await screen.findByRole("alert")).toHaveTextContent("과제 업로드 실패");
+    expect(state.removals).toEqual([{ bucket, paths: [state.uploads[0]!.path] }]);
+    expect(onImagesUploaded).not.toHaveBeenCalled();
+    expect(state.images).toHaveLength(0);
     expect(state.rows).toHaveLength(0);
   });
 
-  it("shows successful files even if a later upload fails", async () => {
+  it("refreshes both the image preview and files after a partially successful mixed upload", async () => {
     state.upload
       .mockResolvedValueOnce({ error: null })
+      .mockResolvedValueOnce({ error: null })
       .mockResolvedValueOnce({ error: new Error("offline") });
-    render(<FeedbackAttachments {...props} />);
+    render(<FeedbackWorkspace {...props} studentName="테스트 수강생" />);
     await settle();
-    fireEvent.change(screen.getByLabelText("첨부 파일 선택"), {
-      target: { files: [new File(["a"], "a.zip"), new File(["b"], "b.zip")] },
+    fireEvent.change(screen.getByLabelText("과제 파일 선택"), {
+      target: { files: [
+        new File(["image"], "a.webp", { type: "image/webp" }),
+        new File(["pdf"], "b.pdf", { type: "application/pdf" }),
+        new File(["zip"], "c.zip", { type: "application/zip" }),
+      ] },
     });
-    expect(await screen.findByRole("alert")).toHaveTextContent("1개 파일은 등록되었습니다");
-    await screen.findByText("a.zip");
-    expect(screen.queryByText("b.zip")).not.toBeInTheDocument();
+    expect(await screen.findByRole("alert")).toHaveTextContent("과제 2개는 업로드되었습니다");
+    expect(await screen.findByRole("img", { name: "테스트 수강생 2주차 이미지 1" })).toBeVisible();
+    expect(await screen.findByText("b.pdf")).toBeVisible();
+    expect(screen.queryByText("c.zip")).not.toBeInTheDocument();
   });
 
   it("limits deletion to the creator for students and hides unsafe legacy links", async () => {

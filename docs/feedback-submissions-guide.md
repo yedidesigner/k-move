@@ -4,9 +4,11 @@ The default feedback tab follows the most recent scheduled class date in `src/da
 
 ## Submission types
 
+Use **과제 업로드** to select images and other files together in a single multiple-file picker. The separate image-upload and file-attachment buttons have been replaced by this one action; **링크 추가** remains alongside it. Every selected file is validated before the first upload starts. Images automatically appear in the image preview/pin area; other files appear as downloadable submissions. Successfully saved items are refreshed even when a later upload fails.
+
 | Type | Accepted formats | Limit | Feedback |
 | --- | --- | --- | --- |
-| Image | JPG, PNG, WebP | 10 MB per image | Existing image preview and position pins |
+| Image | JPG, JPEG, PNG, WebP | 10 MB per image | Existing image preview and position pins |
 | File | PDF, ZIP, TXT, DOCX, PPTX, XLSX, PSD, AI, FIG | 50 MB per file | Download and per-file instructor comments |
 | Link | HTTP/HTTPS web links, including Figma and Drive | 2,048 URL characters | Open original service and per-link instructor comments |
 

@@ -1,9 +1,9 @@
-import { useEffect, useRef, useState, type MouseEvent } from "react";
+import { useEffect, useState, type MouseEvent } from "react";
 import { ImagePlus, Trash2 } from "lucide-react";
 import { getSupabase } from "@/lib/supabase";
 import { FeedbackAttachments } from "@/components/FeedbackAttachments";
+import { FEEDBACK_IMAGE_BUCKET as BUCKET } from "@/lib/feedback-attachments";
 
-const BUCKET = "kmove-feedback-screenshots";
 type ImageRow = { id:string; student_id:string; week:number; object_path:string; created_by:string; created_at:string };
 type Pin = { id:string; image_id:string; x:number; y:number; content:string; created_at:string };
 type Draft = { imageId:string; x:number; y:number } | null;
@@ -26,16 +26,14 @@ function FeedbackWorkspaceContent({studentId,studentName,week,userId,instructor}
   const [revision,setRevision] = useState(0);
   const [loading,setLoading] = useState(true);
   const [busy,setBusy] = useState(false);
+  const [uploading,setUploading] = useState(false);
   const [error,setError] = useState("");
-  const fileInput = useRef<HTMLInputElement>(null);
-  const alive = useRef(true);
-  const uploadBusy = useRef(false);
-  useEffect(() => { alive.current = true; return () => { alive.current = false; }; }, []);
+  const isBusy = busy || uploading;
   const reload = () => setRevision(n => n+1);
 
   useEffect(() => {
     let active = true;
-    setLoading(true); setDraft(null); setNote("");
+    setLoading(true); setDraft(null); setNote(""); setError("");
     setImages([]); setPins([]); setUrls({});
     (async () => {
       try {
@@ -66,43 +64,8 @@ function FeedbackWorkspaceContent({studentId,studentName,week,userId,instructor}
     return () => { active=false; };
   },[studentId,week,revision]);
 
-  async function upload(files:FileList|null) {
-    if(!files?.length || busy || uploadBusy.current) return;
-    uploadBusy.current=true;
-    setBusy(true); setError("");
-    let saved=0;
-    try {
-      const db=getSupabase();
-      const selected=Array.from(files);
-      for(const file of selected) {
-        if(!["image/png","image/jpeg","image/webp"].includes(file.type)) throw new Error("JPG, PNG, WebP 파일만 가능합니다.");
-        if(file.size>10*1024*1024) throw new Error("이미지당 최대 크기는 10MB입니다.");
-      }
-      for(const file of selected) {
-        if(!alive.current) break;
-        const ext=file.type==="image/png"?"png":file.type==="image/webp"?"webp":"jpg";
-        const path=[studentId,String(week).padStart(2,"0"),crypto.randomUUID()+"."+ext].join("/");
-        const stored=await db.storage.from(BUCKET).upload(path,file,{upsert:false,contentType:file.type});
-        if(stored.error) throw stored.error;
-        const inserted=await db.from("kmove_feedback_images").insert({
-          student_id:studentId,week,object_path:path,created_by:userId
-        });
-        if(inserted.error) {
-          await db.storage.from(BUCKET).remove([path]);
-          throw inserted.error;
-        }
-        saved++;
-      }
-    } catch(e) {if(alive.current) setError((saved?`${saved}개 이미지는 등록되었습니다. `:"")+"업로드 실패: "+errText(e));}
-    finally {
-      uploadBusy.current=false;
-      if(alive.current) {if(saved) reload();setBusy(false);}
-      if(fileInput.current) fileInput.current.value="";
-    }
-  }
-
   function place(e:MouseEvent<HTMLImageElement>,imageId:string) {
-    if(!instructor || busy) return;
+    if(!instructor || isBusy) return;
     const rect=e.currentTarget.getBoundingClientRect();
     const x=Math.max(0,Math.min(100,(e.clientX-rect.left)/rect.width*100));
     const y=Math.max(0,Math.min(100,(e.clientY-rect.top)/rect.height*100));
@@ -110,7 +73,7 @@ function FeedbackWorkspaceContent({studentId,studentName,week,userId,instructor}
   }
 
   async function insertPin() {
-    if(!instructor || !draft || !note.trim() || busy) return;
+    if(!instructor || !draft || !note.trim() || isBusy) return;
     setBusy(true);setError("");
     try {
       const result=await getSupabase().from("kmove_feedback_pins").insert({
@@ -124,7 +87,7 @@ function FeedbackWorkspaceContent({studentId,studentName,week,userId,instructor}
   }
 
   async function saveEdit(id:string) {
-    if(!instructor || !editingText.trim() || busy) return;
+    if(!instructor || !editingText.trim() || isBusy) return;
     setBusy(true);setError("");
     try {
       const result=await getSupabase().from("kmove_feedback_pins")
@@ -136,7 +99,7 @@ function FeedbackWorkspaceContent({studentId,studentName,week,userId,instructor}
   }
 
   async function removePin(id:string) {
-    if(!instructor || busy || !window.confirm("피드백을 삭제할까요?")) return;
+    if(!instructor || isBusy || !window.confirm("피드백을 삭제할까요?")) return;
     setBusy(true);setError("");
     try {
       const result=await getSupabase().from("kmove_feedback_pins").delete().eq("id",id);
@@ -147,7 +110,7 @@ function FeedbackWorkspaceContent({studentId,studentName,week,userId,instructor}
   }
 
   async function removeImage(image:ImageRow) {
-    if((!instructor && image.created_by!==userId) || busy) return;
+    if((!instructor && image.created_by!==userId) || isBusy) return;
     if(!window.confirm("이 이미지를 삭제하면 연결된 피드백도 함께 삭제됩니다. 삭제할까요?")) return;
     setBusy(true);setError("");
     try {
@@ -176,14 +139,7 @@ function FeedbackWorkspaceContent({studentId,studentName,week,userId,instructor}
   return (
     <div className="space-y-8 pb-14">
       <FeedbackAttachments studentId={studentId} week={week} userId={userId} instructor={instructor}
-        imageAction={<>
-          <input ref={fileInput} type="file" multiple accept="image/jpeg,image/png,image/webp"
-            aria-label="이미지 파일 선택" className="sr-only" onChange={e=>void upload(e.target.files)} />
-          <button type="button" disabled={busy} onClick={()=>fileInput.current?.click()}
-            className="flex min-h-10 items-center gap-2 bg-black px-4 text-xs font-semibold text-white disabled:opacity-50">
-            <ImagePlus className="size-4" aria-hidden="true" /> {busy?"처리 중…":"이미지 업로드"}
-          </button>
-        </>}
+        onImagesUploaded={reload} uploadDisabled={busy} onUploadBusyChange={setUploading}
       />
       <div>
         <h4 className="text-sm font-semibold">이미지 피드백</h4>
@@ -195,7 +151,7 @@ function FeedbackWorkspaceContent({studentId,studentName,week,userId,instructor}
         <div className="flex min-h-24 flex-col items-center justify-center border border-dashed border-neutral-300 py-5">
           <ImagePlus className="mb-2 size-5 text-neutral-400" aria-hidden="true"/>
           <p className="text-sm text-neutral-500">업로드한 이미지가 없습니다.</p>
-          <p className="mt-1 text-xs text-neutral-400">JPG · PNG · WebP / 최대 10MB</p>
+          <p className="mt-1 text-xs text-neutral-400">위의 ‘과제 업로드’에서 이미지를 선택해 주세요.</p>
         </div>
       )}
       {images.map((image,index)=>{
@@ -206,7 +162,7 @@ function FeedbackWorkspaceContent({studentId,studentName,week,userId,instructor}
             <div className="mb-4 flex items-center justify-start gap-3">
               <h4 className="shrink-0 text-xs font-bold tracking-widest">IMAGE {String(index+1).padStart(2,"0")}</h4>
               {(instructor || image.created_by===userId) && (
-                <button type="button" disabled={busy} onClick={()=>void removeImage(image)}
+                <button type="button" disabled={isBusy} onClick={()=>void removeImage(image)}
                   aria-label={studentName+" "+week+"주차 "+(index+1)+"번째 이미지 삭제"}
                   className="flex min-h-10 items-center gap-1 text-xs text-neutral-500 hover:text-red-700 disabled:opacity-50">
                   <Trash2 className="size-3.5" aria-hidden="true"/> 이미지 삭제
@@ -248,7 +204,7 @@ function FeedbackWorkspaceContent({studentId,studentName,week,userId,instructor}
                           aria-label="피드백 수정" onChange={e=>setEditingText(e.target.value)}
                           className="w-full border border-neutral-400 p-2 text-sm"/>
                         <div className="flex gap-3 text-xs">
-                          <button type="button" disabled={busy||!editingText.trim()} onClick={()=>void saveEdit(pin.id)}>저장</button>
+                          <button type="button" disabled={isBusy||!editingText.trim()} onClick={()=>void saveEdit(pin.id)}>저장</button>
                           <button type="button" onClick={()=>setEditing(null)}>취소</button>
                         </div>
                       </div>
@@ -262,7 +218,7 @@ function FeedbackWorkspaceContent({studentId,studentName,week,userId,instructor}
                       aria-label="새 피드백" placeholder="수정할 부분과 개선 방향을 작성하세요."
                       className="w-full border border-neutral-300 p-2 text-sm"/>
                     <div className="flex gap-2 text-xs">
-                      <button type="button" disabled={busy||!note.trim()} onClick={()=>void insertPin()}
+                      <button type="button" disabled={isBusy||!note.trim()} onClick={()=>void insertPin()}
                         className="min-h-9 bg-black px-3 text-white disabled:opacity-40">저장</button>
                       <button type="button" onClick={()=>setDraft(null)} className="min-h-9 border px-3">취소</button>
                     </div>
