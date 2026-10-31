@@ -3,7 +3,6 @@ import type { ReactNode } from "react";
 import {
   Home,
   CalendarDays,
-  FolderOpen,
   BookOpen,
   ClipboardList,
   Briefcase,
@@ -19,7 +18,6 @@ import { useAuth } from "@/lib/auth";
 const NAV = [
   { to: "/", label: "홈", icon: Home },
   { to: "/sessions", label: "전체 수업", icon: CalendarDays },
-  { to: "/materials", label: "학습자료", icon: FolderOpen },
   { to: "/glossary", label: "용어집", icon: BookOpen },
   { to: "/assignments", label: "과제", icon: ClipboardList },
   { to: "/portfolio", label: "내 포트폴리오", icon: Briefcase },
@@ -27,7 +25,7 @@ const NAV = [
   { to: "/tools", label: "실습 도구", icon: Wrench },
 ] as const;
 
-const MOBILE = ["/", "/sessions", "/materials", "/assignments", "/portfolio"];
+const MOBILE = ["/", "/sessions", "/glossary", "/assignments", "/portfolio"];
 
 export function AppShell({ children }: { children: ReactNode }) {
   const { status, user, signOut } = useAuth();
@@ -95,12 +93,6 @@ export function AppShell({ children }: { children: ReactNode }) {
         <p className="text-sm font-bold leading-snug text-foreground break-keep">{SITE_NAME}</p>
         <p className="text-xs text-muted-foreground break-keep">{COURSE_NAME}</p>
         <div className="mt-2 flex flex-wrap gap-2">
-          <Link
-            to="/glossary"
-            className="inline-flex min-h-11 items-center gap-1.5 border border-border px-3 py-2 text-xs transition-colors hover:bg-muted data-[status=active]:bg-primary data-[status=active]:text-primary-foreground"
-          >
-            <BookOpen className="size-3.5" aria-hidden /> 용어집
-          </Link>
           <Link
             to="/tools"
             className="border border-border px-3 py-2 text-xs transition-colors hover:bg-muted"

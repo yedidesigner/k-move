@@ -7,7 +7,6 @@ export type TopicId =
   | "accessibility"
   | "strategy"
   | "career";
-export type StudyLevel = "foundation" | "applied" | "advanced";
 export type SourceCitation = {
   sourceId: string;
   pdfPages: number[];
@@ -24,7 +23,7 @@ export type DesignSource = {
   limitations: string;
 };
 export const TOPICS: { id: TopicId; label: string }[] = [
-  { id: "foundations", label: "UX·UI 기초" },
+  { id: "foundations", label: "UX·UI 개념" },
   { id: "research", label: "리서치·사용자 이해" },
   { id: "visual", label: "비주얼·타이포그래피" },
   { id: "interaction", label: "인터랙션·정보 구조" },
@@ -32,11 +31,6 @@ export const TOPICS: { id: TopicId; label: string }[] = [
   { id: "accessibility", label: "접근성·포용적 디자인" },
   { id: "strategy", label: "제품 전략·AI 워크플로" },
   { id: "career", label: "협업·포트폴리오" },
-];
-export const LEVELS: { id: StudyLevel; label: string }[] = [
-  { id: "foundation", label: "기초 이해" },
-  { id: "applied", label: "실무 적용" },
-  { id: "advanced", label: "심화 판단" },
 ];
 export const DESIGN_SOURCES: DesignSource[] = [
   {

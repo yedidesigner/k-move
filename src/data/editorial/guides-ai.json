@@ -2,7 +2,6 @@
   {
     "id": "ai-design-workflow",
     "topic": "strategy",
-    "level": "applied",
     "category": "AI · 설계 워크플로",
     "title": "AI 초안을 검토 가능한 결과로 바꾸기",
     "summary": "요청의 범위·완료 기준·수정 이력을 정해 생성 결과를 자신의 설계로 만듭니다.",
@@ -79,13 +78,21 @@
     "sourceRefs": [
       {
         "sourceId": "vibe-playbook",
-        "pdfPages": [13, 19, 20, 27],
+        "pdfPages": [
+          13,
+          19,
+          20,
+          27
+        ],
         "section": "Set Up Version Control; Using AI as a First Drafter; Review Checkpoints",
         "relation": "application"
       },
       {
         "sourceId": "vibe-revolution",
-        "pdfPages": [34, 35],
+        "pdfPages": [
+          34,
+          35
+        ],
         "section": "Your First Conversation with Replit Agent; Iterating and Improving",
         "relation": "application"
       }
@@ -94,7 +101,6 @@
   {
     "id": "ai-prototype-validation",
     "topic": "strategy",
-    "level": "advanced",
     "category": "AI · 검증과 출시 판단",
     "title": "AI 프로토타입의 검증 범위 설계하기",
     "summary": "보기 좋은 화면과 작동하는 기능, 검증된 서비스 사이의 차이를 확인합니다.",
@@ -171,13 +177,22 @@
     "sourceRefs": [
       {
         "sourceId": "vibe-playbook",
-        "pdfPages": [49, 50, 52, 57, 58],
+        "pdfPages": [
+          49,
+          50,
+          52,
+          57,
+          58
+        ],
         "section": "Security Concerns; Handling Edge Cases; Testing and Validating Code",
         "relation": "application"
       },
       {
         "sourceId": "vibe-revolution",
-        "pdfPages": [34, 35],
+        "pdfPages": [
+          34,
+          35
+        ],
         "section": "Review and Iterate",
         "relation": "context"
       }
@@ -186,7 +201,6 @@
   {
     "id": "design-critique",
     "topic": "career",
-    "level": "advanced",
     "category": "협업 · 디자인 크리틱",
     "title": "취향을 넘어 근거로 디자인 크리틱하기",
     "summary": "관찰·해석·제안을 구분하고, 과업과 제약에 맞춰 대안을 논의합니다.",
@@ -263,13 +277,22 @@
     "sourceRefs": [
       {
         "sourceId": "ux-practices",
-        "pdfPages": [6, 13, 20],
+        "pdfPages": [
+          6,
+          13,
+          20
+        ],
         "section": "Connect the Goals; Share Knowledge Early; Listen to Actions",
         "relation": "context"
       },
       {
         "sourceId": "design-systems",
-        "pdfPages": [29, 30, 108, 109],
+        "pdfPages": [
+          29,
+          30,
+          108,
+          109
+        ],
         "section": "Shared Language",
         "relation": "application"
       }
@@ -278,7 +301,6 @@
   {
     "id": "design-handoff",
     "topic": "career",
-    "level": "applied",
     "category": "협업 · 핸드오프",
     "title": "화면을 넘어 동작과 판단을 핸드오프하기",
     "summary": "개발자가 추측해야 하는 상태·규칙·예외를 명세와 예시로 연결합니다.",
@@ -356,13 +378,27 @@
     "sourceRefs": [
       {
         "sourceId": "design-systems",
-        "pdfPages": [29, 30, 110, 111, 257, 258, 259, 260, 276, 277],
+        "pdfPages": [
+          29,
+          30,
+          110,
+          111,
+          257,
+          258,
+          259,
+          260,
+          276,
+          277
+        ],
         "section": "Shared Language; Naming Patterns; Pattern Documentation; People and Responsibilities",
         "relation": "application"
       },
       {
         "sourceId": "ux-practices",
-        "pdfPages": [13, 30],
+        "pdfPages": [
+          13,
+          30
+        ],
         "section": "Share Knowledge Early; Document Your UI Patterns",
         "relation": "context"
       }

@@ -1,5 +1,5 @@
 import { renderToStaticMarkup } from "react-dom/server";
-import { cleanup, render, screen, within } from "@testing-library/react";
+import { cleanup, fireEvent, render, screen, within } from "@testing-library/react";
 import { afterEach, describe, expect, it } from "vitest";
 import { GLOSSARY } from "@/data/glossary";
 import { getGlossaryLearning } from "@/data/glossary-learning";
@@ -48,16 +48,23 @@ describe("Contextual visual glossary examples", () => {
     expect(specializedFrames).toEqual(["curb-cut", "domain"]);
   });
 
-  it("shows the realistic example first while keeping the original structure available to expand", () => {
+  it("shows the essential structure before the realistic example and lets the learner collapse it", () => {
     const term = GLOSSARY.find((entry) => entry.id === "proximity")!;
     const { container } = render(
       <GlossaryExampleFigure termId={term.id} figure={getGlossaryLearning(term.id)!.figure} />,
     );
     const figure = screen.getByRole("figure", { name: `${term.korean} 예시` });
     const structure = container.querySelector("details.cx-key-structure")!;
-    expect(structure).not.toHaveAttribute("open");
+    expect(structure).toHaveAttribute("open");
     expect(within(figure).getByText("핵심 구조 살펴보기")).toBeVisible();
-    expect(container.querySelector('[data-contextual-term="proximity"]')).toBeVisible();
+    const contextual = container.querySelector('[data-contextual-term="proximity"]')!;
+    expect(contextual).toBeVisible();
+    expect(
+      structure.compareDocumentPosition(contextual) & Node.DOCUMENT_POSITION_FOLLOWING,
+    ).toBeTruthy();
+    fireEvent.click(within(figure).getByText("핵심 구조 살펴보기"));
+    expect(structure).not.toHaveAttribute("open");
+    expect(contextual).toBeVisible();
     expect(within(figure).getByText("학습용 가상 예시 · 정적 화면")).toBeVisible();
     expect(within(figure).queryByRole("button")).not.toBeInTheDocument();
   });

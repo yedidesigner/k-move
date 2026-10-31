@@ -358,3 +358,32 @@
     transition: none;
   }
 }
+
+.glossary-editorial-footer {
+  margin-top: 2rem;
+  color: #666;
+  font-size: 11px;
+  line-height: 1.8;
+}
+.glossary-editorial-footer summary {
+  cursor: pointer;
+  min-height: 44px;
+  padding: 0.75rem 0;
+}
+.glossary-editorial-footer p {
+  max-width: 72ch;
+  margin: 0 0 0.75rem;
+}
+.glossary-editorial-footer a {
+  display: inline-block;
+  min-height: 44px;
+  padding: 0.75rem 0;
+  color: inherit;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+.glossary-editorial-footer summary:focus-visible,
+.glossary-editorial-footer a:focus-visible {
+  outline: 2px solid #171717;
+  outline-offset: 3px;
+}

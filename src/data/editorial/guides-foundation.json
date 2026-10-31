@@ -2,8 +2,7 @@
   {
     "id": "ux-ui-foundations",
     "topic": "foundations",
-    "level": "foundation",
-    "category": "UX·UI 기초",
+    "category": "UX·UI 개념",
     "title": "UX와 UI: 화면에서 사용자의 목표까지",
     "summary": "화면의 생김새, 조작, 서비스의 흐름을 연결하고 검증하려는 질문에 맞는 설계물을 선택합니다.",
     "intro": "예쁜 제출 버튼을 만들었는데도 학생이 과제를 제대로 제출했는지 불안해한다면 무엇을 바꿔야 할까요? UI에는 버튼과 글자뿐 아니라 조작 가능한 상태와 피드백이 포함되고, UX는 그 화면을 포함한 전체 이용 경험을 다룹니다. 이 가이드는 가상의 학습 서비스에서 과제를 제출하는 상황을 통해 두 영역을 연결합니다. 사례의 관찰과 결과는 실제 K-Move 이용자 데이터가 아닌 학습용 설정입니다.",
@@ -70,19 +69,31 @@
     "sourceRefs": [
       {
         "sourceId": "intro-ux",
-        "pdfPages": [2, 3, 4],
+        "pdfPages": [
+          2,
+          3,
+          4
+        ],
         "section": "Introduction to UX; Introduction to UI; UI와 UX의 관계",
         "relation": "concept"
       },
       {
         "sourceId": "intro-ux",
-        "pdfPages": [14, 15, 22, 23],
+        "pdfPages": [
+          14,
+          15,
+          22,
+          23
+        ],
         "section": "UX 디자인 업무의 흐름과 와이어프레임·목업·프로토타입 용어",
         "relation": "concept"
       },
       {
         "sourceId": "ux-practices",
-        "pdfPages": [6, 18],
+        "pdfPages": [
+          6,
+          18
+        ],
         "section": "Connect the goals; Use paper prototypes",
         "relation": "application"
       }
@@ -91,8 +102,7 @@
   {
     "id": "ux-research",
     "topic": "research",
-    "level": "foundation",
-    "category": "리서치 기초",
+    "category": "리서치 설계",
     "title": "UX 리서치: 질문에 맞는 증거 수집하기",
     "summary": "인터뷰와 사용성 테스트의 역할을 구분하고, 다음 디자인 결정을 바꿀 수 있는 조사 계획을 만듭니다.",
     "intro": "‘예약 버튼을 더 크게 해 달라’는 요청만으로 버튼 크기를 바꾸기 전에, 사용자가 무엇을 하려다 어디에서 멈췄는지 확인해야 합니다. 리서치는 이미 정한 디자인을 지지할 문장을 모으는 활동이 아니라 불확실한 결정을 좁히는 과정입니다. 이 가이드는 가상의 공방 예약 서비스를 사례로 질문, 참여자, 방법, 관찰, 의사결정의 연결을 연습합니다.",
@@ -161,13 +171,22 @@
     "sourceRefs": [
       {
         "sourceId": "ux-practices",
-        "pdfPages": [10, 16, 20],
+        "pdfPages": [
+          10,
+          16,
+          20
+        ],
         "section": "Look beyond feature requests; Build personas; Listen to actions",
         "relation": "concept"
       },
       {
         "sourceId": "intro-ux",
-        "pdfPages": [28, 33, 34, 35],
+        "pdfPages": [
+          28,
+          33,
+          34,
+          35
+        ],
         "section": "Field Research; Usability Testing; 사용자 의견과 프로토타입 수정",
         "relation": "concept"
       }
@@ -176,8 +195,7 @@
   {
     "id": "visual-foundations",
     "topic": "visual",
-    "level": "foundation",
-    "category": "시각 디자인 기초",
+    "category": "시각 디자인",
     "title": "시각적 위계: 정보의 관계를 보이게 만들기",
     "summary": "그리드·여백·타이포그래피·색의 역할을 연결해 사용자가 비교하고 판단할 수 있는 화면을 설계합니다.",
     "intro": "좋은 정렬만으로 정보의 우선순위가 결정되지는 않습니다. 같은 예약 카드라도 목적에 따라 장소 사진보다 날짜와 가격이 먼저 보여야 할 수 있습니다. 이 가이드는 가상의 주말 공방 목록을 이용해 무엇을 강조하고 무엇을 묶을지 판단합니다. 여백이나 컬럼 수의 고정 공식을 외우기보다, 화면이 전달해야 하는 관계를 읽고 실제 내용으로 확인하는 데 초점을 둡니다.",
@@ -245,25 +263,40 @@
     "sourceRefs": [
       {
         "sourceId": "ui-fundamentals",
-        "pdfPages": [35, 36, 37, 38],
+        "pdfPages": [
+          35,
+          36,
+          37,
+          38
+        ],
         "section": "Grid and Layout: Columns, Rows, Gutters, Margins, Fluid Grid",
         "relation": "concept"
       },
       {
         "sourceId": "ui-fundamentals",
-        "pdfPages": [58, 59, 63],
+        "pdfPages": [
+          58,
+          59,
+          63
+        ],
         "section": "색의 역할과 변형; Contrast",
         "relation": "application"
       },
       {
         "sourceId": "laws-ux",
-        "pdfPages": [58, 61, 64],
+        "pdfPages": [
+          58,
+          61,
+          64
+        ],
         "section": "Miller’s Law: 정보 묶기·위계·여백과 숫자 7의 오용 경고",
         "relation": "concept"
       },
       {
         "sourceId": "web-terms",
-        "pdfPages": [34],
+        "pdfPages": [
+          34
+        ],
         "section": "색상 체계: Primary, Secondary, Accent, Neutral, Semantic",
         "relation": "context"
       }
@@ -272,11 +305,10 @@
   {
     "id": "portfolio-case-study",
     "topic": "career",
-    "level": "applied",
     "category": "포트폴리오·케이스 스터디",
     "title": "케이스 스터디: 결과물보다 판단의 근거 보여주기",
     "summary": "문제·근거·대안·결정·한계를 연결해 읽는 사람이 자신의 판단을 따라갈 수 있는 프로젝트 기록을 만듭니다.",
-    "intro": "케이스 스터디는 만든 화면을 시간순으로 나열한 문서와 다릅니다. 특정 상황에서 왜 그 문제를 다루었고, 어떤 근거로 대안을 선택했으며, 결과를 어디까지 확인했는지 설명하는 하나의 사례입니다. 다음 구성은 제공 자료의 목표 정렬·협업·스토리텔링 원칙을 포트폴리오에 적용한 편집 제안이며, 원문에 정해진 포트폴리오 공식이 있다는 뜻은 아닙니다.",
+    "intro": "케이스 스터디는 만든 화면을 시간순으로 나열한 문서와 다릅니다. 특정 상황에서 왜 그 문제를 다루었고, 어떤 근거로 대안을 선택했으며, 결과를 어디까지 확인했는지 설명하는 하나의 사례입니다. 독자가 본인의 역할과 판단을 따라갈 수 있도록 목표, 근거, 대안과 결과를 연결하세요. 프로젝트마다 필요한 설명은 다르므로 정해진 형식을 채우기보다 중요한 결정을 보여 줄 구성과 증거를 선택합니다.",
     "objectives": [
       "프로젝트의 문제·역할·제약을 독자가 판단할 수 있게 제시한다.",
       "관찰 근거에서 디자인 결정으로 이어지는 설명을 구성한다.",
@@ -306,7 +338,7 @@
       }
     ],
     "decision": {
-      "context": "학습용 예시: 학생 포트폴리오에 과제 제출 화면을 개선한 개인 프로젝트가 있습니다. 실제 운영 데이터나 사용자 테스트는 없고, 두 상태를 구분하는 프로토타입과 동료 리뷰만 진행한 설정입니다.",
+      "context": "학습용 예시: 디자이너의 포트폴리오에 과제 제출 화면을 개선한 개인 프로젝트가 있습니다. 실제 운영 데이터나 사용자 테스트는 없고, 두 상태를 구분하는 프로토타입과 동료 리뷰만 진행한 설정입니다.",
       "choice": "결과 제목을 ‘제출률 개선’ 대신 ‘첨부와 제출을 구분하는 설계 제안’으로 씁니다. 상태가 섞이는 장면, 자동 제출과 명시적 제출의 비교, 선택한 상태 설계를 제시하고 동료 리뷰 범위를 별도로 표시합니다.",
       "why": "증거 수준을 정확히 쓰면 검증하지 않은 효과를 성과로 오해하게 만들지 않으면서도 문제를 정의하고 대안을 비교한 기여를 전달할 수 있습니다.",
       "alternatives": "과정 전체를 시간순으로 넣으면 빠짐없이 보여 줄 수 있지만 핵심 결정이 묻힐 수 있습니다. 반대로 최종 화면만 강조하면 매력은 전달되더라도 문제 이해와 설계 판단을 평가하기 어렵습니다.",
@@ -342,13 +374,20 @@
     "sourceRefs": [
       {
         "sourceId": "ux-practices",
-        "pdfPages": [6, 13, 38],
+        "pdfPages": [
+          6,
+          13,
+          38
+        ],
         "section": "Connect the goals; Share knowledge early; Tell a story — 케이스 스터디 편집에 적용",
         "relation": "application"
       },
       {
         "sourceId": "intro-ux",
-        "pdfPages": [14, 15],
+        "pdfPages": [
+          14,
+          15
+        ],
         "section": "UX 디자인 업무·설계 산출물·이해관계자 설명",
         "relation": "context"
       }
@@ -357,7 +396,6 @@
   {
     "id": "mental-models-cognitive-load",
     "topic": "foundations",
-    "level": "applied",
     "category": "인지와 인터페이스",
     "title": "멘탈 모델과 인지 부하: 익숙함과 설명의 균형",
     "summary": "사용자가 예상하는 동작을 확인하고, 정보를 무조건 줄이는 대신 이해와 기억에 필요한 부담을 줄입니다.",
@@ -426,19 +464,33 @@
     "sourceRefs": [
       {
         "sourceId": "laws-ux",
-        "pdfPages": [28, 36, 37],
+        "pdfPages": [
+          28,
+          36,
+          37
+        ],
         "section": "Jakob’s Law: Mental models; Key Consideration: Sameness; Conclusion",
         "relation": "concept"
       },
       {
         "sourceId": "laws-ux",
-        "pdfPages": [43, 44, 51, 52, 53],
+        "pdfPages": [
+          43,
+          44,
+          51,
+          52,
+          53
+        ],
         "section": "Hick’s Law: Cognitive load; Oversimplification; 아이콘과 레이블",
         "relation": "concept"
       },
       {
         "sourceId": "laws-ux",
-        "pdfPages": [58, 61, 64],
+        "pdfPages": [
+          58,
+          61,
+          64
+        ],
         "section": "Miller’s Law: Chunking; 정보 위계; 숫자 7을 설계 제한으로 쓰지 말 것",
         "relation": "concept"
       }
@@ -447,11 +499,10 @@
   {
     "id": "research-synthesis",
     "topic": "research",
-    "level": "applied",
     "category": "리서치 분석",
     "title": "리서치 종합: 관찰을 설계 질문으로 바꾸기",
     "summary": "원자료와 해석을 분리하고, 비슷한 관찰과 반례를 함께 비교해 다음에 검증할 디자인 결정을 정합니다.",
-    "intro": "인터뷰 기록을 붙여 놓았다고 인사이트가 자동으로 나오지는 않습니다. 관찰이 어떤 과업과 조건에서 나왔는지 보존하고, 공통점뿐 아니라 서로 다른 이유와 반례를 살펴야 합니다. 이 가이드는 관찰·그룹·해석·기회의 연결 방법을 제공 자료의 사용자 이해 원칙에 적용한 학습 절차입니다. 아래의 P01·P02·P03 기록은 절차를 설명하기 위한 가상 자료이며 실제 조사 결과가 아닙니다.",
+    "intro": "인터뷰 기록을 붙여 놓았다고 인사이트가 자동으로 나오지는 않습니다. 관찰이 어떤 과업과 조건에서 나왔는지 보존하고, 공통점뿐 아니라 서로 다른 이유와 반례를 살펴야 합니다. 관찰을 묶고 의미를 해석한 뒤 설계 기회로 연결할 때, 각 판단이 어떤 기록에 기대고 있는지 추적해 봅니다. 아래의 P01·P02·P03 기록은 분석 과정을 연습하기 위한 가상 자료이며 실제 조사 결과가 아닙니다.",
     "objectives": [
       "원래 관찰과 연구자의 해석을 분리해 추적 가능한 기록을 만든다.",
       "주제별 그룹에 포함되는 관찰과 반례를 비교한다.",
@@ -517,13 +568,21 @@
     "sourceRefs": [
       {
         "sourceId": "ux-practices",
-        "pdfPages": [10, 16, 20],
+        "pdfPages": [
+          10,
+          16,
+          20
+        ],
         "section": "Look beyond feature requests; Build personas; Listen to actions — 관찰과 해석을 연결하는 분석 절차에 적용",
         "relation": "application"
       },
       {
         "sourceId": "intro-ux",
-        "pdfPages": [14, 34, 35],
+        "pdfPages": [
+          14,
+          34,
+          35
+        ],
         "section": "리서치에서 사용자 이해와 설계로 이어지는 업무; 관찰한 문제와 프로토타입 수정",
         "relation": "application"
       }
@@ -532,7 +591,6 @@
   {
     "id": "typography-reading",
     "topic": "visual",
-    "level": "applied",
     "category": "타이포그래피",
     "title": "읽히는 타이포그래피: 글자의 역할과 읽기 조건",
     "summary": "서체·크기·행간·행 길이·위계를 실제 한국어 콘텐츠에 맞춰 조정하고 좁은 화면에서 확인합니다.",
@@ -602,25 +660,37 @@
     "sourceRefs": [
       {
         "sourceId": "ui-fundamentals",
-        "pdfPages": [42, 44, 48, 49],
+        "pdfPages": [
+          42,
+          44,
+          48,
+          49
+        ],
         "section": "Typography: Typeface vs. Font; Line Height and Line Length; Type Scale",
         "relation": "concept"
       },
       {
         "sourceId": "ui-fundamentals",
-        "pdfPages": [155, 156],
+        "pdfPages": [
+          155,
+          156
+        ],
         "section": "An Eye for UI/UX Design: With text and image; Articles — 실제 내용의 위계·행간 검토에 적용",
         "relation": "application"
       },
       {
         "sourceId": "web-terms",
-        "pdfPages": [32],
+        "pdfPages": [
+          32
+        ],
         "section": "타이포그래피: font-family, font-size, font-weight, line-height, letter-spacing",
         "relation": "concept"
       },
       {
         "sourceId": "laws-ux",
-        "pdfPages": [61],
+        "pdfPages": [
+          61
+        ],
         "section": "Miller’s Law: 제목·여백·행 길이로 콘텐츠를 구조화한 예",
         "relation": "application"
       }
@@ -629,11 +699,10 @@
   {
     "id": "evidence-led-design",
     "topic": "research",
-    "level": "advanced",
     "category": "디자인 근거 해석",
     "title": "근거로 판단하기: 보이는 데이터가 말해 주지 않는 것",
     "summary": "시선 기록·사용자 의견·과업 수행이 각각 무엇을 보여 주는지 구분하고, 심리 원칙을 검증 가능한 가설로 바꿉니다.",
-    "intro": "시선이 오래 머물지 않은 사진은 쓸모없을까요? 보기 좋다는 평가는 사용하기 쉽다는 증거일까요? 제공된 디자인 심리 자료는 전체 책이 아닌 28쪽 발췌본이며, 이 가이드는 그중 실제 본문 PDF 15–17쪽의 주변시와 시선추적 해석 논의를 사용합니다. 목차에만 나온 다른 심리 주제를 읽은 것으로 간주하지 않으며, 관찰에서 설계 결론으로 넘어갈 때의 빈틈을 점검합니다.",
+    "intro": "시선이 오래 머물지 않은 사진은 쓸모없을까요? 보기 좋다는 평가는 사용하기 쉽다는 증거일까요? 시선 고정, 클릭, 발언과 과업 수행은 서로 다른 질문에 답하는 관찰입니다. 중심시와 주변시의 역할을 구분하고, 측정한 사실에서 설계 결론으로 넘어갈 때 어떤 해석이 더해지는지 살펴봅니다. 한 종류의 지표만으로 효과를 단정하지 않고 사용자 목표와 관찰 조건에 맞는 근거를 연결하는 연습을 합니다.",
     "objectives": [
       "측정한 사실과 그 사실에서 추론한 의미를 구분한다.",
       "시선 기록과 선호도 의견만으로 사용성을 결론 내릴 수 없는 이유를 설명한다.",
@@ -647,7 +716,7 @@
       },
       {
         "title": "2. 시선이 머문 곳과 처리한 정보는 같지 않다",
-        "body": "발췌본은 세부를 살피는 중심시와 주변의 정보를 받아들이는 주변시를 구분하며, 주변 정보가 다음에 볼 곳을 정하는 데 관여할 수 있다고 설명합니다. 따라서 특정 사진에 시선 고정이 적었다는 이유만으로 그 사진이 어떤 역할도 하지 않았다고 결론 내리기 어렵습니다. 그렇다고 사진의 효과가 입증된 것도 아닙니다. 시선추적 기록은 그 측정에서의 시선 패턴에 관한 증거이며, 내용의 이해나 과업 성공까지 직접 대신해 주지 않습니다."
+        "body": "중심시는 세부를 살피는 데, 주변시는 시선이 고정된 곳 밖의 정보를 받아들이는 데 관여합니다. 주변 정보는 다음에 볼 곳을 정하는 단서가 될 수 있으므로 특정 사진에 시선 고정이 적었다는 이유만으로 그 사진이 어떤 역할도 하지 않았다고 결론 내리기 어렵습니다. 그렇다고 사진의 효과가 입증된 것도 아닙니다. 시선추적 기록은 그 측정에서의 시선 패턴에 관한 증거이며, 내용의 이해나 과업 성공까지 직접 대신해 주지 않습니다."
       },
       {
         "title": "3. 심리 설명을 모든 화면의 처방으로 바꾸지 않기",
@@ -684,7 +753,7 @@
       "히트맵의 빈 영역을 보지 않았거나 이해하지 못한 영역이라고 단정하지 않습니다.",
       "주변시가 작동한다는 이유로 여백을 장식이나 정보로 모두 채우지 않습니다.",
       "아름다운 화면에 대한 호감을 실제 과업 성공이나 사업 성과로 치환하지 않습니다.",
-      "목차나 요약의 제목만으로 설계 원칙을 채택하지 말고 실제 본문과 연구 조건을 확인합니다."
+      "심리 원칙의 이름만으로 효과를 단정하지 말고, 관찰한 과업과 사용자·기기 조건이 현재 설계와 어떻게 다른지 확인합니다."
     ],
     "relatedTermIds": [
       "initial-focus",
@@ -699,19 +768,28 @@
     "sourceRefs": [
       {
         "sourceId": "design-psychology",
-        "pdfPages": [15, 16, 17],
+        "pdfPages": [
+          15,
+          16,
+          17
+        ],
         "section": "발췌 본문 4: Peripheral Vision Determines Where Central Vision Should Look; Don’t base every design decision on eye-tracking studies; Takeaways",
         "relation": "concept"
       },
       {
         "sourceId": "laws-ux",
-        "pdfPages": [89, 90],
+        "pdfPages": [
+          89,
+          90
+        ],
         "section": "Aesthetic-Usability Effect: 시각적 호감이 사용성 문제를 가릴 수 있다는 주의와 행동 관찰",
         "relation": "concept"
       },
       {
         "sourceId": "ux-practices",
-        "pdfPages": [20],
+        "pdfPages": [
+          20
+        ],
         "section": "Listen to actions — 의견과 실제 행동을 구분한 검증 계획에 적용",
         "relation": "application"
       }
