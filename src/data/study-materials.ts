@@ -1,7 +1,9 @@
 import foundation from "./editorial/guides-foundation.json";
 import practice from "./editorial/guides-practice.json";
 import ai from "./editorial/guides-ai.json";
+import expandedGuides from "./expansion/guides.json";
 import glossary from "./glossary.json";
+import { EXPANDED_TERMS } from "./expansion";
 import { sourceReference, type SourceCitation, type TopicId } from "./design-sources";
 export { TOPICS } from "./design-sources";
 
@@ -32,6 +34,7 @@ export type StudyGuide = {
 };
 type AuthoredGuide = Omit<StudyGuide, "keywords" | "relatedTerms" | "references"> & {
   relatedTermIds: string[];
+  references?: StudyGuide["references"];
 };
 const supplementalReferences: Record<string, StudyGuide["references"]> = {
   "accessible-interaction": [
@@ -73,10 +76,13 @@ const order = [
   "ai-design-workflow",
   "ai-prototype-validation",
 ];
-export const STUDY_GUIDES: StudyGuide[] = ([...foundation, ...practice, ...ai] as AuthoredGuide[])
+const allTerms = [...glossary, ...EXPANDED_TERMS];
+export const STUDY_GUIDES: StudyGuide[] = (
+  [...foundation, ...practice, ...ai, ...expandedGuides] as AuthoredGuide[]
+)
   .map((guide) => {
     const relatedTerms = guide.relatedTermIds.map((id) => {
-      const term = glossary.find((item) => item.id === id);
+      const term = allTerms.find((item) => item.id === id);
       if (!term) throw new Error(`Unknown glossary term ${id} in ${guide.id}`);
       return { id: term.id, english: term.english, korean: term.korean };
     });
@@ -87,10 +93,15 @@ export const STUDY_GUIDES: StudyGuide[] = ([...foundation, ...practice, ...ai] a
       references: [
         ...guide.sourceRefs.map(sourceReference),
         ...(supplementalReferences[guide.id] ?? []),
+        ...(guide.references ?? []),
       ],
     };
   })
-  .sort((a, b) => order.indexOf(a.id) - order.indexOf(b.id));
+  .sort((a, b) => {
+    const ai = order.indexOf(a.id),
+      bi = order.indexOf(b.id);
+    return (ai < 0 ? order.length : ai) - (bi < 0 ? order.length : bi);
+  });
 
 /** Return only guides explicitly connected to this glossary term. */
 export function getGuidesForTerm(termId: string): StudyGuide[] {

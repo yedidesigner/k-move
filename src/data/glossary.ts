@@ -1,4 +1,5 @@
 import entries from "./glossary.json";
+import { EXPANDED_TERMS } from "./expansion";
 import { hasGlossaryPractice } from "./glossary-practice";
 import { getLearningMode, LEARNING_LABELS } from "./glossary-learning";
 import type { LearningMode } from "./learning/types";
@@ -25,7 +26,7 @@ function isLessonId(value: unknown): value is GlossaryLessonId {
   return value === "cta" || value === "hamburger" || value === "carousel";
 }
 
-export const GLOSSARY: GlossaryEntry[] = entries
+export const GLOSSARY: GlossaryEntry[] = [...entries, ...EXPANDED_TERMS]
   .map((entry): GlossaryEntry => {
     const normalized: GlossaryEntry = {
       id: entry.id,

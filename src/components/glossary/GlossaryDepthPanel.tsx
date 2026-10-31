@@ -96,6 +96,20 @@ export function GlossarySourceDetails({ termId }: { termId: string }) {
         </ul>
       )}
       {profile.sourceNote && <p className="gd-source-scope">{profile.sourceNote}</p>}
+      {profile.webReferences && profile.webReferences.length > 0 && (
+        <ul>
+          {profile.webReferences.map((reference) => (
+            <li key={reference.url}>
+              <strong>
+                <a href={reference.url} target="_blank" rel="noopener noreferrer">
+                  {reference.title} ↗<span className="sr-only"> (새 탭)</span>
+                </a>
+              </strong>
+              <small>{reference.note}</small>
+            </li>
+          ))}
+        </ul>
+      )}
     </details>
   );
 }

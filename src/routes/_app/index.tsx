@@ -12,7 +12,7 @@ export const Route = createFileRoute("/_app/")({
   head: () => ({
     meta: [
       { title: "홈 | K-Move 미국 디자인 실무 취업 연수과정" },
-      { name: "description", content: "오늘의 수업, 공지, 디자인 용어와 과제를 확인하세요." },
+      { name: "description", content: "오늘의 수업, 공지, 디자인 용어와 학습자료를 확인하세요." },
       { property: "og:title", content: "K-Move 미국 디자인 실무 취업 연수과정" },
       { property: "og:description", content: "Google AI를 활용한 포트폴리오 제작 수강생 포털" },
     ],
@@ -83,6 +83,16 @@ function HomePage() {
             <span>
               <span className="block text-xs text-muted-foreground">개념·예시·실습</span>
               <span className="mt-2 block text-lg font-semibold">용어집</span>
+            </span>
+            <ArrowUpRight aria-hidden className="size-5 shrink-0" />
+          </Link>
+          <Link
+            to="/materials"
+            className="group flex min-h-28 items-center justify-between gap-4 px-6 py-6 transition-colors hover:bg-muted"
+          >
+            <span>
+              <span className="block text-xs text-muted-foreground">주제별로 이어 배우기</span>
+              <span className="mt-2 block text-lg font-semibold">학습자료</span>
             </span>
             <ArrowUpRight aria-hidden className="size-5 shrink-0" />
           </Link>

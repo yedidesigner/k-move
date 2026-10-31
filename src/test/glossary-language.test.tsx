@@ -39,7 +39,7 @@ describe("Natural design terminology", () => {
   });
 
   it("keeps every study-guide related term synchronized with the glossary", () => {
-    expect(STUDY_GUIDES).toHaveLength(20);
+    expect(STUDY_GUIDES).toHaveLength(28);
     for (const guide of STUDY_GUIDES) {
       for (const related of guide.relatedTerms) {
         const term = GLOSSARY.find((entry) => entry.id === related.id);

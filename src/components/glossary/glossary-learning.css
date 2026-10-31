@@ -1294,3 +1294,162 @@
     padding: 16px;
   }
 }
+
+/* One study step at a time: the title remains the anchor. */
+.gl-lesson .gl-header {
+  gap: 8px;
+  padding-bottom: 24px;
+}
+.gl-lesson .gl-header h2 {
+  font-size: clamp(28px, 4vw, 38px);
+}
+.gl-lesson .gl-definition {
+  max-width: 64ch;
+  font-size: 15px;
+  line-height: 1.85;
+}
+.gl-step-tabs {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  border-bottom: 1px solid #d8ddda;
+  margin-top: 28px;
+}
+.gl-step-tabs > button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 9px;
+  min-height: 58px;
+  padding: 12px 8px;
+  border: 0;
+  border-bottom: 2px solid transparent;
+  background: #fff;
+  color: #66706b;
+  font-size: 14px;
+  font-weight: 500;
+}
+.gl-step-tabs > button > span {
+  font-size: 10px;
+  font-variant-numeric: tabular-nums;
+  opacity: 0.7;
+}
+.gl-step-tabs > button[aria-selected="true"] {
+  color: #111;
+  border-bottom-color: #111;
+  font-weight: 700;
+}
+.gl-step-tabs > button:hover {
+  background: #f7f8f7;
+}
+.gl-step-panel[hidden] {
+  display: none;
+}
+.gl-step-panel {
+  padding-top: 2px;
+  outline-offset: 5px;
+}
+.gl-step-panel > .gl-section {
+  margin-top: 24px;
+}
+.gl-step-panel .gl-section > h3 {
+  font-size: 18px;
+}
+.gl-next-step {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  width: 100%;
+  margin-top: 28px;
+  border: 1px solid #d4dad6;
+  min-height: 50px;
+  padding: 13px 18px;
+  background: #fff;
+  font-size: 13px;
+  font-weight: 600;
+}
+.gl-next-step:hover {
+  background: #f3f6f4;
+}
+.gl-essential {
+  border-left: 2px solid #54756d;
+  padding-left: 14px;
+  font-size: 14px;
+  line-height: 1.85;
+}
+.gl-more-examples {
+  margin-top: 26px;
+  border-top: 1px solid #ddd;
+  padding-top: 10px;
+}
+.gl-more-examples > summary {
+  cursor: pointer;
+  padding: 12px 0;
+  font-size: 13px;
+  font-weight: 600;
+}
+.gl-context-only {
+  border: 0;
+}
+.gl-context-only .cx-section-label {
+  display: none;
+}
+.gl-expanded-example {
+  min-width: 0;
+  padding: 20px;
+  background: #f7f8f6;
+  border: 1px solid #dfe3df;
+}
+.gl-expanded-label {
+  color: #66706b;
+  font-size: 11px;
+  margin-bottom: 18px !important;
+}
+.gl-structure-only .gl-example-body {
+  border-top: 0;
+}
+.gl-step-panel .vux-lesson {
+  padding: 0;
+}
+.gl-step-panel .vux-section {
+  margin-top: 22px;
+}
+.gl-step-panel .vux-section-title {
+  font-size: 18px;
+}
+.gl-step-panel .vux-section-title > span {
+  display: none;
+}
+.gl-step-panel .gd-heading {
+  margin-top: 26px;
+}
+@media (max-width: 600px) {
+  .gl-step-tabs {
+    margin-top: 20px;
+  }
+  .gl-step-tabs > button {
+    gap: 4px;
+    padding: 10px 3px;
+    font-size: 12px;
+    min-height: 52px;
+  }
+  .gl-step-tabs > button > span {
+    font-size: 9px;
+  }
+  .gl-expanded-example {
+    padding: 12px;
+  }
+  .gl-lesson .gl-definition {
+    font-size: 14px;
+  }
+}
+.gl-step-panel .vux-lesson[data-lesson-stage="structure"] .vux-section {
+  margin-top: 0;
+}
+.gl-step-panel .vux-lesson[data-lesson-stage="structure"] .vux-section-title {
+  display: none;
+}
+.gl-expanded-concept {
+  min-width: 0;
+  width: 100%;
+}

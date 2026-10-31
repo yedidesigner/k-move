@@ -26,9 +26,9 @@ function validCitation(ref: SourceCitation, owner: string) {
   }
 }
 describe("Source-aware design curriculum", () => {
-  it("gives each of the239 existing terms distinct applied and critical reading with valid references", () => {
-    expect(GLOSSARY_DEPTH).toHaveLength(239);
-    expect(new Set(GLOSSARY_DEPTH.map((item) => item.id)).size).toBe(239);
+  it("gives each of the359 designer terms distinct applied and critical reading with valid references", () => {
+    expect(GLOSSARY_DEPTH).toHaveLength(359);
+    expect(new Set(GLOSSARY_DEPTH.map((item) => item.id)).size).toBe(359);
     expect([...GLOSSARY_DEPTH.map((item) => item.id)].sort()).toEqual([...terms.keys()].sort());
     for (const profile of GLOSSARY_DEPTH) {
       expect(
@@ -42,9 +42,9 @@ describe("Source-aware design curriculum", () => {
         ...Object.values(profile.critique),
       ]) {
         expect(text.trim().length, profile.id).toBeGreaterThan(15);
-        expect(text, profile.id).not.toMatch(/TODO|TBD|추후 작성/);
+        expect(text, profile.id).not.toMatch(/\bTODO\b|\bTBD\b|추후 작성/);
       }
-      if (!profile.sourceRefs.length)
+      if (!profile.sourceRefs.length && !profile.webReferences?.length)
         expect(profile.sourceNote?.trim().length, profile.id).toBeGreaterThan(10);
       for (const ref of profile.sourceRefs) validCitation(ref, profile.id);
       for (const other of profile.confusedWith) {
@@ -56,7 +56,7 @@ describe("Source-aware design curriculum", () => {
   });
   it("retains all ten sources as guide references and connects every guide to explicit glossary terms", () => {
     expect(DESIGN_SOURCES).toHaveLength(10);
-    expect(STUDY_GUIDES).toHaveLength(20);
+    expect(STUDY_GUIDES).toHaveLength(28);
     const cited = new Set(
       STUDY_GUIDES.flatMap((guide) => guide.sourceRefs.map((ref) => ref.sourceId)),
     );
@@ -90,7 +90,7 @@ describe("Source-aware design curriculum", () => {
     const eligible = GLOSSARY_DEPTH.filter((profile) => profile.topic === "systems");
     expect(eligible.length).toBeGreaterThan(0);
     expect(visible.getAllByRole("button", { name: /— 설명 보기/ }).length).toBe(
-      Math.min(24, eligible.length),
+      Math.min(12, eligible.length),
     );
     fireEvent.change(screen.getByRole("searchbox", { name: "용어 검색" }), {
       target: { value: "없는용어9999" },

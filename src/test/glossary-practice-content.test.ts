@@ -24,12 +24,12 @@ const visualPresets = new Set([
 function expectAuthored(value: string, field: string) {
   expect(typeof value, field).toBe("string");
   expect(value.trim().length, field).toBeGreaterThan(0);
-  expect(value, field).not.toMatch(/TODO|TBD|준비 중|작성 예정|예시를 입력/i);
+  expect(value, field).not.toMatch(/\bTODO\b|\bTBD\b|준비 중|작성 예정|예시를 입력/i);
 }
 
 describe("Retained practice engine content", () => {
   it("keeps practice records tied to real glossary terms and retains the three original demos", () => {
-    expect(GLOSSARY).toHaveLength(239);
+    expect(GLOSSARY).toHaveLength(359);
     const legacy = GLOSSARY.filter((entry) => entry.lessonId);
     expect(legacy.map((entry) => entry.lessonId).sort()).toEqual(["carousel", "cta", "hamburger"]);
     expect(Object.keys(PRACTICES).length).toBeGreaterThan(0);
