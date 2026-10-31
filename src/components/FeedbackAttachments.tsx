@@ -38,6 +38,9 @@ type Props = {
   userId: string;
   instructor: boolean;
   onImagesUploaded?: () => void;
+  onAssetsChanged?: () => void;
+  readOnly?: boolean;
+  lockedAssetIds?: readonly string[];
   uploadDisabled?: boolean;
   onUploadBusyChange?: (busy: boolean) => void;
 };
@@ -61,6 +64,9 @@ function AttachmentContent({
   userId,
   instructor,
   onImagesUploaded,
+  onAssetsChanged,
+  readOnly = false,
+  lockedAssetIds = [],
   uploadDisabled = false,
   onUploadBusyChange,
 }: Props) {
@@ -160,7 +166,7 @@ function AttachmentContent({
   }
 
   async function upload(files: FileList | File[] | null) {
-    if (!files?.length || uploadDisabled || busyRef.current) return;
+    if (!files?.length || readOnly || uploadDisabled || busyRef.current) return;
     const chosen = Array.from(files);
     if (chosen.some((file) => file.size > FEEDBACK_FILE_LIMIT)) {
       setError("");
@@ -227,6 +233,7 @@ function AttachmentContent({
         );
     } finally {
       if (savedFiles) refresh();
+      if (saved && alive.current) onAssetsChanged?.();
       if (alive.current) {
         if (savedImages) onImagesUploaded?.();
         setUploading(false);
@@ -239,7 +246,7 @@ function AttachmentContent({
 
   async function saveLink(event: FormEvent) {
     event.preventDefault();
-    if (!start()) return;
+    if (readOnly || !start()) return;
     try {
       const url = normalizeFeedbackUrl(linkUrl);
       const title = linkTitle.trim() || new URL(url).hostname;
@@ -258,6 +265,7 @@ function AttachmentContent({
         setLinkUrl("");
         setNotice("링크를 등록했습니다.");
         refresh();
+        onAssetsChanged?.();
       }
     } catch (e) {
       if (alive.current) setError(errorText(e));
@@ -290,6 +298,8 @@ function AttachmentContent({
 
   async function remove(row: FeedbackAttachment) {
     if (
+      readOnly ||
+      lockedAssetIds.includes(row.id) ||
       (!instructor && row.created_by !== userId) ||
       busyRef.current ||
       !window.confirm("이 자료와 연결된 피드백을 삭제할까요?")
@@ -316,6 +326,7 @@ function AttachmentContent({
       if (alive.current) {
         setCommentDraft(null);
         setNotice("자료를 삭제했습니다.");
+        onAssetsChanged?.();
       }
     } catch (e) {
       if (alive.current) setError(errorText(e));
@@ -326,7 +337,7 @@ function AttachmentContent({
 
   async function saveComment(event: FormEvent) {
     event.preventDefault();
-    if (!instructor || !commentDraft?.content.trim() || !start()) return;
+    if (readOnly || !instructor || !commentDraft?.content.trim() || !start()) return;
     try {
       const db = getSupabase();
       const result = commentDraft.commentId
@@ -358,7 +369,13 @@ function AttachmentContent({
   }
 
   async function removeComment(id: string) {
-    if (!instructor || busyRef.current || !window.confirm("이 피드백을 삭제할까요?") || !start())
+    if (
+      readOnly ||
+      !instructor ||
+      busyRef.current ||
+      !window.confirm("이 피드백을 삭제할까요?") ||
+      !start()
+    )
       return;
     try {
       const result = await getSupabase()
@@ -382,42 +399,44 @@ function AttachmentContent({
         <div>
           <h4 className="text-sm font-semibold">피드백 자료</h4>
           <p className="mt-1 text-xs leading-5 text-neutral-500">
-            이미지·문서·압축파일을 한 번에 선택해 이 주차에 등록할 수 있습니다.
+            이미지·문서·압축파일을 한 번에 선택해 이 회차에 등록할 수 있습니다.
           </p>
         </div>
-        <div className="flex flex-wrap gap-2">
-          <input
-            ref={fileInput}
-            type="file"
-            multiple
-            accept={FEEDBACK_UPLOAD_ACCEPT}
-            aria-label="과제 파일 선택"
-            aria-describedby="feedback-upload-formats"
-            disabled={busy || uploadDisabled}
-            className="sr-only"
-            onChange={(event) => void upload(event.target.files)}
-          />
-          <button
-            ref={uploadButton}
-            type="button"
-            disabled={busy || uploadDisabled}
-            onClick={() => fileInput.current?.click()}
-            className="inline-flex min-h-10 items-center justify-center gap-2 border border-black bg-black px-4 text-xs font-semibold text-white disabled:opacity-50"
-          >
-            <FileUp className="size-4" aria-hidden="true" />
-            {uploading ? "업로드 중…" : "과제 업로드"}
-          </button>
-          <button
-            type="button"
-            disabled={busy}
-            aria-expanded={linkOpen}
-            onClick={() => setLinkOpen((value) => !value)}
-            className={actionClass}
-          >
-            <Link2 className="size-4" aria-hidden="true" />
-            링크 추가
-          </button>
-        </div>
+        {!readOnly && (
+          <div className="flex flex-wrap gap-2">
+            <input
+              ref={fileInput}
+              type="file"
+              multiple
+              accept={FEEDBACK_UPLOAD_ACCEPT}
+              aria-label="과제 파일 선택"
+              aria-describedby="feedback-upload-formats"
+              disabled={busy || uploadDisabled}
+              className="sr-only"
+              onChange={(event) => void upload(event.target.files)}
+            />
+            <button
+              ref={uploadButton}
+              type="button"
+              disabled={busy || uploadDisabled}
+              onClick={() => fileInput.current?.click()}
+              className="inline-flex min-h-10 items-center justify-center gap-2 border border-black bg-black px-4 text-xs font-semibold text-white disabled:opacity-50"
+            >
+              <FileUp className="size-4" aria-hidden="true" />
+              {uploading ? "업로드 중…" : "과제 업로드"}
+            </button>
+            <button
+              type="button"
+              disabled={busy}
+              aria-expanded={linkOpen}
+              onClick={() => setLinkOpen((value) => !value)}
+              className={actionClass}
+            >
+              <Link2 className="size-4" aria-hidden="true" />
+              링크 추가
+            </button>
+          </div>
+        )}
       </div>
       <p id="feedback-upload-formats" className="text-xs leading-5 text-neutral-500">
         이미지·PDF·ZIP·문서·디자인 원본은 파일당 최대 10MB입니다. 더 큰 파일은 Google Drive에
@@ -535,6 +554,9 @@ function AttachmentContent({
                       {row.kind === "link" ? "LINK" : "FILE"}
                     </span>
                     <p className="break-all text-sm font-medium">{row.title}</p>
+                    {lockedAssetIds.includes(row.id) && (
+                      <p className="mt-1 text-xs text-neutral-500">제출된 원본 · 이력 보존</p>
+                    )}
                     {row.file_size != null && (
                       <p className="mt-1 text-xs text-neutral-500">
                         {feedbackFileSize(row.file_size)}
@@ -570,25 +592,27 @@ function AttachmentContent({
                         <span className="sr-only">(새 탭)</span>
                       </a>
                     )}
-                    {(instructor || row.created_by === userId) && (
-                      <button
-                        type="button"
-                        disabled={busy}
-                        onClick={() => void remove(row)}
-                        aria-label={`${row.title} 삭제`}
-                        className="inline-flex min-h-10 items-center gap-1 text-xs text-neutral-500"
-                      >
-                        <Trash2 className="size-3.5" aria-hidden="true" />
-                        삭제
-                      </button>
-                    )}
+                    {!readOnly &&
+                      !lockedAssetIds.includes(row.id) &&
+                      (instructor || row.created_by === userId) && (
+                        <button
+                          type="button"
+                          disabled={busy}
+                          onClick={() => void remove(row)}
+                          aria-label={`${row.title} 삭제`}
+                          className="inline-flex min-h-10 items-center gap-1 text-xs text-neutral-500"
+                        >
+                          <Trash2 className="size-3.5" aria-hidden="true" />
+                          삭제
+                        </button>
+                      )}
                   </div>
                 </div>
                 {notes.map((comment) => (
                   <div key={comment.id} className="mt-3 border-l-2 border-neutral-300 pl-3">
                     <div className="flex items-center gap-3">
                       <strong className="text-xs">강사 피드백</strong>
-                      {instructor && (
+                      {instructor && !readOnly && (
                         <>
                           <button
                             type="button"
@@ -620,7 +644,7 @@ function AttachmentContent({
                     </p>
                   </div>
                 ))}
-                {instructor && commentDraft?.attachmentId !== row.id && (
+                {instructor && !readOnly && commentDraft?.attachmentId !== row.id && (
                   <button
                     type="button"
                     disabled={busy}
@@ -630,7 +654,7 @@ function AttachmentContent({
                     피드백 작성
                   </button>
                 )}
-                {instructor && commentDraft?.attachmentId === row.id && (
+                {instructor && !readOnly && commentDraft?.attachmentId === row.id && (
                   <form onSubmit={(event) => void saveComment(event)} className="mt-3 space-y-2">
                     <label className="text-xs font-semibold">
                       자료 피드백

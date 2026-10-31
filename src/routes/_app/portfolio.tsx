@@ -1,18 +1,17 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { StudentDriveFolders } from "@/components/StudentDriveFolders";
+import { PortfolioManager } from "@/components/instructor/PortfolioManager";
 
 export const Route = createFileRoute("/_app/portfolio")({
   head: () => ({
     meta: [
-      { title: "내 포트폴리오 | K-Move LMS" },
-      { name: "description", content: "수강생별 Google Drive 포트폴리오 폴더" },
-      { property: "og:title", content: "내 포트폴리오" },
-      { property: "og:description", content: "수강생별 Google Drive 포트폴리오 폴더" },
+      { title: "포트폴리오 | K-Move LMS" },
+      { name: "description", content: "프로젝트별 작업 버전과 수정 이력" },
+      { name: "robots", content: "noindex" },
     ],
   }),
   component: Portfolio,
 });
 
 function Portfolio() {
-  return <StudentDriveFolders kind="portfolio" />;
+  return <PortfolioManager />;
 }

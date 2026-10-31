@@ -1,18 +1,9 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { StudentDriveFolders } from "@/components/StudentDriveFolders";
+import { AssignmentWorkspace } from "@/components/instructor/AssignmentWorkspace";
 
 export const Route = createFileRoute("/_app/assignments")({
   head: () => ({
-    meta: [
-      { title: "과제 | K-Move LMS" },
-      { name: "description", content: "수강생별 Google Drive 과제 폴더" },
-      { property: "og:title", content: "과제" },
-      { property: "og:description", content: "수강생별 Google Drive 과제 폴더" },
-    ],
+    meta: [{ title: "과제·피드백 | K-Move LMS" }, { name: "robots", content: "noindex" }],
   }),
-  component: Assignments,
+  component: AssignmentWorkspace,
 });
-
-function Assignments() {
-  return <StudentDriveFolders kind="assignment" />;
-}

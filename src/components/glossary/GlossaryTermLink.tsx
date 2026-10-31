@@ -1,10 +1,11 @@
 import { useContext, type ReactNode } from "react";
-import { GLOSSARY } from "@/data/glossary";
+import { usePublishedContent } from "@/lib/published-content";
 import { GlossaryNavigationContext } from "./navigation-context";
 
 export function GlossaryTermLink({ termId, children }: { termId: string; children: ReactNode }) {
   const openTerm = useContext(GlossaryNavigationContext);
-  const term = GLOSSARY.find((item) => item.id === termId);
+  const { glossary } = usePublishedContent();
+  const term = glossary.find((item) => item.id === termId);
   if (!term) return null;
   return (
     <a

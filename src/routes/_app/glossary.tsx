@@ -1,5 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { Glossary } from "@/components/Glossary";
+import { useAuth } from "@/lib/auth";
 
 export const Route = createFileRoute("/_app/glossary")({
   validateSearch: (search: Record<string, unknown>): { term?: string } =>
@@ -20,6 +21,21 @@ export const Route = createFileRoute("/_app/glossary")({
 });
 
 function GlossaryPage() {
+  const { status } = useAuth();
   const { term = "" } = Route.useSearch();
-  return <Glossary key={term} initialQuery={term} />;
+  return (
+    <>
+      {status === "instructor" && (
+        <div className="mb-5 flex justify-end">
+          <a
+            href="/admin?tab=content&type=glossary"
+            className="inline-flex min-h-11 items-center border border-neutral-300 px-4 text-sm font-medium"
+          >
+            용어 편집·추가
+          </a>
+        </div>
+      )}
+      <Glossary key={term} initialQuery={term} />
+    </>
+  );
 }

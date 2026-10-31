@@ -12,6 +12,7 @@ import type { Session } from "@/data/schedule";
 import { calendarWeeks, SESSION_MONTHS } from "@/lib/session-calendar";
 import type { CalendarDay } from "@/lib/session-calendar";
 import { cn } from "@/lib/utils";
+import type { ManagedSession } from "@/lib/content-model";
 
 const WEEKDAYS = [
   { en: "Sun", ko: "일" },
@@ -23,7 +24,6 @@ const WEEKDAYS = [
   { en: "Sat", ko: "토" },
 ];
 const monthFormatter = new Intl.DateTimeFormat("en-US", { month: "long", timeZone: TIME_ZONE });
-const sessionsByDate = new Map(SESSIONS.map((session) => [session.date, session]));
 const cellClass = "flex min-h-[clamp(7.5rem,16vw,13rem)] flex-col p-1 sm:p-2";
 
 function DayCell({
@@ -32,11 +32,17 @@ function DayCell({
   today,
 }: {
   day: CalendarDay;
-  session: Session | undefined;
+  session: (Session & Partial<ManagedSession>) | undefined;
   today: string;
 }) {
   const isToday = day.date === today;
-  const status = session ? sessionStatusLabel(session, today) : "";
+  const status = session
+    ? session.progress === "completed"
+      ? "진행 완료"
+      : session.date < today
+        ? "일정 경과"
+        : sessionStatusLabel(session, today)
+    : "";
   const content = (
     <>
       <div className="flex flex-wrap items-start justify-between gap-x-1 gap-y-0.5">
@@ -55,7 +61,7 @@ function DayCell({
       {session && (
         <div className="mt-2 border-t border-border pt-1.5">
           <p className="break-keep text-[9px] font-medium leading-snug [overflow-wrap:anywhere] sm:text-xs">
-            {session.curriculum?.project ?? session.title}
+            {session.managed ? session.title : (session.curriculum?.project ?? session.title)}
           </p>
           {session.curriculum?.stage && (
             <p className="mt-1 hidden break-keep text-[10px] leading-snug text-muted-foreground [overflow-wrap:anywhere] sm:block">
@@ -63,8 +69,8 @@ function DayCell({
             </p>
           )}
           <p className="mt-1 flex flex-wrap gap-x-1 text-[8px] leading-snug tabular-nums text-muted-foreground sm:text-[10px]">
-            <span>{CLASS_START}</span>
-            <span>– {CLASS_END}</span>
+            <span>{session.startTime ?? CLASS_START}</span>
+            <span>– {session.endTime ?? CLASS_END}</span>
           </p>
           <div className="mt-2 flex items-center justify-between gap-1 bg-black px-1 py-0.5 text-[9px] text-white sm:text-[10px]">
             <span className="font-medium tabular-nums">
@@ -81,7 +87,7 @@ function DayCell({
     <Link
       to="/sessions/$id"
       params={{ id: session.id }}
-      aria-label={`${formatDateKo(day.date)}, ${String(session.number).padStart(2, "0")} ${session.title}, ${CLASS_START}~${CLASS_END}, ${status}`}
+      aria-label={`${formatDateKo(day.date)}, ${String(session.number).padStart(2, "0")} ${session.title}, ${session.startTime ?? CLASS_START}~${session.endTime ?? CLASS_END}, ${status}`}
       className={cn(
         cellClass,
         "h-full transition-colors hover:bg-muted focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-primary",
@@ -98,19 +104,25 @@ export function SessionCalendar({
   month,
   today,
   onMonthChange,
+  sessions = SESSIONS,
 }: {
   month: string;
   today: string;
   onMonthChange: (month: string) => void;
+  sessions?: (Session & Partial<ManagedSession>)[];
 }) {
-  const monthIndex = SESSION_MONTHS.indexOf(month);
+  const months = [...new Set(sessions.map((session) => session.date.slice(0, 7)))].sort();
+  const sessionsByDate = new Map<string, (Session & Partial<ManagedSession>)[]>();
+  for (const session of sessions)
+    sessionsByDate.set(session.date, [...(sessionsByDate.get(session.date) ?? []), session]);
+  const monthIndex = months.indexOf(month);
   const [year, monthNumber] = month.split("-");
   const monthLabel = `${year}년 ${Number(monthNumber)}월`;
   const monthName = monthFormatter.format(new Date(`${month}-01T12:00:00+09:00`));
-  const monthlySessions = SESSIONS.filter((session) => session.date.startsWith(month));
+  const monthlySessions = sessions.filter((session) => session.date.startsWith(month));
   const todayMonth = today.slice(0, 7);
   const navigateMonth = (offset: number) => {
-    const next = SESSION_MONTHS[monthIndex + offset];
+    const next = months[monthIndex + offset];
     if (next) onMonthChange(next);
   };
 
@@ -132,7 +144,7 @@ export function SessionCalendar({
           </p>
         </div>
         <div className="flex flex-wrap items-center gap-1">
-          {SESSION_MONTHS.includes(todayMonth) && (
+          {months.includes(todayMonth) && (
             <button
               type="button"
               onClick={() => onMonthChange(todayMonth)}
@@ -147,7 +159,7 @@ export function SessionCalendar({
             onChange={(event) => onMonthChange(event.target.value)}
             className="min-h-11 border border-border bg-card px-2 text-xs text-foreground"
           >
-            {SESSION_MONTHS.map((value) => {
+            {months.map((value) => {
               const [optionYear, optionMonth] = value.split("-");
               return (
                 <option key={value} value={value}>
@@ -169,7 +181,7 @@ export function SessionCalendar({
             type="button"
             aria-label="다음 달"
             onClick={() => navigateMonth(1)}
-            disabled={monthIndex >= SESSION_MONTHS.length - 1}
+            disabled={monthIndex >= months.length - 1}
             className="inline-flex size-11 items-center justify-center hover:bg-muted disabled:cursor-default disabled:opacity-25 disabled:hover:bg-transparent"
           >
             <ChevronRight className="size-4" aria-hidden />
@@ -202,7 +214,15 @@ export function SessionCalendar({
                   className="border border-border bg-card p-0 align-top"
                 >
                   {day ? (
-                    <DayCell day={day} session={sessionsByDate.get(day.date)} today={today} />
+                    sessionsByDate.has(day.date) ? (
+                      sessionsByDate
+                        .get(day.date)!
+                        .map((session) => (
+                          <DayCell key={session.id} day={day} session={session} today={today} />
+                        ))
+                    ) : (
+                      <DayCell day={day} session={undefined} today={today} />
+                    )
                   ) : (
                     <div aria-hidden="true" className={cellClass} />
                   )}

@@ -1,12 +1,10 @@
 import { ArrowUpRight, ChevronRight } from "lucide-react";
 import { createFileRoute, Link } from "@tanstack/react-router";
-import {
-  CLASS_END,
-  CLASS_START,
-  COURSE_NAME,
-  currentOrNextSession,
-  formatDateKo,
-} from "@/data/schedule";
+import { useEffect, useState } from "react";
+import { useAuth } from "@/lib/auth";
+import { InstructorHome } from "@/components/instructor/InstructorHome";
+import { PublishedAnnouncements, usePublishedSessions } from "@/lib/published-content";
+import { CLASS_END, CLASS_START, COURSE_NAME, formatDateKo } from "@/data/schedule";
 
 export const Route = createFileRoute("/_app/")({
   head: () => ({
@@ -21,7 +19,64 @@ export const Route = createFileRoute("/_app/")({
 });
 
 function HomePage() {
-  const cur = currentOrNextSession();
+  const { status, user } = useAuth();
+  return <RoleHome key={`${user?.id}:${status}`} />;
+}
+
+function RoleHome() {
+  const { status } = useAuth();
+  const [preview, setPreview] = useState(false);
+  if (status === "instructor" && !preview)
+    return <InstructorHome onPreview={() => setPreview(true)} />;
+  return (
+    <>
+      {preview && (
+        <div className="mb-6 flex flex-wrap items-center justify-between gap-3 border border-neutral-300 bg-white p-4">
+          <div>
+            <p className="text-sm font-semibold">학생 홈 미리보기 · 읽기 전용</p>
+            <p className="mt-1 text-xs text-neutral-500">
+              학생에게 공개된 홈 화면을 확인합니다. 계정과 권한은 변경되지 않습니다.
+            </p>
+          </div>
+          <button
+            type="button"
+            onClick={() => setPreview(false)}
+            className="min-h-10 bg-black px-4 text-xs text-white"
+          >
+            강사 홈으로 돌아가기
+          </button>
+        </div>
+      )}
+      <div
+        onClickCapture={
+          preview
+            ? (event) => {
+                if ((event.target as HTMLElement).closest("a,button")) {
+                  event.preventDefault();
+                  event.stopPropagation();
+                }
+              }
+            : undefined
+        }
+      >
+        <StudentHome />
+      </div>
+    </>
+  );
+}
+
+function StudentHome() {
+  const sessions = usePublishedSessions();
+  const [now, setNow] = useState(() => new Date());
+  useEffect(() => {
+    const timer = window.setInterval(() => setNow(new Date()), 60_000);
+    return () => window.clearInterval(timer);
+  }, []);
+  const today = new Intl.DateTimeFormat("en-CA", { timeZone: "Asia/Seoul" }).format(now);
+  const next = [...sessions]
+    .sort((a, b) => a.date.localeCompare(b.date))
+    .find((session) => session.date >= today);
+  const cur = next ? { session: next, isToday: next.date === today } : null;
   return (
     <>
       <header className="mb-6 flex items-baseline gap-4">
@@ -30,15 +85,7 @@ function HomePage() {
         </h1>
         <p className="min-w-0 text-base text-muted-foreground">{COURSE_NAME}</p>
       </header>
-      <section aria-labelledby="home-notice-title" className="mb-8">
-        <h2 id="home-notice-title" className="mb-3 text-lg font-bold">
-          공지
-        </h2>
-        <div className="border-y border-border bg-card px-5 py-4 sm:px-6">
-          <p className="text-base font-semibold text-foreground">등록된 공지가 없습니다</p>
-          <p className="mt-1 text-sm text-muted-foreground">공지가 등록되면 이곳에 표시됩니다.</p>
-        </div>
-      </section>
+      <PublishedAnnouncements />
       <div className="grid gap-5 lg:grid-cols-[minmax(0,2fr)_minmax(0,1fr)]">
         <section className="@container border-y border-border bg-card px-6 py-7 text-foreground sm:px-8 sm:py-8">
           {cur ? (
@@ -58,7 +105,8 @@ function HomePage() {
                   <div className="mt-2 text-sm">
                     <p>{formatDateKo(cur.session.date)}</p>
                     <p className="mt-1">
-                      {CLASS_START} ~ {CLASS_END} (한국 시간)
+                      {cur.session.startTime ?? CLASS_START} ~ {cur.session.endTime ?? CLASS_END}{" "}
+                      (한국 시간)
                     </p>
                   </div>
                 </div>

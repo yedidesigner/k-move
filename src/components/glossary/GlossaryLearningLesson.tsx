@@ -1,6 +1,6 @@
 import { useId, type ReactNode } from "react";
 import { ArrowUpRight } from "lucide-react";
-import type { GlossaryEntry } from "@/data/glossary";
+import type { ManagedTerm } from "@/lib/content-model";
 import type { GlossaryLearning } from "@/data/learning/types";
 import type { GlossaryPractice } from "@/data/practice/types";
 import { GlossaryExampleFigure } from "./GlossaryExampleFigure";
@@ -28,7 +28,7 @@ export function GlossaryLearningLesson({
   learning,
   practice,
 }: {
-  entry: GlossaryEntry;
+  entry: ManagedTerm;
   learning: GlossaryLearning;
   practice?: GlossaryPractice | undefined;
 }) {
@@ -40,7 +40,13 @@ export function GlossaryLearningLesson({
     <article className="gp-lesson gl-lesson" data-learning-mode={learning.mode}>
       <header className="gl-header">
         <p className="gl-eyebrow">DESIGN GLOSSARY</p>
-        <h2 lang="en">{entry.lessonId ? VISUAL_LESSONS[entry.lessonId].english : entry.english}</h2>
+        <h2 lang="en">
+          {entry.managed
+            ? entry.english
+            : entry.lessonId
+              ? VISUAL_LESSONS[entry.lessonId].english
+              : entry.english}
+        </h2>
         <p className="gl-pronunciation">
           [{entry.pronunciation}] / {entry.korean}
         </p>

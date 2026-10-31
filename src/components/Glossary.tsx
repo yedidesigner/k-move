@@ -1,4 +1,4 @@
-import { lazy, Suspense, useId, useRef, useState } from "react";
+import { lazy, Suspense, useEffect, useId, useRef, useState } from "react";
 import * as Dialog from "@radix-ui/react-dialog";
 import {
   ArrowUpRight,
@@ -9,17 +9,13 @@ import {
   Search,
   X,
 } from "lucide-react";
-import {
-  filterGlossary,
-  GLOSSARY,
-  GLOSSARY_SOURCE_URL,
-  LEARNING_FILTERS,
-  type GlossaryEntry,
-  type GlossaryFilter,
-} from "@/data/glossary";
+import { GLOSSARY_SOURCE_URL, type GlossaryEntry, type GlossaryFilter } from "@/data/glossary";
 import { VISUAL_LESSONS } from "./glossary/VisualGlossaryLesson";
 import { getGlossaryPractice, hasGlossaryPractice } from "@/data/glossary-practice";
-import { getGlossaryLearning, LEARNING_LABELS } from "@/data/glossary-learning";
+import { getGlossaryLearning, getLearningMode, LEARNING_LABELS } from "@/data/glossary-learning";
+import { usePublishedContent } from "@/lib/published-content";
+import { hasManagedExample, ManagedTermExample } from "./glossary/ManagedTermExample";
+import type { ManagedTerm } from "@/lib/content-model";
 import "./glossary.css";
 import { getGlossaryDepth } from "@/data/glossary-depth";
 import { GlossaryNavigationContext } from "./glossary/navigation-context";
@@ -33,13 +29,12 @@ const GlossaryLearningLesson = lazy(() =>
 
 const PAGE_SIZE = 12;
 const ALPHABET = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("");
-const AVAILABLE_LETTERS = new Set(GLOSSARY.map((entry) => entry.letter));
 
 function GlossaryCard({
   entry,
   onLearn,
 }: {
-  entry: GlossaryEntry;
+  entry: ManagedTerm;
   onLearn: (entry: GlossaryEntry, trigger: HTMLButtonElement) => void;
 }) {
   const [flipped, setFlipped] = useState(false);
@@ -47,7 +42,7 @@ function GlossaryCard({
   const [description, note] = entry.description.split("[실무 참고]");
   const lessonId = entry.lessonId;
   const lesson = lessonId ? VISUAL_LESSONS[lessonId] : null;
-  const english = lesson?.english ?? entry.english;
+  const english = entry.managed ? entry.english : (lesson?.english ?? entry.english);
   const hasPractice = hasGlossaryPractice(entry);
   const learning = getGlossaryLearning(entry.id);
 
@@ -107,7 +102,7 @@ function GlossaryCard({
           </span>
         </span>
       </button>
-      {learning && (
+      {(learning || hasManagedExample(entry)) && (
         <button
           type="button"
           className="glossary-learn-button"
@@ -123,26 +118,62 @@ function GlossaryCard({
 }
 
 export function Glossary({ initialQuery = "" }: { initialQuery?: string } = {}) {
+  const { glossary: entries } = usePublishedContent();
+  const availableLetters = new Set(entries.map((entry) => entry.letter));
+  const learningFilters = [
+    { value: "all", label: "전체", count: entries.length },
+    ...Object.entries(LEARNING_LABELS).map(([value, label]) => ({
+      value,
+      label,
+      count: entries.filter((entry) => (getLearningMode(entry) ?? "example") === value).length,
+    })),
+  ];
   const [query, setQuery] = useState(initialQuery);
   const [letter, setLetter] = useState("ALL");
   const [filter, setFilter] = useState<GlossaryFilter>("all");
   const [topic, setTopic] = useState("all");
   const [page, setPage] = useState(1);
   const [resetKey, setResetKey] = useState(0);
-  const [activeEntry, setActiveEntry] = useState<GlossaryEntry | null>(null);
+  const [activeEntry, setActiveEntry] = useState<ManagedTerm | null>(null);
   const lessonTriggerRef = useRef<HTMLElement | null>(null);
   const lessonDialogRef = useRef<HTMLDivElement>(null);
   const lessonCloseRef = useRef<HTMLButtonElement>(null);
   const resultsRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
-  const results = filterGlossary(query, letter, filter).filter(
-    (entry) => topic === "all" || getGlossaryDepth(entry.id)?.topic === topic,
+  const words = query.trim().normalize("NFKC").toLocaleLowerCase().split(/\s+/).filter(Boolean);
+  const results = entries.filter(
+    (entry) =>
+      (letter === "ALL" || entry.letter === letter) &&
+      (filter === "all" || (getLearningMode(entry) ?? "example") === filter) &&
+      (topic === "all" || (entry.topic || getGlossaryDepth(entry.id)?.topic) === topic) &&
+      words.every((word) =>
+        [
+          entry.english,
+          entry.korean,
+          entry.pronunciation,
+          entry.description,
+          entry.example,
+          ...(entry.aliases ?? []),
+        ]
+          .join(" ")
+          .normalize("NFKC")
+          .toLocaleLowerCase()
+          .includes(word),
+      ),
   );
   const pageCount = Math.max(1, Math.ceil(results.length / PAGE_SIZE));
   const start = (page - 1) * PAGE_SIZE;
   const visibleEntries = results.slice(start, start + PAGE_SIZE);
   const activePractice = activeEntry ? getGlossaryPractice(activeEntry.id) : undefined;
   const activeLearning = activeEntry ? getGlossaryLearning(activeEntry.id) : undefined;
+  useEffect(() => {
+    setPage((previous) => Math.min(previous, pageCount));
+  }, [pageCount]);
+  useEffect(() => {
+    setActiveEntry((previous) =>
+      previous ? (entries.find((entry) => entry.id === previous.id) ?? null) : null,
+    );
+  }, [entries]);
 
   function openLesson(entry: GlossaryEntry, trigger: HTMLButtonElement) {
     lessonTriggerRef.current = trigger;
@@ -150,7 +181,7 @@ export function Glossary({ initialQuery = "" }: { initialQuery?: string } = {}) 
   }
 
   function openRelatedTerm(termId: string, trigger: HTMLAnchorElement) {
-    const entry = GLOSSARY.find((item) => item.id === termId);
+    const entry = entries.find((item) => item.id === termId);
     if (!entry || activeEntry?.id === termId) return;
     if (!activeEntry) lessonTriggerRef.current = trigger;
     setActiveEntry(entry);
@@ -188,7 +219,7 @@ export function Glossary({ initialQuery = "" }: { initialQuery?: string } = {}) 
             </h1>
             <span className="text-xs tracking-[0.1em] text-muted-foreground">
               <strong className="mr-1.5 text-xl font-medium tracking-tight text-foreground">
-                {GLOSSARY.length}
+                {entries.length}
               </strong>{" "}
               TERMS
             </span>
@@ -269,13 +300,13 @@ export function Glossary({ initialQuery = "" }: { initialQuery?: string } = {}) 
             <span>{filter !== "all" || letter !== "ALL" ? "적용 중" : "학습 유형 · 알파벳"}</span>
           </summary>
           <div role="group" aria-label="학습 유형 필터" className="glossary-type-filters">
-            {LEARNING_FILTERS.map(({ value, label, count }) => (
+            {learningFilters.map(({ value, label, count }) => (
               <button
                 key={value}
                 type="button"
                 aria-pressed={filter === value}
                 onClick={() => {
-                  setFilter(value);
+                  setFilter(value as GlossaryFilter);
                   setPage(1);
                 }}
               >
@@ -295,7 +326,7 @@ export function Glossary({ initialQuery = "" }: { initialQuery?: string } = {}) 
                 type="button"
                 aria-label={item === "ALL" ? "전체 알파벳" : `${item}로 시작하는 용어`}
                 aria-pressed={letter === item}
-                disabled={item !== "ALL" && !AVAILABLE_LETTERS.has(item)}
+                disabled={item !== "ALL" && !availableLetters.has(item)}
                 onClick={() => {
                   setLetter(item);
                   setPage(1);
@@ -313,7 +344,7 @@ export function Glossary({ initialQuery = "" }: { initialQuery?: string } = {}) 
             <p role="status" aria-live="polite">
               {filter === "all"
                 ? "전체 용어"
-                : LEARNING_FILTERS.find((item) => item.value === filter)?.label}
+                : learningFilters.find((item) => item.value === filter)?.label}
               {letter !== "ALL" && ` · ${letter}`}{" "}
               <span className="ml-1 font-semibold text-foreground">{results.length}개</span>
               {query.trim() && <span> · 검색 결과</span>}
@@ -436,9 +467,11 @@ export function Glossary({ initialQuery = "" }: { initialQuery?: string } = {}) 
               </div>
               <Dialog.Title className="sr-only">
                 {activeEntry
-                  ? activeEntry.lessonId
-                    ? VISUAL_LESSONS[activeEntry.lessonId].english
-                    : activeEntry.english
+                  ? activeEntry.managed
+                    ? activeEntry.english
+                    : activeEntry.lessonId
+                      ? VISUAL_LESSONS[activeEntry.lessonId].english
+                      : activeEntry.english
                   : "용어"}{" "}
                 학습
               </Dialog.Title>
@@ -446,6 +479,7 @@ export function Glossary({ initialQuery = "" }: { initialQuery?: string } = {}) 
                 용어에 맞는 시각 예시와 관찰 포인트를 보고 이해하는 학습 화면입니다. 조작이 도움이
                 되는 용어에는 실습이 함께 제공됩니다.
               </Dialog.Description>
+              {activeEntry && <ManagedTermExample term={activeEntry} />}
               {activeEntry && activeLearning ? (
                 <Suspense
                   fallback={

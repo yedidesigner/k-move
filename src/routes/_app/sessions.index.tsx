@@ -1,6 +1,9 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { CalendarDays, ChevronRight, List } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { useAuth } from "@/lib/auth";
+import { usePublishedSessions } from "@/lib/published-content";
+import { SessionManager } from "@/components/instructor/SessionManager";
 import {
   CLASS_END,
   CLASS_START,
@@ -53,9 +56,22 @@ function initialView(): ScheduleView {
 }
 
 function Sessions() {
+  const { status } = useAuth();
+  return status === "instructor" ? <SessionManager /> : <StudentSessionSchedule />;
+}
+
+export function StudentSessionSchedule() {
+  const sessions = usePublishedSessions();
   const today = seoulToday();
   const [view, setView] = useState<ScheduleView>(initialView);
   const [month, setMonth] = useState(() => defaultCalendarMonth(today));
+  useEffect(() => {
+    const months = [...new Set(sessions.map((session) => session.date.slice(0, 7)))].sort();
+    if (!months.includes(month))
+      setMonth(
+        months.find((item) => item >= today.slice(0, 7)) ?? months.at(-1) ?? today.slice(0, 7),
+      );
+  }, [sessions, month, today]);
 
   const changeView = (next: ScheduleView) => {
     setView(next);
@@ -74,7 +90,7 @@ function Sessions() {
             CURRICULUM
           </h1>
           <p className="mt-1.5 text-base text-muted-foreground">
-            총 {SESSIONS.length}회차 · 매회 {CLASS_START}~{CLASS_END} (한국 시간)
+            총 {sessions.length}회차 · 회차별 일정 확인 (한국 시간)
           </p>
         </div>
         <div role="group" aria-label="수업 보기 방식" className="inline-flex border border-border">
@@ -123,7 +139,7 @@ function Sessions() {
         </p>
       </section>
       {view === "calendar" ? (
-        <SessionCalendar month={month} today={today} onMonthChange={setMonth} />
+        <SessionCalendar month={month} today={today} onMonthChange={setMonth} sessions={sessions} />
       ) : (
         <SessionList today={today} />
       )}
@@ -132,9 +148,10 @@ function Sessions() {
 }
 
 function SessionList({ today }: { today: string }) {
+  const sessions = usePublishedSessions();
   return (
     <ul className="divide-y divide-border border-y border-border">
-      {SESSIONS.map((s) => {
+      {sessions.map((s) => {
         const state = s.date === today ? "today" : s.date < today ? "done" : "upcoming";
         return (
           <li key={s.id}>
@@ -142,7 +159,7 @@ function SessionList({ today }: { today: string }) {
               to="/sessions/$id"
               params={{ id: s.id }}
               className={cn(
-                "group relative grid min-h-24 grid-cols-[4.25rem_minmax(0,1fr)_auto] items-center gap-x-3 px-3 py-4 transition duration-200 ease-out hover:z-10 focus-visible:z-10 focus-visible:outline focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-primary motion-safe:hover:scale-[1.015] motion-safe:focus-visible:scale-[1.015] motion-reduce:transition-none sm:grid-cols-[6rem_minmax(0,1fr)_auto_1.25rem] sm:gap-x-5 sm:px-7",
+                "group relative grid min-h-24 grid-cols-[4.25rem_minmax(0,1fr)_auto] items-center gap-x-3 px-3 py-4 transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-primary sm:grid-cols-[6rem_minmax(0,1fr)_auto_1.25rem] sm:gap-x-5 sm:px-7",
                 state === "today"
                   ? "bg-black text-white hover:bg-neutral-900"
                   : "bg-card text-foreground hover:bg-muted",
@@ -153,7 +170,7 @@ function SessionList({ today }: { today: string }) {
               </span>
               <div className="min-w-0">
                 <p className="break-keep text-base font-bold leading-snug [overflow-wrap:anywhere]">
-                  {s.curriculum?.project ?? s.title}
+                  {s.managed ? s.title : (s.curriculum?.project ?? s.title)}
                 </p>
                 {s.curriculum?.stage && (
                   <p
@@ -191,7 +208,11 @@ function SessionList({ today }: { today: string }) {
                   state === "today" ? "text-white" : "text-muted-foreground",
                 )}
               >
-                {sessionStatusLabel(s, today)}
+                {s.progress === "completed"
+                  ? "진행 완료"
+                  : s.date < today
+                    ? "일정 경과"
+                    : sessionStatusLabel(s, today)}
               </span>
               <ChevronRight
                 aria-hidden

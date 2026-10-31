@@ -1,6 +1,7 @@
 import { lazy, Suspense, useEffect, useId, useRef, useState } from "react";
 import { ArrowLeft, ArrowRight, BookOpen, Check, ChevronDown, Search, X } from "lucide-react";
-import { STUDY_GUIDES, TOPICS, getGuidesForTerm, type StudyGuide } from "@/data/study-materials";
+import { TOPICS, type StudyGuide } from "@/data/study-materials";
+import { usePublishedContent } from "@/lib/published-content";
 import { getGlossaryLearning } from "@/data/glossary-learning";
 import { GlossaryTermLink } from "./glossary/GlossaryTermLink";
 import "./study-materials.css";
@@ -46,6 +47,7 @@ export function DesignGuideContent({
   guide: StudyGuide;
   onGuideChange?: (id: string) => void;
 }) {
+  const { guides, glossary } = usePublishedContent();
   const titleId = useId();
   const tabsId = useId();
   const [activeTab, setActiveTab] = useState(0);
@@ -53,8 +55,11 @@ export function DesignGuideContent({
   const [hasOpenedVisual, setHasOpenedVisual] = useState(false);
   const tabRefs = useRef<Array<HTMLButtonElement | null>>([]);
   const sectionRefs = useRef<Array<HTMLButtonElement | null>>([]);
-  const visual = guide.visualTermId ? getGlossaryLearning(guide.visualTermId) : undefined;
-  const topicGuides = STUDY_GUIDES.filter((item) => item.topic === guide.topic);
+  const visual =
+    guide.visualTermId && glossary.some((term) => term.id === guide.visualTermId)
+      ? getGlossaryLearning(guide.visualTermId)
+      : undefined;
+  const topicGuides = guides.filter((item) => item.topic === guide.topic);
   const topicIndex = topicGuides.findIndex((item) => item.id === guide.id);
   const nextGuide = topicIndex >= 0 ? topicGuides[topicIndex + 1] : undefined;
   return (
@@ -353,7 +358,11 @@ export function DesignGuideContent({
 
 export function RelatedDesignGuides({ termId }: { termId: string }) {
   const headingId = useId();
-  const guides = getGuidesForTerm(termId);
+  const { guides: allGuides } = usePublishedContent();
+  const guides = allGuides.filter(
+    (guide) =>
+      guide.relatedTerms.some((term) => term.id === termId) || guide.visualTermId === termId,
+  );
   if (!guides.length) return null;
   return (
     <section className="study-shared study-related-guides" aria-labelledby={headingId}>
@@ -380,6 +389,7 @@ type StudyMaterialsProps = {
   onGuideChange?: (id: string | undefined) => void;
 };
 export function StudyMaterials({ guideId, onGuideChange }: StudyMaterialsProps = {}) {
+  const { guides, paths } = usePublishedContent();
   const [localGuideId, setLocalGuideId] = useState(guideId);
   const [query, setQuery] = useState("");
   const [topic, setTopic] = useState("browse");
@@ -388,19 +398,17 @@ export function StudyMaterials({ guideId, onGuideChange }: StudyMaterialsProps =
   const returnRef = useRef<string | undefined>(undefined);
   const guideLinks = useRef(new Map<string, HTMLAnchorElement>());
   const requestedId = onGuideChange ? guideId : localGuideId;
-  const selectedGuide = STUDY_GUIDES.find((guide) => guide.id === requestedId);
+  const selectedGuide = guides.find((guide) => guide.id === requestedId);
   const searchId = useId();
   const topicId = useId();
   const titleId = useId();
   const showTopics = topic === "browse" && !query.trim();
-  const results = STUDY_GUIDES.filter(
+  const results = guides.filter(
     (guide) =>
       (topic === "browse" || topic === "all" || guide.topic === topic) &&
       matchesGuide(guide, query),
   );
-  const availableTopics = TOPICS.filter((item) =>
-    STUDY_GUIDES.some((guide) => guide.topic === item.id),
-  );
+  const availableTopics = TOPICS.filter((item) => guides.some((guide) => guide.topic === item.id));
   const changeGuide = (id: string | undefined) => {
     if (id && !selectedGuide) returnRef.current = id;
     if (onGuideChange) onGuideChange(id);
@@ -418,7 +426,7 @@ export function StudyMaterials({ guideId, onGuideChange }: StudyMaterialsProps =
         <div className="study-page-title-row">
           <h1 id={titleId}>학습자료</h1>
           <span>
-            {STUDY_GUIDES.length}
+            {guides.length}
             <small>GUIDES</small>
           </span>
         </div>
@@ -501,6 +509,38 @@ export function StudyMaterials({ guideId, onGuideChange }: StudyMaterialsProps =
             </div>
           </div>
           <section className="study-topic-section" aria-labelledby={`${titleId}-topics`}>
+            {showTopics && paths.length > 0 && (
+              <div className="mb-7 space-y-4" aria-label="강사가 구성한 학습 경로">
+                {paths.map((path) => (
+                  <article key={path.id} className="border border-neutral-200 bg-white p-5">
+                    <p className="text-xs text-neutral-500">주제별 이어 배우기</p>
+                    <h2 className="mt-2 text-lg font-semibold">{path.title}</h2>
+                    <p className="mt-2 whitespace-pre-wrap text-sm leading-7 text-neutral-600">
+                      {path.description}
+                    </p>
+                    <ol className="mt-4 divide-y divide-neutral-100">
+                      {path.guideIds.flatMap((id) => {
+                        const guide = guides.find((item) => item.id === id);
+                        return guide
+                          ? [
+                              <li key={id}>
+                                <button
+                                  type="button"
+                                  className="flex min-h-11 w-full items-center justify-between gap-3 py-3 text-left text-sm hover:underline"
+                                  onClick={() => changeGuide(id)}
+                                >
+                                  {guide.title}
+                                  <ArrowRight size={15} aria-hidden />
+                                </button>
+                              </li>,
+                            ]
+                          : [];
+                      })}
+                    </ol>
+                  </article>
+                ))}
+              </div>
+            )}
             <div className="study-section-heading">
               <div>
                 <h2 id={`${titleId}-topics`}>주제별로 이어 배우기</h2>
@@ -540,7 +580,7 @@ export function StudyMaterials({ guideId, onGuideChange }: StudyMaterialsProps =
                       <span className="study-topic-card-meta">
                         <span>{String(index + 1).padStart(2, "0")}</span>
                         <span>
-                          {STUDY_GUIDES.filter((guide) => guide.topic === item.id).length}개 가이드
+                          {guides.filter((guide) => guide.topic === item.id).length}개 가이드
                         </span>
                       </span>
                       <strong>{item.label}</strong>
