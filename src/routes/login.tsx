@@ -75,7 +75,7 @@ function Login() {
 
         <div className="mt-7 border-b border-border pb-4">
           <h2 className="text-base font-semibold">로그인</h2>
-          <p className="mt-1 text-sm text-muted-foreground">강사가 등록한 이름으로 로그인해 주세요.</p>
+          <p className="mt-1 text-sm text-muted-foreground">본명으로 로그인</p>
         </div>
 
         <div className="mt-6">
