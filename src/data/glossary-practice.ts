@@ -1,5 +1,6 @@
 import practiceEntries from "./practice/entries.json";
 import type { GlossaryPractice } from "./practice/types";
+import { getLearningMode } from "./glossary-learning";
 
 export type PracticeKind = GlossaryPractice["kind"];
 type PracticeEntry = { id: string; lessonId?: string };
@@ -15,6 +16,7 @@ export function getGlossaryPractice(id: string): GlossaryPractice | undefined {
 }
 
 export function getPracticeKind(entry: PracticeEntry): PracticeKind | undefined {
+  if (getLearningMode(entry) !== "practice") return undefined;
   if (entry.lessonId === "cta" || entry.lessonId === "hamburger" || entry.lessonId === "carousel") {
     return "visual";
   }

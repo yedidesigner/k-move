@@ -1,0 +1,1296 @@
+.gl-lesson {
+  --gl-ink: #171d19;
+  --gl-muted: #626e66;
+  --gl-line: #d9e0da;
+  --gl-soft: #f1f5f1;
+  --gl-accent: #2d6c5d;
+  background: #fff;
+  font-family: inherit;
+  max-width: 960px;
+}
+.gl-lesson h2,
+.gl-lesson h3,
+.gl-lesson h4,
+.gl-lesson p,
+.gl-lesson figure,
+.gl-lesson ul,
+.gl-lesson ol,
+.gl-lesson dl,
+.gl-lesson dd {
+  margin: 0;
+}
+.gl-header {
+  display: grid;
+  gap: 10px;
+  border-bottom: 1px solid var(--gl-line);
+  padding-bottom: 28px;
+}
+.gl-eyebrow,
+.gl-original-label {
+  font-size: 10px;
+  letter-spacing: 0.08em;
+  color: var(--gl-muted);
+}
+.gl-header h2 {
+  font-size: clamp(30px, 5vw, 44px);
+  line-height: 1.18;
+  font-weight: 700;
+  letter-spacing: -0.04em;
+  overflow-wrap: anywhere;
+}
+.gl-pronunciation {
+  color: var(--gl-muted);
+  font-size: 14px;
+}
+.gl-definition {
+  margin-top: 9px !important;
+  font-size: 16px;
+  line-height: 1.85;
+  max-width: 58em;
+}
+.gl-section {
+  display: grid;
+  gap: 16px;
+  margin-top: 30px;
+}
+.gl-section > h3 {
+  font-size: 20px;
+  font-weight: 700;
+  line-height: 1.45;
+  letter-spacing: -0.025em;
+}
+.gl-example {
+  border: 1px solid var(--gl-line);
+  background: #fff;
+  color: var(--gl-ink);
+  max-width: 100%;
+}
+.gl-example-header {
+  display: grid;
+  gap: 6px;
+  padding: 22px 24px;
+}
+.gl-original-label {
+  display: block;
+  color: var(--gl-accent);
+  letter-spacing: 0.025em;
+  margin-bottom: 4px;
+}
+.gl-example-header h4 {
+  font-size: 21px;
+  line-height: 1.45;
+  font-weight: 650;
+  letter-spacing: -0.025em;
+}
+.gl-example-header > p {
+  color: var(--gl-muted);
+  font-size: 13px;
+  line-height: 1.75;
+}
+.gl-example-body {
+  padding: 22px;
+  border-top: 1px solid var(--gl-line);
+  border-bottom: 1px solid var(--gl-line);
+  background: #f6f8f5;
+  font-size: 13px;
+  line-height: 1.75;
+  overflow-wrap: anywhere;
+}
+.gl-example-body strong {
+  font-weight: 650;
+}
+.gl-example-body small {
+  display: block;
+  color: var(--gl-muted);
+  font-size: 12px;
+  line-height: 1.75;
+  margin-top: 7px;
+}
+.gl-example figcaption {
+  padding: 16px 24px;
+  color: var(--gl-muted);
+  font-size: 13px;
+  line-height: 1.8;
+}
+.gl-item-label {
+  display: block;
+  font-size: 15px;
+  line-height: 1.5;
+  margin-bottom: 8px;
+}
+.gl-item-heading {
+  display: block;
+  font-size: 18px;
+  line-height: 1.45;
+  margin-bottom: 10px;
+}
+.gl-observation,
+.gl-takeaway {
+  font-size: 15px;
+  line-height: 1.85;
+}
+.gl-observation {
+  padding-left: 16px;
+  border-left: 3px solid var(--gl-accent);
+}
+.gl-takeaway {
+  padding: 17px 20px;
+  background: var(--gl-soft);
+}
+.gl-references {
+  list-style: none;
+  display: grid;
+  gap: 14px;
+  padding: 0;
+}
+.gl-references a {
+  display: inline-flex;
+  gap: 6px;
+  align-items: baseline;
+  color: var(--gl-ink);
+  font-size: 14px;
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+.gl-references a svg {
+  flex-shrink: 0;
+  align-self: center;
+}
+.gl-references li > p {
+  font-size: 12px;
+  color: var(--gl-muted);
+  line-height: 1.8;
+  margin-top: 5px;
+}
+.gl-practice-reason {
+  color: var(--gl-muted);
+  font-size: 14px;
+}
+.gl-sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+.gl-inline-note {
+  color: var(--gl-muted);
+  font-size: 12px;
+  padding-top: 16px;
+  line-height: 1.7;
+}
+.gl-browser-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  background: #edf1ed;
+  border-bottom: 1px solid #d5ddd5;
+  padding: 9px 12px;
+  font-size: 9px;
+  letter-spacing: 0.06em;
+  color: #536258;
+}
+.gl-window-dots {
+  display: flex;
+  gap: 4px;
+}
+.gl-window-dots i {
+  display: block;
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: #a7b5aa;
+}
+.gl-screen {
+  background: #fff;
+  border: 1px solid #bdc9be;
+}
+.gl-native-app {
+  max-width: 350px;
+  margin: auto;
+  border: 5px solid #344a30;
+  border-radius: 27px;
+  overflow: hidden;
+}
+.gl-app-device-edge {
+  display: flex;
+  justify-content: center;
+  padding: 11px 0 3px;
+}
+.gl-app-device-edge > span {
+  width: 65px;
+  height: 6px;
+  border-radius: 8px;
+  background: #344a30;
+}
+.gl-native-app .gl-screen-heading {
+  padding: 15px 20px;
+  letter-spacing: -0.02em;
+}
+.gl-native-app .gl-screen-block:not(:first-child) {
+  display: block;
+}
+.gl-app-bottom-nav {
+  display: flex;
+  justify-content: space-around;
+  padding: 17px 14px 23px;
+  border-top: 1px solid #d0ddc5;
+  color: #5c7750;
+  font-size: 11px;
+  background: #f6f9f1;
+}
+.gl-app-bottom-nav > span:first-child {
+  font-weight: 700;
+  color: #2c4e21;
+}
+.gl-screen-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20px 22px;
+  gap: 14px;
+  border-bottom: 1px solid var(--gl-line);
+  font-size: 16px;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+}
+.gl-screen-nav {
+  font-size: 8px;
+  letter-spacing: 0.1em;
+  font-weight: 500;
+}
+.gl-ui-action {
+  display: inline-block;
+  padding: 12px 18px;
+  background: #2e543a;
+  color: #fff;
+  font-weight: 600;
+  width: fit-content;
+}
+.gl-ui-search {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px;
+  border: 1px solid #a9bca5;
+  color: #526d4b;
+  background: #fff;
+}
+.gl-ui-filter {
+  padding: 8px 12px;
+  border-bottom: 2px solid #64845a;
+  background: #edf3e8;
+}
+.gl-ui-status {
+  display: inline-block;
+  padding: 6px 11px;
+  background: #e7efe0;
+  color: #355d2b;
+  width: fit-content;
+}
+.gl-icon-gallery {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 17px;
+}
+.gl-icon-gallery > div {
+  padding: 16px;
+  background: #fff;
+  border-bottom: 2px solid #9cb291;
+}
+.gl-icon-specimen {
+  padding: 16px 0 25px;
+  color: #324b2d;
+}
+.gl-landmark-map {
+  display: grid;
+  grid-template-columns: minmax(0, 1.6fr) minmax(0, 1fr);
+  border: 1px solid #a9bca1;
+  background: #fff;
+}
+.gl-landmark-map > .gl-browser-bar {
+  grid-column: 1/-1;
+}
+.gl-landmark-region {
+  padding: 22px;
+  border: 1px dashed #a8bda1;
+}
+.gl-landmark-0 {
+  grid-column: 1/-1;
+  background: #e7efdf;
+}
+.gl-landmark-1 {
+  min-height: 230px;
+}
+.gl-landmark-2 {
+  background: #f1f5ec;
+}
+.gl-landmark-tag {
+  display: inline-block;
+  font-family: monospace;
+  font-size: 10px;
+  color: #4b743e;
+  margin-bottom: 15px;
+  border: 1px solid #bed0b3;
+  padding: 2px 5px;
+}
+.gl-menu-anatomy {
+  background: #fff;
+  border: 1px solid #bcccb1;
+}
+.gl-menu-header {
+  display: flex;
+  justify-content: space-between;
+  gap: 15px;
+  padding: 20px;
+  border-bottom: 1px solid #d1ddc7;
+}
+.gl-menu-header > span {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+}
+.gl-menu-open {
+  width: 58%;
+  margin-left: auto;
+  border: 1px solid #a7be98;
+  border-top: 0;
+  background: #eff5e7;
+  padding: 16px 20px;
+}
+.gl-menu-open-label {
+  display: flex;
+  justify-content: space-between;
+  gap: 15px;
+  border-bottom: 1px solid #c4d4b7;
+  padding-bottom: 12px;
+  margin-bottom: 12px;
+  color: #4e6a3c;
+  font-size: 11px;
+}
+.gl-menu-open > p {
+  padding: 10px 0;
+}
+.gl-menu-anatomy > dl {
+  display: grid;
+  gap: 16px;
+  padding: 20px;
+  border-top: 1px solid #d1ddc7;
+  margin-top: 20px;
+}
+.gl-menu-anatomy dt {
+  font-weight: 650;
+  font-size: 13px;
+}
+.gl-menu-anatomy dd {
+  font-size: 12px;
+}
+.gl-screen-content {
+  position: relative;
+  display: grid;
+  gap: 0;
+}
+.gl-screen-block {
+  padding: 22px;
+  border-bottom: 1px solid var(--gl-line);
+}
+.gl-screen-block:last-child {
+  border-bottom: 0;
+}
+.gl-screen-standard .gl-screen-block:first-child {
+  padding: 30px 22px;
+  background: #e9f0e9;
+}
+.gl-screen-standard .gl-screen-block:first-child .gl-item-heading {
+  font-size: 25px;
+  max-width: 24ch;
+}
+.gl-screen-standard .gl-screen-block:not(:first-child) {
+  display: grid;
+  grid-template-columns: minmax(110px, 0.65fr) minmax(0, 1fr);
+  gap: 5px 20px;
+}
+.gl-screen-standard .gl-screen-block:not(:first-child) small {
+  grid-column: 2;
+}
+.gl-screen-z .gl-screen-content {
+  grid-template-columns: 1fr 1fr;
+  gap: 70px 32px;
+  padding: 25px;
+}
+.gl-screen-z .gl-screen-block {
+  padding: 14px;
+  border: 1px solid #b9c9bd;
+  background: #fff;
+  position: relative;
+}
+.gl-screen-z .gl-screen-block small {
+  font-size: 11px;
+}
+.gl-screen-order {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 23px;
+  height: 23px;
+  background: #244e3d;
+  color: #fff;
+  font-size: 11px;
+  margin-bottom: 10px;
+}
+.gl-z-path {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+.gl-z-path path {
+  fill: none;
+  stroke: #74a08a;
+  stroke-width: 2;
+  stroke-dasharray: 5 5;
+}
+.gl-screen-z > .gl-inline-note {
+  padding: 15px 22px;
+  border-top: 1px solid var(--gl-line);
+}
+.gl-screen-layered .gl-screen-block {
+  padding: 0 20px 20px;
+}
+.gl-screen-layered .gl-item-heading {
+  margin: 0 -20px 15px;
+  padding: 12px 20px;
+  background: #e1e9e0;
+  font-size: 17px;
+}
+.gl-text-lines {
+  display: grid;
+  gap: 7px;
+  margin-top: 13px;
+}
+.gl-text-lines i {
+  height: 5px;
+  background: #cdd7ce;
+  width: 100%;
+}
+.gl-text-lines i:last-child {
+  width: 62%;
+}
+.gl-comparison-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 18px;
+}
+.gl-comparison-panel {
+  background: #fff;
+  padding: 19px;
+  border-top: 3px solid #7d9984;
+}
+.gl-comparison-label {
+  font-size: 16px;
+}
+.gl-evidence-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 18px;
+}
+.gl-evidence-sheet {
+  padding: 20px;
+  background: #fff;
+  border: 1px solid #d0dcd0;
+  border-top: 4px solid #839e88;
+  box-shadow: 2px 3px 0 #e5ece1;
+}
+.gl-evidence-quote {
+  margin: 18px 0 10px;
+  padding: 12px 0;
+  font-size: 16px;
+  line-height: 1.85;
+  border-top: 1px solid #dce5d8;
+  border-bottom: 1px solid #dce5d8;
+}
+.gl-typeset-quote {
+  margin: 20px 0;
+  font-size: 21px;
+  line-height: 1.9;
+}
+.gl-comparison-display {
+  margin-top: 15px;
+  border: 1px solid #b9cabb;
+  background: #fff;
+}
+.gl-comparison-content {
+  padding: 20px 16px;
+  min-height: 110px;
+}
+.gl-phone-display {
+  border: 5px solid #405949;
+  border-radius: 19px;
+  max-width: 225px;
+  margin-left: auto;
+  margin-right: auto;
+  padding: 10px 0 16px;
+}
+.gl-phone-display .gl-browser-bar {
+  background: #fff;
+  border: 0;
+  font-size: 8px;
+}
+.gl-phone-display .gl-comparison-content {
+  min-height: 150px;
+}
+.gl-map-example {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+.gl-form-field-lines {
+  display: grid;
+  gap: 12px;
+  padding-top: 15px;
+}
+.gl-form-field-lines > i {
+  display: block;
+  height: 30px;
+  border: 1px solid #b9c9b8;
+  background: #fff;
+}
+.gl-form-region {
+  background: #edf3e9;
+  margin: 15px;
+  padding: 15px;
+  border: 1px solid #c6d6c1;
+}
+.gl-state-marker {
+  display: block;
+  color: #496b50;
+  font-size: 23px;
+  margin-bottom: 14px;
+}
+.gl-comparison-summary {
+  margin-top: 13px !important;
+}
+.gl-fold-viewport {
+  overflow: hidden;
+  padding: 18px;
+  position: relative;
+}
+.gl-fold-viewport-0 {
+  height: 182px;
+  border-bottom: 2px dashed #64846b;
+}
+.gl-fold-viewport-1 {
+  height: 246px;
+  border-bottom: 2px dashed #64846b;
+}
+.gl-fold-header {
+  font-size: 12px;
+  font-weight: 650;
+  padding-bottom: 18px;
+}
+.gl-fold-hero {
+  background: #e5eddf;
+  padding: 25px 15px;
+  font-size: 17px;
+  line-height: 1.7;
+  margin-bottom: 18px;
+}
+.gl-static-action {
+  display: inline-block;
+  background: #2c5037;
+  color: #fff;
+  font-size: 12px;
+  padding: 9px 16px;
+}
+.gl-comparison-fidelity .gl-evidence-grid > div {
+  padding: 15px;
+  background: #fff;
+  border-top: 1px solid #c2d2be;
+}
+
+.gl-flow {
+  display: grid;
+  list-style: none;
+  padding: 0;
+  width: min(100%, 500px);
+  margin: auto !important;
+}
+.gl-flow li {
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+}
+.gl-flow-node {
+  display: block;
+  background: #fff;
+  border: 1.5px solid #8fa896;
+  padding: 17px 22px;
+  width: 100%;
+}
+.gl-flow-terminal {
+  border-radius: 28px;
+}
+.gl-flow-arrow {
+  display: block;
+  font-size: 28px;
+  color: var(--gl-accent);
+  line-height: 1;
+  padding: 10px 0;
+}
+.gl-branch-flow {
+  display: grid;
+  gap: 0;
+}
+.gl-branch-stem {
+  width: min(100%, 460px);
+  margin: auto;
+}
+.gl-branch-stem .gl-flow-arrow {
+  text-align: center;
+}
+.gl-branch-options {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+  border-top: 1px solid #8baa81;
+  padding-top: 14px;
+}
+.gl-branch-condition {
+  display: block;
+  padding-bottom: 10px;
+  font-size: 12px;
+  color: #4c7342;
+}
+.gl-t-shaped > svg {
+  display: block;
+  width: 100%;
+  max-width: 400px;
+  height: auto;
+  margin: auto auto 25px;
+}
+.gl-t-shaped-notes {
+  display: grid;
+  gap: 16px;
+}
+.gl-t-shaped-notes > div {
+  display: grid;
+  grid-template-columns: minmax(110px, 0.4fr) minmax(0, 1fr);
+  column-gap: 18px;
+  padding-top: 15px;
+  border-top: 1px solid #c2d4b8;
+}
+.gl-t-shaped-notes small {
+  grid-column: 2;
+}
+.gl-sitemap-root {
+  max-width: 340px;
+  margin: 0 auto 35px;
+  padding: 15px 20px;
+  border: 1.5px solid #567a62;
+  text-align: center;
+  font-size: 16px;
+  font-weight: 650;
+  background: #fff;
+  position: relative;
+}
+.gl-sitemap-root > span {
+  margin-right: 8px;
+}
+.gl-sitemap-root::after {
+  position: absolute;
+  content: "";
+  height: 35px;
+  width: 1px;
+  background: #86a08c;
+  top: 100%;
+  left: 50%;
+}
+.gl-sitemap > ul {
+  padding: 0;
+  list-style: none;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 24px;
+}
+.gl-sitemap li {
+  position: relative;
+  border: 1px solid #b6c5b9;
+  background: #fff;
+  padding: 16px;
+}
+.gl-sitemap li::before {
+  content: "";
+  position: absolute;
+  height: 12px;
+  width: 1px;
+  top: -13px;
+  left: 50%;
+  background: #86a08c;
+}
+.gl-sitemap li::after {
+  content: "";
+  position: absolute;
+  height: 1px;
+  width: calc(100% + 24px);
+  top: -13px;
+  left: -12px;
+  background: #86a08c;
+}
+.gl-sitemap li > strong {
+  display: block;
+  font-size: 15px;
+  padding-bottom: 9px;
+  margin-bottom: 9px;
+  border-bottom: 1px solid #dce3dd;
+}
+.gl-storyboard {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 24px;
+  list-style: none;
+  padding: 0;
+}
+.gl-storyboard > li {
+  background: #fff;
+  padding: 13px;
+  border-bottom: 2px solid #b4c5b8;
+}
+.gl-story-number {
+  color: #64776a;
+  font-size: 9px;
+  letter-spacing: 0.12em;
+}
+.gl-story-scene {
+  width: 100%;
+  height: auto;
+  margin: 9px 0 12px;
+  display: block;
+}
+.gl-chart {
+  background: #fff;
+  padding: 22px;
+  border: 1px solid #d8e1d8;
+  display: grid;
+  gap: 24px;
+}
+.gl-chart-label {
+  display: flex;
+  justify-content: space-between;
+  gap: 18px;
+  font-size: 14px;
+  margin-bottom: 9px;
+}
+.gl-chart-label > span {
+  font-variant-numeric: tabular-nums;
+  font-weight: 650;
+}
+.gl-chart-track {
+  position: relative;
+  width: 100%;
+  background: #eef2ec;
+  border-left: 1px solid #a2b5a6;
+  margin-bottom: 10px;
+}
+.gl-chart-zero {
+  position: absolute;
+  top: -3px;
+  bottom: -3px;
+  width: 1px;
+  background: #829a89;
+}
+.gl-chart-bar {
+  min-height: 25px;
+  background: #527d62;
+}
+.gl-chart-no-value {
+  color: #7c887e;
+  font-size: 11px;
+  padding: 7px 0;
+  border-bottom: 1px dashed #cbd5cd;
+  margin-bottom: 10px;
+}
+.gl-type-specimen {
+  background: #fff;
+  padding: 0 24px;
+}
+.gl-type-specimen > div {
+  padding: 24px 0;
+  border-bottom: 1px solid #d8e0d8;
+}
+.gl-type-specimen > div:last-child {
+  border: 0;
+}
+.gl-specimen-label {
+  font-size: 12px;
+  color: #596e60;
+}
+.gl-specimen-text {
+  font-size: clamp(22px, 4vw, 36px);
+  line-height: 1.6;
+  margin: 10px 0 !important;
+  word-break: normal;
+}
+.gl-font-sans {
+  font-family: Arial, "Noto Sans KR", sans-serif;
+}
+.gl-font-serif {
+  font-family: Georgia, "Noto Serif KR", "Batang", serif;
+}
+.gl-font-mono {
+  font-family: "Courier New", "D2Coding", monospace;
+}
+.gl-swatches {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 18px;
+}
+.gl-swatches > div {
+  padding: 10px 10px 17px;
+  background: white;
+}
+.gl-swatch {
+  height: 110px;
+  margin-bottom: 12px;
+  border: 1px solid #00000012;
+}
+.gl-swatches code {
+  display: block;
+  font-size: 11px;
+  color: #627268;
+  margin-bottom: 12px;
+}
+.gl-code-workspace {
+  background: #fff;
+  border: 1px solid #bfcdbf;
+}
+.gl-code-file {
+  padding: 18px;
+  border-bottom: 1px solid #d9e2da;
+}
+.gl-code-file:last-child {
+  border: 0;
+}
+.gl-code-file > strong {
+  display: block;
+  color: #42644e;
+  font-size: 13px;
+  margin-bottom: 10px;
+}
+.gl-code-file pre {
+  background: #f2f5f0;
+  border-left: 3px solid #668b71;
+  padding: 18px;
+  margin: 0;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  font-size: 13px;
+  line-height: 1.85;
+}
+.gl-code-file > p {
+  margin-top: 12px;
+  color: #647568;
+  font-size: 12px;
+}
+.gl-anatomy {
+  display: grid;
+  grid-template-columns: minmax(0, 0.75fr) minmax(0, 1fr);
+  gap: 24px;
+  align-items: center;
+}
+.gl-anatomy-artifact {
+  border: 1px solid #a2b9a7;
+  background: #fff;
+}
+.gl-anatomy-toolbar {
+  display: flex;
+  gap: 5px;
+  padding: 10px;
+  background: #e4ece3;
+}
+.gl-anatomy-toolbar i {
+  width: 5px;
+  height: 5px;
+  background: #9aaf9e;
+  border-radius: 50%;
+}
+.gl-anatomy-part {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 82px;
+  padding: 14px;
+  border-bottom: 1px solid #cbd9ce;
+}
+.gl-anatomy-part:last-child {
+  border-bottom: 0;
+}
+.gl-anatomy-part:nth-child(even) {
+  background: #edf3eb;
+}
+.gl-anatomy-part > span,
+.gl-anatomy-notes li > span {
+  display: grid;
+  place-items: center;
+  flex: 0 0 23px;
+  width: 23px;
+  height: 23px;
+  color: #fff;
+  background: #2e6549;
+  font-size: 11px;
+  border-radius: 50%;
+}
+.gl-anatomy-part .gl-text-lines {
+  flex: 1;
+  margin: 0;
+}
+.gl-anatomy-notes {
+  list-style: none;
+  padding: 0;
+  display: grid;
+  gap: 18px;
+}
+.gl-anatomy-notes li {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+}
+.gl-anatomy-notes .gl-item-label {
+  font-size: 14px;
+  margin-bottom: 5px;
+}
+.gl-url-sample {
+  grid-column: 1/-1;
+  padding: 20px 12px;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 6px;
+  font-size: 17px;
+  background: #fff;
+  border: 1px solid #bfcebe;
+}
+.gl-url-sample > strong {
+  color: var(--gl-accent);
+  border-bottom: 2px solid var(--gl-accent);
+}
+.gl-anatomy-url .gl-anatomy-artifact {
+  display: none;
+}
+.gl-anatomy-url .gl-anatomy-notes {
+  grid-column: 1/-1;
+}
+.gl-role-workspace {
+  background: #fff;
+  border: 1px solid #c1cebf;
+}
+.gl-role-layout {
+  display: grid;
+  grid-template-columns: 105px minmax(0, 1fr);
+}
+.gl-role-sidebar {
+  background: #edf2e9;
+  border-right: 1px solid #d1ddcd;
+  padding: 22px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  font-size: 11px;
+  color: #52674e;
+}
+.gl-role-sidebar strong {
+  font-size: 9px;
+  letter-spacing: 0.1em;
+}
+.gl-role-artifacts {
+  padding: 20px;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 18px;
+  background: #f7f9f5;
+}
+.gl-role-file {
+  position: relative;
+  background: #fff;
+  padding: 15px 15px 20px;
+  border: 1px solid #c4d3c3;
+  box-shadow: 2px 3px 0 #d9e3d549;
+}
+.gl-file-index {
+  color: #879981;
+  font-size: 9px;
+  display: block;
+  margin-bottom: 17px;
+}
+.gl-file-fold {
+  position: absolute;
+  right: -1px;
+  top: -1px;
+  width: 14px;
+  height: 14px;
+  background: linear-gradient(45deg, #e3ebdd 50%, #f7f9f5 51%);
+  border-bottom: 1px solid #c4d3c3;
+  border-left: 1px solid #c4d3c3;
+}
+.gl-role-file .gl-item-label {
+  font-size: 14px;
+}
+.gl-role-file p {
+  font-size: 12px;
+}
+.gl-concept-map {
+  padding: 12px 0;
+}
+.gl-concept-center {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: min(100%, 280px);
+  min-height: 86px;
+  padding: 18px 26px;
+  border: 2px solid #72967b;
+  border-radius: 50%;
+  background: #fff;
+  text-align: center;
+  font-weight: 650;
+  margin: 0 auto 34px;
+  position: relative;
+}
+.gl-concept-center::after {
+  content: "";
+  position: absolute;
+  width: 1px;
+  background: #8daa94;
+  height: 35px;
+  top: 100%;
+  left: 50%;
+}
+.gl-concept-branches {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 18px;
+}
+.gl-concept-branches > div {
+  border-top: 2px solid #96af9b;
+  padding: 18px 8px 0;
+  position: relative;
+}
+.gl-concept-joint {
+  display: block;
+  position: absolute;
+  width: 9px;
+  height: 9px;
+  border: 2px solid #6e9678;
+  border-radius: 50%;
+  top: -5.5px;
+  left: calc(50% - 4.5px);
+  background: #f6f8f5;
+}
+.gl-preset-figure .gp-concept-diagram {
+  margin: 0 auto 10px;
+}
+.gl-preset-figure dl {
+  display: grid;
+  gap: 13px;
+  padding: 17px 0 0;
+  border-top: 1px solid #d1ddcf;
+}
+.gl-preset-figure dl > div {
+  display: grid;
+  grid-template-columns: minmax(100px, 0.5fr) minmax(0, 1fr);
+  gap: 15px;
+}
+.gl-preset-figure dt {
+  font-weight: 650;
+  color: #345c3c;
+}
+.gl-preset-figure dd small {
+  margin-top: 5px;
+}
+@media (max-width: 600px) {
+  .gl-t-shaped-notes > div {
+    display: block;
+  }
+  .gl-branch-options .gl-flow-node {
+    padding: 14px 11px;
+  }
+  .gl-icon-gallery {
+    grid-template-columns: 1fr;
+  }
+  .gl-icon-gallery > div {
+    display: grid;
+    grid-template-columns: 56px minmax(0, 1fr);
+    column-gap: 17px;
+  }
+  .gl-icon-specimen {
+    grid-row: 1/4;
+    padding: 3px 0;
+  }
+  .gl-landmark-region {
+    padding: 15px;
+  }
+  .gl-landmark-1 {
+    min-height: 180px;
+  }
+  .gl-menu-open {
+    width: 80%;
+  }
+  .gl-example-header {
+    padding: 18px 16px;
+  }
+  .gl-example-header h4 {
+    font-size: 19px;
+  }
+  .gl-example-body {
+    padding: 15px 12px;
+  }
+  .gl-example figcaption {
+    padding: 14px 16px;
+  }
+  .gl-definition {
+    font-size: 15px;
+  }
+  .gl-comparison-grid,
+  .gl-storyboard,
+  .gl-role-artifacts {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+  .gl-evidence-grid {
+    grid-template-columns: 1fr;
+  }
+  .gl-screen-standard .gl-screen-block:not(:first-child) {
+    display: block;
+  }
+  .gl-screen-block {
+    padding: 18px;
+  }
+  .gl-screen-standard .gl-screen-block:first-child {
+    padding: 22px 18px;
+  }
+  .gl-screen-standard .gl-screen-block:first-child .gl-item-heading {
+    font-size: 21px;
+  }
+  .gl-screen-heading {
+    padding: 16px;
+  }
+  .gl-screen-z .gl-screen-content {
+    gap: 56px 12px;
+    padding: 16px 10px;
+  }
+  .gl-screen-z .gl-screen-block {
+    padding: 10px;
+  }
+  .gl-screen-z .gl-item-heading {
+    font-size: 14px;
+  }
+  .gl-screen-z .gl-screen-block p {
+    font-size: 12px;
+  }
+  .gl-screen-z .gl-screen-block small {
+    font-size: 11px;
+  }
+  .gl-screen-nav {
+    display: none;
+  }
+  .gl-sitemap > ul {
+    gap: 24px 16px;
+  }
+  .gl-sitemap li {
+    padding: 12px;
+    font-size: 12px;
+  }
+  .gl-sitemap li::after {
+    width: calc(100% + 16px);
+    left: -8px;
+  }
+  .gl-story-scene {
+    max-width: 320px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+  .gl-type-specimen {
+    padding: 0 16px;
+  }
+  .gl-specimen-text {
+    font-size: 24px;
+  }
+  .gl-swatches {
+    gap: 12px;
+  }
+  .gl-swatches .gl-item-label {
+    font-size: 13px;
+  }
+  .gl-swatches p {
+    font-size: 12px;
+  }
+  .gl-swatch {
+    height: 90px;
+  }
+  .gl-code-file {
+    padding: 14px;
+  }
+  .gl-code-file pre {
+    padding: 12px;
+    font-size: 12px;
+  }
+  .gl-anatomy {
+    grid-template-columns: minmax(0, 0.65fr) minmax(0, 1fr);
+    gap: 15px;
+  }
+  .gl-anatomy-part {
+    padding: 9px;
+    gap: 6px;
+    min-height: 100px;
+  }
+  .gl-anatomy-notes li {
+    font-size: 12px;
+    gap: 7px;
+  }
+  .gl-anatomy-notes .gl-item-label {
+    font-size: 13px;
+  }
+  .gl-role-layout {
+    grid-template-columns: 1fr;
+  }
+  .gl-role-sidebar {
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 10px 16px;
+    padding: 12px;
+    border-right: 0;
+    border-bottom: 1px solid #d1ddcd;
+  }
+  .gl-role-artifacts {
+    padding: 15px;
+  }
+  .gl-concept-branches {
+    grid-template-columns: 1fr;
+    gap: 23px;
+    border-left: 1px solid #a2b7a6;
+    margin-left: 12px;
+  }
+  .gl-concept-branches > div {
+    border-top: 0;
+    padding: 0 8px 0 20px;
+  }
+  .gl-concept-joint {
+    left: -5px;
+    top: 5px;
+  }
+  .gl-concept-center::after {
+    display: none;
+  }
+  .gl-preset-figure dl > div {
+    grid-template-columns: 1fr;
+    gap: 5px;
+  }
+  .gl-chart {
+    padding: 16px;
+  }
+}

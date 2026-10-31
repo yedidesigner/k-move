@@ -1,0 +1,67 @@
+.gpf-figure {
+  display: grid;
+  gap: 18px;
+  min-width: 0;
+}
+.gpf-diagram {
+  display: block;
+  width: 100%;
+  max-width: 520px;
+  max-height: 350px;
+  margin: auto;
+  background: #fff;
+  font-family: inherit;
+}
+.gpf-diagram text {
+  font-size: 16px;
+  fill: #26332c;
+}
+.gpf-path {
+  fill: none;
+  stroke: #23685e;
+  stroke-width: 4;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.gpf-notes {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+.gpf-notes > div {
+  padding: 12px 14px;
+  border-left: 2px solid #b5c8bd;
+  background: #fff;
+  overflow-wrap: anywhere;
+}
+.gpf-notes strong {
+  font-size: 13px;
+  display: block;
+  margin-bottom: 5px;
+}
+.gpf-notes p {
+  font-size: 13px;
+  line-height: 1.7;
+  margin: 0;
+}
+.gpf-notes small {
+  font-size: 12px;
+  line-height: 1.6;
+  display: block;
+  margin-top: 6px;
+  color: #626b66;
+}
+.gpf-boundary {
+  font-size: 12px;
+  line-height: 1.7;
+  color: #626b66;
+  margin: 0;
+}
+@media (max-width: 520px) {
+  .gpf-notes {
+    grid-template-columns: 1fr;
+  }
+  .gpf-diagram {
+    max-height: none;
+  }
+}

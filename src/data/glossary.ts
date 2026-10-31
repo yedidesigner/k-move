@@ -1,13 +1,10 @@
 import entries from "./glossary.json";
-import {
-  getPracticeKind,
-  hasGlossaryPractice,
-  PRACTICE_LABELS,
-  type PracticeKind,
-} from "./glossary-practice";
+import { hasGlossaryPractice } from "./glossary-practice";
+import { getLearningMode, LEARNING_LABELS } from "./glossary-learning";
+import type { LearningMode } from "./learning/types";
 
 export type GlossaryLessonId = "cta" | "hamburger" | "carousel";
-export type GlossaryFilter = "all" | "interactive" | PracticeKind;
+export type GlossaryFilter = "all" | LearningMode;
 
 export type GlossaryEntry = {
   id: string;
@@ -45,12 +42,12 @@ export const GLOSSARY: GlossaryEntry[] = entries
 
 export const INTERACTIVE_GLOSSARY_COUNT = GLOSSARY.filter(hasGlossaryPractice).length;
 
-export const PRACTICE_FILTERS: { value: GlossaryFilter; label: string; count: number }[] = [
+export const LEARNING_FILTERS: { value: GlossaryFilter; label: string; count: number }[] = [
   { value: "all", label: "전체", count: GLOSSARY.length },
-  ...Object.entries(PRACTICE_LABELS).map(([value, label]) => ({
-    value: value as PracticeKind,
+  ...Object.entries(LEARNING_LABELS).map(([value, label]) => ({
+    value: value as LearningMode,
     label,
-    count: GLOSSARY.filter((entry) => getPracticeKind(entry) === value).length,
+    count: GLOSSARY.filter((entry) => getLearningMode(entry) === value).length,
   })),
 ];
 
@@ -58,9 +55,7 @@ export function filterGlossary(query: string, letter: string, filter: GlossaryFi
   const words = query.trim().normalize("NFKC").toLocaleLowerCase().split(/\s+/).filter(Boolean);
   return GLOSSARY.filter((entry) => {
     if (letter !== "ALL" && entry.letter !== letter) return false;
-    if (filter === "interactive" && !hasGlossaryPractice(entry)) return false;
-    if (filter !== "all" && filter !== "interactive" && getPracticeKind(entry) !== filter)
-      return false;
+    if (filter !== "all" && getLearningMode(entry) !== filter) return false;
     const text =
       `${entry.english} ${entry.pronunciation} ${entry.korean} ${entry.description} ${entry.example}`
         .normalize("NFKC")

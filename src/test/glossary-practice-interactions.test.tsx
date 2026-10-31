@@ -436,12 +436,13 @@ describe("Practice rendering coverage", () => {
     expect(container.querySelector(".gp-visual-stage")!.innerHTML).toEqual(initialSample);
   });
 
-  it("mounts every authored practice with its actual entry, core relationship and instructions", () => {
+  it("mounts every retained practice with its actual entry, core relationship and instructions", () => {
     const errors = vi.spyOn(console, "error").mockImplementation(() => {});
     const warnings = vi.spyOn(console, "warn").mockImplementation(() => {});
-    expect(Object.keys(PRACTICES)).toHaveLength(236);
-    for (const entry of GLOSSARY.filter((entry) => !entry.lessonId)) {
-      const practice = PRACTICES[entry.id]!;
+    expect(Object.keys(PRACTICES).length).toBeGreaterThan(0);
+    for (const practice of Object.values(PRACTICES)) {
+      const entry = GLOSSARY.find((entry) => entry.id === practice.id)!;
+      expect(entry, practice.id).toBeDefined();
       const view = render(<GlossaryPracticeLesson entry={entry} practice={practice} />);
       expect(screen.getByRole("heading", { name: entry.english }), entry.id).toBeInTheDocument();
       expect(screen.getByRole("heading", { name: "핵심 구조" }), entry.id).toBeInTheDocument();

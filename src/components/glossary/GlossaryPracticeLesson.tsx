@@ -1555,6 +1555,18 @@ function VisualExercise({ practice }: { practice: VisualPractice }) {
   );
 }
 
+export function PracticeExercise({ practice }: { practice: GlossaryPractice }) {
+  return practice.kind === "decision" ? (
+    <DecisionExercise key={practice.id} practice={practice} />
+  ) : practice.kind === "sort" ? (
+    <SortExercise key={practice.id} practice={practice} />
+  ) : practice.kind === "sequence" ? (
+    <SequenceExercise key={practice.id} practice={practice} />
+  ) : (
+    <VisualExercise key={practice.id} practice={practice} />
+  );
+}
+
 export function GlossaryPracticeLesson({
   entry,
   practice,
@@ -1586,15 +1598,7 @@ export function GlossaryPracticeLesson({
           {practice.scenario}
         </p>
         <p className="gp-instruction">{practice.instruction}</p>
-        {practice.kind === "decision" ? (
-          <DecisionExercise key={practice.id} practice={practice} />
-        ) : practice.kind === "sort" ? (
-          <SortExercise key={practice.id} practice={practice} />
-        ) : practice.kind === "sequence" ? (
-          <SequenceExercise key={practice.id} practice={practice} />
-        ) : (
-          <VisualExercise key={practice.id} practice={practice} />
-        )}
+        <PracticeExercise practice={practice} />
       </Section>
       <Section title="기억할 점" number="03">
         <p className="gp-takeaway">{practice.takeaway}</p>
