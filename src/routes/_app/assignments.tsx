@@ -1,7 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { FolderCollection } from "@/components/FolderCollection";
-
-import { ASSIGNMENT_FOLDERS, ASSIGNMENT_ROOT_FOLDER_URL } from "@/data/student-roster";
+import { StudentDriveFolders } from "@/components/StudentDriveFolders";
 
 export const Route = createFileRoute("/_app/assignments")({
   head: () => ({
@@ -16,13 +14,5 @@ export const Route = createFileRoute("/_app/assignments")({
 });
 
 function Assignments() {
-  return (
-    <FolderCollection
-      title="ASSIGNMENTS"
-      rootFolderUrl={ASSIGNMENT_ROOT_FOLDER_URL}
-      folders={ASSIGNMENT_FOLDERS}
-      tone="sky"
-      listLabel="수강생 과제 폴더"
-    />
-  );
+  return <StudentDriveFolders kind="assignment" />;
 }

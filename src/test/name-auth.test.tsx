@@ -9,6 +9,8 @@ const db = vi.hoisted(() => ({
   signInWithPassword: vi.fn(),
   updateUser: vi.fn(),
   unsubscribe: vi.fn(),
+  profile: vi.fn(),
+  listener: null as null | ((_event: string, session: { user: { id: string; email: string } } | null) => void),
 }));
 vi.mock("@/lib/supabase", () => ({
   isSupabaseConfigured: () => true,
@@ -17,9 +19,9 @@ vi.mock("@/lib/supabase", () => ({
       getSession: db.getSession,
       signInWithPassword: db.signInWithPassword,
       updateUser: db.updateUser,
-      onAuthStateChange: () => ({ data: { subscription: { unsubscribe: db.unsubscribe } } }),
+      onAuthStateChange: (listener: NonNullable<typeof db.listener>) => { db.listener = listener; return { data: { subscription: { unsubscribe: db.unsubscribe } } }; },
     },
-    from: () => ({ select: () => ({ eq: () => ({ maybeSingle: async () => ({ data: { role: "student" }, error: null }) }) }) }),
+    from: () => ({ select: () => ({ eq: () => ({ maybeSingle: db.profile }) }) }),
   }),
 }));
 
@@ -28,6 +30,8 @@ const wrapper = ({ children }: { children: ReactNode }) => <AuthProvider>{childr
 
 beforeEach(() => {
   vi.stubGlobal("crypto", webcrypto);
+  db.listener = null;
+  db.profile.mockReset().mockResolvedValue({ data: { role: "student" }, error: null });
   db.getSession.mockReset().mockResolvedValue({ data: { session: { user: account } }, error: null });
   db.signInWithPassword.mockReset().mockResolvedValue({ data: { user: account }, error: null });
   db.updateUser.mockReset().mockResolvedValue({ data: { user: account }, error: null });
@@ -101,5 +105,62 @@ describe("Name login compatibility and password verification", () => {
     await expect(result.current.changePassword("1111", "2479")).rejects.toThrow("auth/not-signed-in");
     expect(db.signInWithPassword).not.toHaveBeenCalled();
     expect(db.updateUser).not.toHaveBeenCalled();
+  });
+});
+
+describe("Auth role request isolation", () => {
+  it("ignores an old instructor role response after a student signs in", async () => {
+    let resolveInstructor!: (value: unknown) => void;
+    db.profile.mockReturnValueOnce(new Promise(resolve => { resolveInstructor = resolve; }));
+    const { result } = renderHook(useAuth, { wrapper });
+    await waitFor(() => expect(db.profile).toHaveBeenCalledTimes(1));
+    expect(result.current.status).toBe("loading");
+    act(() => db.listener!("SIGNED_IN", { user: { id: "new-student", email: "student@login.kmove.local" } }));
+    await waitFor(() => expect(result.current.status).toBe("student"));
+    await act(async () => resolveInstructor({ data: { role: "instructor" }, error: null }));
+    expect(result.current.user?.id).toBe("new-student");
+    expect(result.current.status).toBe("student");
+  });
+
+  it("does not restore a role after logout while a profile query is pending", async () => {
+    let finish!: (value: unknown) => void;
+    db.profile.mockReturnValueOnce(new Promise(resolve => { finish = resolve; }));
+    const { result } = renderHook(useAuth, { wrapper });
+    await waitFor(() => expect(db.profile).toHaveBeenCalledTimes(1));
+    act(() => db.listener!("SIGNED_OUT", null));
+    expect(result.current.status).toBe("signedOut");
+    expect(result.current.user).toBeNull();
+    await act(async () => finish({ data: { role: "instructor" }, error: null }));
+    expect(result.current.status).toBe("signedOut");
+    expect(result.current.user).toBeNull();
+  });
+
+  it("ignores initial session hydration that finishes after a newer login", async () => {
+    let hydrate!: (value: unknown) => void;
+    db.getSession.mockReturnValueOnce(new Promise(resolve => { hydrate = resolve; }));
+    const { result } = renderHook(useAuth, { wrapper });
+    act(() => db.listener!("SIGNED_IN", { user: { id: "new-student", email: "student@login.kmove.local" } }));
+    await waitFor(() => expect(result.current.status).toBe("student"));
+    await act(async () => hydrate({ data: { session: { user: account } }, error: null }));
+    expect(result.current.user?.id).toBe("new-student");
+    expect(db.profile).toHaveBeenCalledTimes(1);
+  });
+
+  it("keeps the verified same-account view mounted during refresh or password verification", async () => {
+    const result = await authenticatedState();
+    let finish!: (value: unknown) => void;
+    db.profile.mockReturnValueOnce(new Promise(resolve => { finish = resolve; }));
+    act(() => db.listener!("SIGNED_IN", { user: account }));
+    expect(result.current.status).toBe("student");
+    await waitFor(() => expect(db.profile).toHaveBeenCalledTimes(2));
+    expect(result.current.status).toBe("student");
+    await act(async () => finish({ data: { role: "student" }, error: null }));
+  });
+
+  it("does not grant a default student role when profile verification fails", async () => {
+    db.profile.mockResolvedValueOnce({ data: null, error: new Error("connection failed") });
+    const { result } = renderHook(useAuth, { wrapper });
+    await waitFor(() => expect(result.current.status).toBe("error"));
+    expect(result.current.errorDetail).toBe("connection failed");
   });
 });

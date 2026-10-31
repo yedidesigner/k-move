@@ -5,7 +5,7 @@ type FolderTone = "yellow" | "sky";
 
 type FolderCollectionProps = {
   title: string;
-  rootFolderUrl: string;
+  rootFolderUrl?: string;
   folders: readonly { name: string; url: string }[];
   tone: FolderTone;
   listLabel: string;
@@ -61,7 +61,7 @@ export function FolderCollection({
             폴더를 선택하면 Google Drive로 이동합니다.
           </p>
         </div>
-        <a
+        {rootFolderUrl && <a
           href={rootFolderUrl}
           target="_blank"
           rel="noopener noreferrer"
@@ -70,7 +70,7 @@ export function FolderCollection({
           전체 폴더
           <ExternalLink aria-hidden="true" className="size-3.5" />
           <span className="sr-only">(새 탭에서 열기)</span>
-        </a>
+        </a>}
       </header>
 
       <ul

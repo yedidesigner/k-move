@@ -47,40 +47,84 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
     const supabase = getSupabase();
     let active = true;
+    let generation = 0;
+    let verifiedUserId: string | null = null;
+    let verifiedRole: "student" | "instructor" | null = null;
+    const timers = new Set<number>();
 
-    const applyUser = async (nextUser: User | null) => {
+    const applyUser = (nextUser: User | null) => {
       if (!active) return;
+      const request = ++generation;
       setUser(nextUser);
       setErrorDetail(null);
       if (!nextUser) {
+        verifiedUserId = null;
+        verifiedRole = null;
         setStatus("signedOut");
         return;
       }
-      setStatus("student");
-      const { data, error } = await supabase
-        .from("kmove_profiles")
-        .select("role")
-        .eq("id", nextUser.id)
-        .maybeSingle();
-      if (!active) return;
-      if (error) setErrorDetail(error.message);
-      setStatus(data?.role === "instructor" ? "instructor" : "student");
+      // Keep same-account refreshes mounted (including password verification).
+      // A different account must wait for its own verified role.
+      if (verifiedUserId === nextUser.id && verifiedRole) {
+        setStatus(verifiedRole);
+      } else {
+        verifiedUserId = null;
+        verifiedRole = null;
+        setStatus("loading");
+      }
+      // Keep Supabase queries outside its auth callback to avoid auth-lock deadlocks.
+      const timer = window.setTimeout(() => {
+        timers.delete(timer);
+        void (async () => {
+          if (!active || request !== generation) return;
+          try {
+            const { data, error } = await supabase
+              .from("kmove_profiles")
+              .select("role")
+              .eq("id", nextUser.id)
+              .maybeSingle();
+            if (!active || request !== generation) return;
+            if (error || !data || !["student", "instructor"].includes(data.role)) {
+              verifiedUserId = null;
+              verifiedRole = null;
+              setErrorDetail(error?.message ?? "계정 권한을 확인하지 못했습니다.");
+              setStatus("error");
+              return;
+            }
+            verifiedUserId = nextUser.id;
+            verifiedRole = data.role === "instructor" ? "instructor" : "student";
+            setStatus(verifiedRole);
+          } catch (error) {
+            if (!active || request !== generation) return;
+            verifiedUserId = null;
+            verifiedRole = null;
+            setErrorDetail(error instanceof Error ? error.message : "계정 권한을 확인하지 못했습니다.");
+            setStatus("error");
+          }
+        })();
+      }, 0);
+      timers.add(timer);
     };
 
+    const initialGeneration = generation;
     void supabase.auth.getSession().then(({ data, error }) => {
-      if (error && active) {
+      // A newer sign-in/sign-out event always wins over initial session hydration.
+      if (!active || generation !== initialGeneration) return;
+      if (error) {
         setErrorDetail(error.message);
         setStatus("error");
         return;
       }
-      void applyUser(data.session?.user ?? null);
+      applyUser(data.session?.user ?? null);
     });
 
     const { data: listener } = supabase.auth.onAuthStateChange((_event, session) => {
-      window.setTimeout(() => void applyUser(session?.user ?? null), 0);
+      applyUser(session?.user ?? null);
     });
     return () => {
       active = false;
+      generation++;
+      for (const timer of timers) window.clearTimeout(timer);
       listener.subscription.unsubscribe();
     };
   }, []);

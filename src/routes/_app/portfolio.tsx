@@ -1,7 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { FolderCollection } from "@/components/FolderCollection";
-
-import { PORTFOLIO_FOLDERS, PORTFOLIO_ROOT_FOLDER_URL } from "@/data/student-roster";
+import { StudentDriveFolders } from "@/components/StudentDriveFolders";
 
 export const Route = createFileRoute("/_app/portfolio")({
   head: () => ({
@@ -16,13 +14,5 @@ export const Route = createFileRoute("/_app/portfolio")({
 });
 
 function Portfolio() {
-  return (
-    <FolderCollection
-      title="PORTFOLIO"
-      rootFolderUrl={PORTFOLIO_ROOT_FOLDER_URL}
-      folders={PORTFOLIO_FOLDERS}
-      tone="yellow"
-      listLabel="수강생 포트폴리오 폴더"
-    />
-  );
+  return <StudentDriveFolders kind="portfolio" />;
 }
