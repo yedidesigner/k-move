@@ -4,6 +4,8 @@ import type { LearningFigure } from "@/data/learning/types";
 import { VisualConceptDiagram } from "./GlossaryPracticeLesson";
 import { GlossaryArtifactFigure } from "./GlossaryArtifactFigure";
 import { GlossaryPrincipleFigure } from "./GlossaryPrincipleFigure";
+import { GLOSSARY } from "@/data/glossary";
+import { ContextualExample, hasContextualExample } from "./contextual/ContextualExample";
 import "./glossary-learning.css";
 
 type FigureItem = LearningFigure["items"][number];
@@ -1001,6 +1003,8 @@ function FigureBody({ figure, termId }: FigureProps) {
 
 export function GlossaryExampleFigure({ figure, termId }: FigureProps) {
   const titleId = useId();
+  const contextual = Boolean(termId && hasContextualExample(termId));
+  const term = contextual ? GLOSSARY.find((entry) => entry.id === termId) : undefined;
   return (
     <figure
       className={`gl-example gl-example-${figure.kind}`}
@@ -1009,13 +1013,34 @@ export function GlossaryExampleFigure({ figure, termId }: FigureProps) {
     >
       <header className="gl-example-header">
         <span className="gl-original-label">K-Move 교육용 재구성</span>
-        <h4 id={titleId}>{figure.title}</h4>
-        <p>{figure.subtitle}</p>
+        <h4 id={titleId}>{term ? `${term.korean} 예시` : figure.title}</h4>
+        <p>{contextual ? "화면과 실무 자료 속에서 개념을 구분해 보세요." : figure.subtitle}</p>
       </header>
-      <div className="gl-example-body">
-        <FigureBody figure={figure} termId={termId} />
-      </div>
-      <figcaption>{figure.caption}</figcaption>
+      {contextual && termId ? (
+        <>
+          <div className="gl-contextual-body">
+            <details className="cx-key-structure">
+              <summary>핵심 구조 살펴보기</summary>
+              <div className="gl-example-body">
+                <FigureBody figure={figure} termId={termId} />
+                <p className="gl-observation">{figure.focus}</p>
+                <p className="cx-source-note">{figure.caption}</p>
+              </div>
+            </details>
+            <ContextualExample termId={termId} figure={figure} />
+          </div>
+          <figcaption>
+            브랜드·프로젝트·내용은 개념을 설명하기 위해 구성한 가상 예시입니다.
+          </figcaption>
+        </>
+      ) : (
+        <>
+          <div className="gl-example-body">
+            <FigureBody figure={figure} termId={termId} />
+          </div>
+          <figcaption>{figure.caption}</figcaption>
+        </>
+      )}
     </figure>
   );
 }

@@ -134,7 +134,9 @@ describe("Design study materials", () => {
     fireEvent.click(trigger);
     const dialog = screen.getByRole("dialog", { name: guide.title });
     expect(
-      await within(dialog).findByRole("figure", { name: visual.figure.title }),
+      await within(dialog).findByRole("figure", {
+        name: `${GLOSSARY.find((term) => term.id === visual.id)!.korean} 예시`,
+      }),
     ).toBeInTheDocument();
     expect(within(dialog).queryByRole("heading", { name: "직접 해보기" })).not.toBeInTheDocument();
     fireEvent.keyDown(document, { key: "Escape", code: "Escape" });

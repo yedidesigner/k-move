@@ -137,7 +137,7 @@ describe("Learning modes and editorial coverage", () => {
       expect(screen.getByRole("heading", { name: "시각 예시" })).toBeInTheDocument();
       const figure = screen.getByRole("figure");
       expect(figure).toBeInTheDocument();
-      expect(figure).toHaveAccessibleName(learning.figure.title);
+      expect(figure).toHaveAccessibleName(`${entry.korean} 예시`);
       const exampleScreen = figure.querySelector<HTMLElement>(".gaf-case-screen");
       expect(exampleScreen).toBeInTheDocument();
       const example = within(exampleScreen!);
@@ -174,7 +174,7 @@ describe("Selected analysis practices", () => {
       expect(practice.kind).toBe("sort");
       if (practice.kind !== "sort") throw new Error(`Expected a classification practice for ${id}`);
       render(<GlossaryLearningLesson entry={entry} learning={learning} practice={practice} />);
-      expect(screen.getByRole("figure")).toHaveAccessibleName(learning.figure.title);
+      expect(screen.getByRole("figure")).toHaveAccessibleName(`${entry.korean} 예시`);
       const exercise = within(screen.getByRole("region", { name: "직접 해보기" }));
       expect(exercise.getByText(learning.practiceReason!)).toBeInTheDocument();
       expect(exercise.getByText(practice.instruction)).toBeInTheDocument();
@@ -218,7 +218,7 @@ describe("Complete learning rendering", () => {
       ).toBeInTheDocument();
       expect(screen.getByRole("heading", { name: "시각 예시" }), entry.id).toBeInTheDocument();
       expect(screen.getByRole("figure"), entry.id).toBeInTheDocument();
-      expect(screen.getByRole("figure"), entry.id).toHaveAccessibleName(learning.figure.title);
+      expect(screen.getByRole("figure"), entry.id).toHaveAccessibleName(`${entry.korean} 예시`);
       const exercise = screen.queryByRole("heading", { name: "직접 해보기" });
       if (learning.mode === "practice") {
         expect(exercise, entry.id).toBeInTheDocument();
