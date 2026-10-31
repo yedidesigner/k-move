@@ -3,6 +3,7 @@ import { CLASS_END, CLASS_START, SESSIONS, formatDateKo } from "@/data/schedule"
 import { EmptyState, PageHeader, Panel, StatusBadge } from "@/components/lms";
 import { SessionCurriculum } from "@/components/SessionCurriculum";
 import { usePublishedContent, PublishedAnnouncements } from "@/lib/published-content";
+import { useAuth } from "@/lib/auth";
 
 export const Route = createFileRoute("/_app/sessions/$id")({
   loader: ({ params }) => {
@@ -35,6 +36,7 @@ export const Route = createFileRoute("/_app/sessions/$id")({
 });
 
 function Detail() {
+  const { status } = useAuth();
   const base = Route.useLoaderData();
   const { sessions, guides, glossary } = usePublishedContent();
   const s = sessions.find((session) => session.id === base.id)!;
@@ -43,9 +45,20 @@ function Detail() {
   const next = sessions.find((session) => session.number === s.number + 1);
   return (
     <div className="mx-auto max-w-4xl">
-      <Link to="/sessions" className="mb-4 inline-block text-sm text-primary">
-        ← 전체 수업
-      </Link>
+      <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
+        <Link to="/sessions" className="inline-block text-sm text-primary">
+          ← 전체 수업
+        </Link>
+        {status === "instructor" && (
+          <Link
+            to="/admin"
+            search={{ tab: "sessions", session: s.id }}
+            className="inline-flex min-h-11 items-center border border-neutral-300 px-4 text-sm font-semibold hover:bg-neutral-100"
+          >
+            이 수업 내용 편집
+          </Link>
+        )}
+      </div>
       {lesson ? (
         <header className="mb-6">
           <p className="text-xs font-semibold leading-relaxed text-muted-foreground">
@@ -54,6 +67,11 @@ function Detail() {
           <h1 className="mt-2 break-keep text-2xl font-bold leading-tight tracking-tight [overflow-wrap:anywhere] sm:text-3xl">
             {s.managed ? s.title : lesson.project}
           </h1>
+          {s.managed && lesson.project.trim() && lesson.project.trim() !== s.title.trim() && (
+            <p className="mt-2 break-keep text-sm leading-relaxed text-muted-foreground [overflow-wrap:anywhere]">
+              프로젝트 · {lesson.project}
+            </p>
+          )}
           {lesson.stage && (
             <p className="mt-3 break-keep text-lg font-medium leading-relaxed [overflow-wrap:anywhere]">
               {lesson.stage}

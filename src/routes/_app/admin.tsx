@@ -24,17 +24,22 @@ export const Route = createFileRoute("/_app/admin")({
   head: () => ({
     meta: [{ title: "강사 관리 | K-Move LMS" }, { name: "robots", content: "noindex" }],
   }),
-  validateSearch: (search: Record<string, unknown>): { tab?: AdminTab; type?: string } => ({
+  validateSearch: (
+    search: Record<string, unknown>,
+  ): { tab?: AdminTab; type?: string; session?: string } => ({
     ...(["students", "content", "sessions", "settings"].includes(String(search["tab"]))
       ? { tab: search["tab"] as AdminTab }
       : {}),
     ...(typeof search["type"] === "string" ? { type: search["type"] } : {}),
+    ...(typeof search["session"] === "string" && /^S(0[1-9]|1[0-9]|2[0-4])$/.test(search["session"])
+      ? { session: search["session"] }
+      : {}),
   }),
   component: Admin,
 });
 function Admin() {
   const { status, user } = useAuth();
-  const { tab = "students", type } = Route.useSearch();
+  const { tab = "students", type, session } = Route.useSearch();
   if (status !== "instructor") return <Navigate to="/" />;
   const kind = (
     ["glossary", "guide", "path", "announcement"].includes(type ?? "") ? type : "glossary"
@@ -69,7 +74,10 @@ function Admin() {
         ) : tab === "content" ? (
           <ContentManager key={kind} initialKind={kind} />
         ) : tab === "sessions" ? (
-          <SessionManager />
+          <SessionManager
+            key={session ?? "default"}
+            {...(session ? { initialKey: session } : {})}
+          />
         ) : (
           <OperationsSettings />
         )}

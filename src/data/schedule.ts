@@ -43,7 +43,7 @@ const DATES = [
   "2027-02-19",
 ];
 
-// The source describes 19 curriculum sessions, but does not specify dates.
+// Match the 24-session curriculum to the existing course schedule.
 // Attach them by session number and keep all 24 existing dates and IDs intact.
 const curriculumByNumber = new Map(CURRICULUM_LESSONS.map((lesson) => [lesson.number, lesson]));
 

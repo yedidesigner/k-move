@@ -1,6 +1,7 @@
 import { cleanup, fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { ContentEditor } from "@/components/instructor/ContentManager";
+import { SESSIONS } from "@/data/schedule";
 
 const api = vi.hoisted(() => ({ save: vi.fn(), publish: vi.fn() }));
 vi.mock("@/lib/instructor-api", async () => {
@@ -40,6 +41,86 @@ function editor(onPublished?: () => Promise<void>) {
   return { onSaved };
 }
 describe("instructor content editor", () => {
+  it("lets an instructor type the complete session curriculum and saves a private revision", async () => {
+    render(
+      <ContentEditor kind="session" contentKey="S02" onSaved={() => {}} onDirtyChange={() => {}} />,
+    );
+    expect(screen.getByLabelText("주요 교육 내용")).toHaveValue(
+      SESSIONS.find((item) => item.id === "S02")?.curriculum?.topics.join("\n"),
+    );
+    fireEvent.change(screen.getByLabelText("수업 제목", { exact: false }), {
+      target: { value: "포트폴리오 구조 점검" },
+    });
+    fireEvent.change(screen.getByLabelText("목표 산출물"), {
+      target: { value: "구조 검증표 1장" },
+    });
+    fireEvent.change(screen.getByLabelText("주요 교육 내용"), {
+      target: { value: "정보 구조 검토\n동료 테스트" },
+    });
+    fireEvent.change(screen.getByLabelText("사용 도구"), { target: { value: "Gemini\nFigma" } });
+    fireEvent.change(screen.getByLabelText("과제 안내"), {
+      target: { value: "검증표와 변경 기록 제출" },
+    });
+    fireEvent.click(screen.getByRole("button", { name: "초안 저장" }));
+    await screen.findByText("비공개 초안을 저장했습니다.");
+    expect(api.save.mock.calls[0]?.[2].document.curriculum).toMatchObject({
+      title: "포트폴리오 구조 점검",
+      goalOutput: "구조 검증표 1장",
+      topics: ["정보 구조 검토", "동료 테스트"],
+      tools: ["Gemini", "Figma"],
+      homework: "검증표와 변경 기록 제출",
+    });
+    expect(api.publish).not.toHaveBeenCalled();
+  });
+  it("previews the revised curriculum without private instructor notes", () => {
+    render(
+      <ContentEditor kind="session" contentKey="S02" onSaved={() => {}} onDirtyChange={() => {}} />,
+    );
+    fireEvent.change(screen.getByLabelText("주요 교육 내용"), {
+      target: { value: "이번 회차에서 직접 검토할 내용" },
+    });
+    fireEvent.change(screen.getByLabelText("비공개 메모"), {
+      target: { value: "비공개 상담 준비" },
+    });
+    fireEvent.click(screen.getByRole("button", { name: "초안 미리보기" }));
+    expect(screen.getByText("이번 회차에서 직접 검토할 내용")).toBeInTheDocument();
+    expect(screen.queryByText("비공개 상담 준비")).not.toBeInTheDocument();
+    expect(api.save).not.toHaveBeenCalled();
+  });
+  it("restores a legacy publication with editable baseline curriculum and preserves private notes", () => {
+    vi.spyOn(window, "confirm").mockReturnValue(true);
+    render(
+      <ContentEditor
+        kind="session"
+        contentKey="S02"
+        onSaved={() => {}}
+        onDirtyChange={() => {}}
+        history={[
+          {
+            id: "legacy-session",
+            kind: "session",
+            content_key: "S02",
+            document: { title: "이전 수업 제목", body: "이전 수업 안내" },
+            hidden: false,
+            version: 1,
+            published_at: "2026-01-01T00:00:00Z",
+            created_at: "2026-01-01T00:00:00Z",
+            created_by: "teacher",
+            cancelled_at: null,
+          },
+        ]}
+      />,
+    );
+    fireEvent.change(screen.getByLabelText("비공개 메모"), { target: { value: "현재 강사 메모" } });
+    fireEvent.click(screen.getByRole("button", { name: "이 버전을 초안으로" }));
+    expect(screen.getByLabelText("수업 제목", { exact: false })).toHaveValue("이전 수업 제목");
+    expect(screen.getByLabelText("주요 교육 내용")).toHaveValue(
+      SESSIONS[1]?.curriculum?.topics.join("\n"),
+    );
+    expect(screen.getByLabelText("비공개 메모")).toHaveValue("현재 강사 메모");
+    expect(api.save).not.toHaveBeenCalled();
+    vi.restoreAllMocks();
+  });
   it("saving a draft never publishes it", async () => {
     editor();
     fireEvent.click(screen.getByRole("button", { name: "초안 저장" }));

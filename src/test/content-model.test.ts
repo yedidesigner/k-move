@@ -3,6 +3,7 @@ import { GLOSSARY } from "@/data/glossary";
 import { STUDY_GUIDES } from "@/data/study-materials";
 import {
   currentPublishedSession,
+  editableSessionContent,
   initialContent,
   mergeGlossary,
   mergeGuides,
@@ -119,6 +120,57 @@ describe("published educational content overlays", () => {
 });
 
 describe("published class schedule", () => {
+  it("preserves legacy lesson details when older documents contain only a title and schedule", () => {
+    const original = mergeSessions([]).find((item) => item.id === "S02")!;
+    const doc = editableSessionContent("S02", { title: "강사가 수정한 제목", body: "준비물 안내" });
+    const session = mergeSessions([publication("session", "S02", doc)]).find(
+      (item) => item.id === "S02",
+    )!;
+    expect(session.title).toBe("강사가 수정한 제목");
+    expect(session.curriculum?.topics).toEqual(original.curriculum?.topics);
+    expect(session.curriculum?.terms).toEqual(original.curriculum?.terms);
+    expect(session.body).toBe("준비물 안내");
+  });
+  it("publishes editable curriculum fields and honors intentionally empty lists", () => {
+    const doc = editableSessionContent("S02");
+    doc["curriculum"] = {
+      number: 99,
+      sourceWeek: "잘못된 회차",
+      title: "직접 수정한 수업",
+      cycle: "개인 프로젝트",
+      project: "포트폴리오 v2",
+      stage: null,
+      goalOutput: "검증한 배포 링크",
+      topics: ["새 교육 내용"],
+      terms: [{ name: "CTA", description: "행동을 유도하는 요소" }],
+      tools: [],
+      homework: "동료 테스트 결과 제출",
+    };
+    const lesson = mergeSessions([publication("session", "S02", doc)]).find(
+      (item) => item.id === "S02",
+    )!.curriculum!;
+    expect(lesson).toMatchObject({
+      number: 2,
+      cycle: "개인 프로젝트",
+      project: "포트폴리오 v2",
+      stage: null,
+      goalOutput: "검증한 배포 링크",
+      topics: ["새 교육 내용"],
+      tools: [],
+      homework: "동료 테스트 결과 제출",
+    });
+    expect(lesson.sourceWeek).not.toBe("잘못된 회차");
+    expect(lesson.terms).toEqual([{ name: "CTA", description: "행동을 유도하는 요소" }]);
+    expect(mergeSessions([]).find((item) => item.id === "S02")?.curriculum?.topics).not.toEqual([
+      "새 교육 내용",
+    ]);
+  });
+  it("requires paired term names and definitions without deleting incomplete drafts", () => {
+    const doc = editableSessionContent("S02");
+    doc["curriculum"] = { terms: [{ name: "CTA", description: "" }] };
+    expect(validateContent("session", doc)).toContain("이름과 설명");
+    expect(doc["curriculum"]).toEqual({ terms: [{ name: "CTA", description: "" }] });
+  });
   it("selects the latest actual date even when rescheduling changes session-number order", () => {
     const sessions = mergeSessions([
       publication("session", "S01", { ...initialContent("session", "S01"), date: "2026-11-05" }),

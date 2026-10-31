@@ -3,6 +3,7 @@ import { Link } from "@tanstack/react-router";
 import { getSupabase } from "@/lib/supabase";
 import { useAuth } from "@/lib/auth";
 import { koreanRecordDate } from "@/lib/student-operations";
+import { CurriculumSheetSyncPanel } from "./CurriculumSheetSync";
 
 type Log = {
   id: string;
@@ -22,6 +23,10 @@ const ACTIONS: Record<string, string> = {
   "enrollment.added": "수강생 등록",
   "portfolio.version": "포트폴리오 버전 등록",
   "student.relinked": "학생 계정 연결 변경",
+  "curriculum.sheet_pairing_issued": "Google Sheet 연결 코드 발급",
+  "curriculum.sheet_paired": "Google Sheet 연결 완료",
+  "curriculum.sheet_revoked": "Google Sheet 연결 해제",
+  "curriculum.sheet_retry": "Google Sheet 반영 재요청",
 };
 export function OperationsSettings() {
   const { user, status } = useAuth();
@@ -83,6 +88,7 @@ export function OperationsSettings() {
           </Link>
         </section>
       </div>
+      <CurriculumSheetSyncPanel />
       <section className="border-t border-neutral-300 pt-5">
         <h2 className="text-lg font-semibold">최근 변경 기록</h2>
         {error ? (

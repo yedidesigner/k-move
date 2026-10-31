@@ -7,6 +7,7 @@ import { STUDY_GUIDES } from "@/data/study-materials";
 import { SESSIONS, seoulToday } from "@/data/schedule";
 import { TOPICS } from "@/data/design-sources";
 import { DesignGuideContent } from "@/components/StudyMaterials";
+import { SessionCurriculum } from "@/components/SessionCurriculum";
 import {
   listContentDrafts,
   listContentPublications,
@@ -19,11 +20,13 @@ import {
 } from "@/lib/instructor-api";
 import {
   currentPublishedSession,
+  editableSessionContent,
   initialContent,
   isDocument,
   linesValue,
   mergeGlossary,
   mergeGuides,
+  mergeSessions,
   safeContentUrl,
   textValue,
   validateContent,
@@ -32,6 +35,7 @@ import {
 } from "@/lib/content-model";
 import { usePublishedContent } from "@/lib/published-content";
 import { useEditorExitGuard } from "@/lib/editor-exit-guard";
+import { CurriculumSheetSyncStatus } from "./CurriculumSheetSync";
 
 const KINDS: { value: ContentKind; label: string }[] = [
   { value: "glossary", label: "용어집" },
@@ -78,6 +82,8 @@ function Field({
       {multiline ? (
         <textarea
           id={id}
+          aria-describedby={hint ? `${id}-hint` : undefined}
+          aria-required={required || undefined}
           rows={4}
           maxLength={30000}
           value={value}
@@ -87,6 +93,8 @@ function Field({
       ) : (
         <input
           id={id}
+          aria-describedby={hint ? `${id}-hint` : undefined}
+          aria-required={required || undefined}
           type={type}
           maxLength={2000}
           value={value}
@@ -94,7 +102,11 @@ function Field({
           className={inputClass}
         />
       )}
-      {hint && <p className="text-xs leading-5 text-neutral-500">{hint}</p>}
+      {hint && (
+        <p id={`${id}-hint`} className="text-xs leading-5 text-neutral-500">
+          {hint}
+        </p>
+      )}
     </div>
   );
 }
@@ -197,6 +209,121 @@ function OrderedChoice({
   );
 }
 
+function SessionCurriculumFields({
+  value,
+  onChange,
+}: {
+  value: ContentDocument;
+  onChange: (next: ContentDocument) => void;
+}) {
+  const update = (key: string, next: unknown) => onChange({ ...value, [key]: next });
+  const terms = Array.isArray(value["terms"]) ? value["terms"].filter(isDocument) : [];
+  function termChange(index: number, field: string, next: string) {
+    update(
+      "terms",
+      terms.map((term, current) => (current === index ? { ...term, [field]: next } : term)),
+    );
+  }
+  return (
+    <>
+      <EditorGroup title="상세 커리큘럼" open>
+        <p className="text-xs leading-6 text-neutral-500">
+          목표 산출물부터 교육 내용·용어·과제까지 직접 수정합니다. 공개 전에는 학생 화면의 기존
+          내용이 유지됩니다.
+        </p>
+        <Field
+          label="회차 구분·사이클"
+          value={textValue(value["cycle"])}
+          onChange={(next) => update("cycle", next)}
+        />
+        <div className="grid gap-4 sm:grid-cols-2">
+          <Field
+            label="프로젝트명"
+            value={textValue(value["project"])}
+            onChange={(next) => update("project", next)}
+          />
+          <Field
+            label="진행 단계"
+            value={textValue(value["stage"])}
+            onChange={(next) => update("stage", next || null)}
+            hint="단계가 없는 수업은 비워 두세요."
+          />
+        </div>
+        <Field
+          label="목표 산출물"
+          value={textValue(value["goalOutput"])}
+          onChange={(next) => update("goalOutput", next)}
+          multiline
+        />
+        <Field
+          label="주요 교육 내용"
+          value={linesValue(value["topics"]).join("\n")}
+          onChange={(next) => update("topics", next.split("\n"))}
+          multiline
+          hint="한 줄에 하나씩 입력합니다. 입력한 순서대로 표시됩니다."
+        />
+      </EditorGroup>
+      <EditorGroup title="핵심 용어와 설명">
+        {terms.map((term, index) => (
+          <div key={index} className="space-y-3 border border-neutral-200 p-4">
+            <div className="flex items-center justify-between gap-3">
+              <p className="text-xs font-semibold text-neutral-500">용어 {index + 1}</p>
+              <button
+                type="button"
+                className="min-h-9 px-2 text-xs underline underline-offset-4"
+                aria-label={`${index + 1}번째 용어 삭제`}
+                onClick={() =>
+                  update(
+                    "terms",
+                    terms.filter((_, current) => current !== index),
+                  )
+                }
+              >
+                삭제
+              </button>
+            </div>
+            <Field
+              label={`${index + 1}번째 용어`}
+              value={textValue(term["name"])}
+              onChange={(next) => termChange(index, "name", next)}
+            />
+            <Field
+              label={`${index + 1}번째 용어 설명`}
+              value={textValue(term["description"])}
+              onChange={(next) => termChange(index, "description", next)}
+              multiline
+            />
+          </div>
+        ))}
+        <button
+          type="button"
+          className={buttonClass}
+          onClick={() => update("terms", [...terms, { name: "", description: "" }])}
+        >
+          <Plus size={15} />
+          핵심 용어 추가
+        </button>
+      </EditorGroup>
+      <EditorGroup title="사용 도구와 과제">
+        <Field
+          label="사용 도구"
+          value={linesValue(value["tools"]).join("\n")}
+          onChange={(next) => update("tools", next.split("\n"))}
+          multiline
+          hint="한 줄에 하나씩 입력해 주세요."
+        />
+        <Field
+          label="과제 안내"
+          value={textValue(value["homework"])}
+          onChange={(next) => update("homework", next)}
+          multiline
+          hint="커리큘럼의 과제 안내입니다. 실제 제출 대상·마감은 ‘과제·피드백’에서 관리합니다."
+        />
+      </EditorGroup>
+    </>
+  );
+}
+
 function ContentFields({
   kind,
   doc,
@@ -207,7 +334,14 @@ function ContentFields({
   setDoc: (doc: ContentDocument) => void;
 }) {
   const { glossary, guides } = usePublishedContent();
-  const update = (field: string, value: unknown) => setDoc({ ...doc, [field]: value });
+  const update = (field: string, value: unknown) =>
+    setDoc({
+      ...doc,
+      [field]: value,
+      ...(kind === "session" && field === "title" && isDocument(doc["curriculum"])
+        ? { curriculum: { ...doc["curriculum"], title: value } }
+        : {}),
+    });
   const field = (
     key: string,
     label: string,
@@ -279,8 +413,6 @@ function ContentFields({
               <option value="completed">진행 완료</option>
             </select>
           </label>
-          {lines("objectives", "학습 목표")}
-          {field("body", "수업 안내·진행 순서", true)}
           <label className="flex items-start gap-3 text-sm">
             <input
               type="checkbox"
@@ -289,13 +421,26 @@ function ContentFields({
               onChange={(event) => update("keepCurriculum", event.target.checked)}
             />
             <span>
-              기존 상세 커리큘럼도 함께 표시
+              상세 커리큘럼 표시
               <span className="mt-1 block text-xs leading-6 text-neutral-500">
-                해제하면 위에서 작성한 안내와 연결 자료만 표시합니다. 원본 커리큘럼은 보존됩니다.
+                해제하면 추가 수업 안내와 연결 자료만 표시합니다. 작성한 커리큘럼은 보존됩니다.
               </span>
             </span>
           </label>
         </div>
+        {isDocument(doc["curriculum"]) && (
+          <SessionCurriculumFields
+            value={doc["curriculum"]}
+            onChange={(next) => update("curriculum", next)}
+          />
+        )}
+        <EditorGroup title="추가 수업 안내">
+          <p className="text-xs leading-6 text-neutral-500">
+            상세 커리큘럼 외에 전달할 준비물이나 별도 학습 목표가 있을 때 입력합니다.
+          </p>
+          {lines("objectives", "추가 학습 목표")}
+          {field("body", "추가 안내·준비물", true)}
+        </EditorGroup>
         <EditorGroup title="연결할 학습 콘텐츠">
           <OrderedChoice
             label="학습자료"
@@ -667,9 +812,21 @@ function DraftPreview({
       </article>
     );
   }
+  const sessionLesson =
+    kind === "session"
+      ? mergeSessions([row]).find((item) => item.id === contentKey)?.curriculum
+      : null;
   return (
     <article>
+      {sessionLesson?.cycle && (
+        <p className="mb-2 text-xs text-neutral-500">{sessionLesson.cycle}</p>
+      )}
       <h3 className="text-2xl font-bold">{textValue(doc["title"])}</h3>
+      {sessionLesson?.project.trim() &&
+        sessionLesson.project.trim() !== textValue(doc["title"]).trim() && (
+          <p className="mt-2 text-sm text-neutral-600">프로젝트 · {sessionLesson.project}</p>
+        )}
+      {sessionLesson?.stage && <p className="mt-3 text-lg font-medium">{sessionLesson.stage}</p>}
       {kind === "session" && (
         <p className="mt-3 text-sm text-neutral-600">
           {textValue(doc["date"])} · {textValue(doc["startTime"])}–{textValue(doc["endTime"])} ·
@@ -693,6 +850,7 @@ function DraftPreview({
           ))}
         </ol>
       )}
+      {sessionLesson && <SessionCurriculum lesson={sessionLesson} />}
     </article>
   );
 }
@@ -716,7 +874,10 @@ export function ContentEditor({
   history?: ContentPublication[];
   onPublished?: () => Promise<void>;
 }) {
-  const initial = draft?.document ?? publication?.document ?? initialContent(kind, contentKey);
+  const initial =
+    kind === "session"
+      ? editableSessionContent(contentKey, draft?.document ?? publication?.document)
+      : (draft?.document ?? publication?.document ?? initialContent(kind, contentKey));
   const [doc, setDoc] = useState<ContentDocument>(initial);
   const [hidden, setHidden] = useState(draft?.hidden ?? publication?.hidden ?? false);
   const [version, setVersion] = useState(draft?.version ?? 0);
@@ -947,12 +1108,14 @@ export function ContentEditor({
                                 !dirty ||
                                 window.confirm("작성 중인 내용을 이 버전으로 바꿀까요?")
                               ) {
-                                setDoc({
-                                  ...item.document,
-                                  ...(kind === "session"
-                                    ? { instructorNotes: textValue(doc["instructorNotes"]) }
-                                    : {}),
-                                });
+                                setDoc(
+                                  kind === "session"
+                                    ? editableSessionContent(contentKey, {
+                                        ...item.document,
+                                        instructorNotes: textValue(doc["instructorNotes"]),
+                                      })
+                                    : { ...item.document },
+                                );
                                 setHidden(item.hidden);
                                 setPreview(false);
                                 setMessage(
@@ -1014,9 +1177,11 @@ export function ContentEditor({
 export function ContentManager({
   initialKind = "glossary",
   sessionOnly = false,
+  initialKey,
 }: {
   initialKind?: ContentKind;
   sessionOnly?: boolean;
+  initialKey?: string;
 }) {
   const { status, user } = useAuth();
   const { sessions } = usePublishedContent();
@@ -1024,11 +1189,13 @@ export function ContentManager({
   const [drafts, setDrafts] = useState<ContentDraft[]>([]);
   const [publications, setPublications] = useState<ContentPublication[]>([]);
   const [selectedKey, setSelectedKey] = useState<string | null>(
-    sessionOnly
-      ? (sessions.find(
-          (session) => session.number === currentPublishedSession(sessions, seoulToday()),
-        )?.id ?? "S01")
-      : null,
+    sessionOnly && initialKey && SESSIONS.some((session) => session.id === initialKey)
+      ? initialKey
+      : sessionOnly
+        ? (sessions.find(
+            (session) => session.number === currentPublishedSession(sessions, seoulToday()),
+          )?.id ?? "S01")
+        : null,
   );
   const [query, setQuery] = useState("");
   const [loading, setLoading] = useState(true);
@@ -1267,31 +1434,42 @@ export function ContentManager({
             )}
           </aside>
           {selectedKey ? (
-            <ContentEditor
-              key={`${kind}:${selectedKey}:${editorGeneration}`}
-              kind={kind}
-              contentKey={selectedKey}
-              {...(drafts.find((item) => item.kind === kind && item.content_key === selectedKey)
-                ? {
-                    draft: drafts.find(
-                      (item) => item.kind === kind && item.content_key === selectedKey,
-                    )!,
+            <div className="min-w-0">
+              {kind === "session" && (
+                <CurriculumSheetSyncStatus
+                  sessionKey={selectedKey}
+                  revision={
+                    drafts.find((item) => item.kind === kind && item.content_key === selectedKey)
+                      ?.version ?? 0
                   }
-                : {})}
-              {...(latest.find((item) => item.kind === kind && item.content_key === selectedKey)
-                ? {
-                    publication: latest.find(
-                      (item) => item.kind === kind && item.content_key === selectedKey,
-                    )!,
-                  }
-                : {})}
-              onSaved={updated}
-              onDirtyChange={onDirtyChange}
-              history={publications.filter(
-                (item) => item.kind === kind && item.content_key === selectedKey,
+                />
               )}
-              onPublished={refreshPublications}
-            />
+              <ContentEditor
+                key={`${kind}:${selectedKey}:${editorGeneration}`}
+                kind={kind}
+                contentKey={selectedKey}
+                {...(drafts.find((item) => item.kind === kind && item.content_key === selectedKey)
+                  ? {
+                      draft: drafts.find(
+                        (item) => item.kind === kind && item.content_key === selectedKey,
+                      )!,
+                    }
+                  : {})}
+                {...(latest.find((item) => item.kind === kind && item.content_key === selectedKey)
+                  ? {
+                      publication: latest.find(
+                        (item) => item.kind === kind && item.content_key === selectedKey,
+                      )!,
+                    }
+                  : {})}
+                onSaved={updated}
+                onDirtyChange={onDirtyChange}
+                history={publications.filter(
+                  (item) => item.kind === kind && item.content_key === selectedKey,
+                )}
+                onPublished={refreshPublications}
+              />
+            </div>
           ) : (
             <div className="flex min-h-60 items-center justify-center border border-neutral-200 bg-neutral-50 p-8 text-sm text-neutral-600">
               목록에서 편집할 항목을 선택하거나 새 콘텐츠를 추가하세요.

@@ -3,6 +3,7 @@ import { VISUAL_LESSONS } from "@/data/visual-lesson-labels";
 import { STUDY_GUIDES, type StudyGuide } from "@/data/study-materials";
 import { CLASS_END, CLASS_START, SESSIONS, type Session } from "@/data/schedule";
 import { TOPICS, type TopicId } from "@/data/design-sources";
+import { type CurriculumLesson } from "@/data/curriculum";
 
 export type ContentKind = "session" | "announcement" | "glossary" | "guide" | "path";
 export type ContentDocument = Record<string, unknown>;
@@ -220,6 +221,47 @@ export function validDate(value: unknown): value is string {
   const parsed = new Date(`${value}T00:00:00Z`);
   return !Number.isNaN(parsed.getTime()) && parsed.toISOString().slice(0, 10) === value;
 }
+
+/** Stable session identity comes from the schedule, never from editable content. */
+export function sessionCurriculum(session: Session, value: unknown): CurriculumLesson | null {
+  if (!isDocument(value)) return session.curriculum;
+  const base = session.curriculum;
+  const title = textValue(value["title"], base?.title ?? session.title);
+  return {
+    number: session.number,
+    sourceWeek: base?.sourceWeek ?? `${session.number}회차`,
+    title,
+    cycle: textValue(value["cycle"], base?.cycle),
+    project: textValue(value["project"], base?.project ?? title),
+    stage: value["stage"] === null ? null : textValue(value["stage"], base?.stage ?? "") || null,
+    goalOutput: textValue(value["goalOutput"], base?.goalOutput),
+    topics: Array.isArray(value["topics"]) ? linesValue(value["topics"]) : (base?.topics ?? []),
+    terms: Array.isArray(value["terms"])
+      ? value["terms"].filter(isDocument).map((term) => ({
+          name: textValue(term["name"]),
+          description: textValue(term["description"]),
+        }))
+      : (base?.terms ?? []),
+    tools: Array.isArray(value["tools"]) ? linesValue(value["tools"]) : (base?.tools ?? []),
+    homework: textValue(value["homework"], base?.homework),
+  };
+}
+
+/** Older published lessons remain editable without losing their original curriculum. */
+export function editableSessionContent(key: string, document?: ContentDocument): ContentDocument {
+  const base = initialContent("session", key);
+  const session = SESSIONS.find((item) => item.id === key);
+  const doc = { ...base, ...document };
+  if (!session) return doc;
+  const curriculum = sessionCurriculum(session, doc["curriculum"]);
+  return {
+    ...doc,
+    curriculum: curriculum
+      ? { ...curriculum, title: textValue(doc["title"], curriculum.title) }
+      : null,
+  };
+}
+
 export function mergeSessions(rows: PublishedContentRow[]): ManagedSession[] {
   return SESSIONS.map((base) => {
     const row = rows.find((item) => item.kind === "session" && item.content_key === base.id);
@@ -240,7 +282,8 @@ export function mergeSessions(rows: PublishedContentRow[]): ManagedSession[] {
     return {
       ...session,
       managed: true,
-      curriculum: doc["keepCurriculum"] === false ? null : session.curriculum,
+      curriculum:
+        doc["keepCurriculum"] === false ? null : sessionCurriculum(session, doc["curriculum"]),
       title: textValue(doc["title"], session.title),
       date: validDate(doc["date"]) ? doc["date"] : session.date,
       startTime: /^\d{2}:\d{2}$/.test(textValue(doc["startTime"]))
@@ -310,6 +353,22 @@ export function initialContent(kind: ContentKind, key: string): ContentDocument 
       progress: "scheduled",
       instructorNotes: "",
       keepCurriculum: true,
+      curriculum: session
+        ? sessionCurriculum(
+            session,
+            session.curriculum ?? {
+              title: session.title,
+              project: session.title,
+              cycle: "",
+              stage: null,
+              goalOutput: "",
+              topics: [],
+              terms: [],
+              tools: [],
+              homework: "",
+            },
+          )
+        : null,
     };
   }
   if (kind === "path") return { title: "", description: "", topic: "foundations", guideIds: [] };
@@ -339,6 +398,18 @@ export function validateContent(kind: ContentKind, doc: ContentDocument): string
     const timePattern = /^([01]\d|2[0-3]):[0-5]\d$/;
     if (!timePattern.test(start) || !timePattern.test(end) || end <= start)
       return "수업 종료 시각은 시작 시각보다 늦어야 합니다.";
+    if (doc["keepCurriculum"] !== false && isDocument(doc["curriculum"])) {
+      const terms = doc["curriculum"]["terms"];
+      if (
+        Array.isArray(terms) &&
+        terms.some(
+          (term) =>
+            isDocument(term) &&
+            (!textValue(term["name"]).trim() || !textValue(term["description"]).trim()),
+        )
+      )
+        return "핵심 용어의 이름과 설명을 함께 입력하거나 빈 항목을 삭제해 주세요.";
+    }
   }
   if (kind === "guide" && (!textValue(doc["summary"]).trim() || !textValue(doc["intro"]).trim()))
     return "학습 요약과 본문을 입력해 주세요.";
