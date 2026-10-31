@@ -9,7 +9,6 @@ interface AuthState {
   user: User | null;
   errorDetail: string | null;
   signIn: (loginId: string, password: string) => Promise<void>;
-  signUp: (loginId: string, password: string) => Promise<void>;
   signOut: () => Promise<void>;
   changePassword: (currentPassword: string, newPassword: string) => Promise<void>;
 }
@@ -20,16 +19,15 @@ function normalizeLoginId(loginId: string) {
   return loginId.trim().normalize("NFKC").toLocaleLowerCase("ko-KR");
 }
 
-function validateCredentials(loginId: string, password: string, requireKoreanId = false) {
+function validateCredentials(loginId: string, password: string) {
   const normalizedId = normalizeLoginId(loginId);
   if (normalizedId.length < 2 || normalizedId.length > 30) throw new Error("auth/invalid-login-id");
-  if (requireKoreanId && !/^[가-힣]+$/.test(normalizedId)) throw new Error("auth/korean-login-id-required");
   if (!/^\d{4}$/.test(password)) throw new Error("auth/invalid-pin");
   return normalizedId;
 }
 
-async function internalCredentials(loginId: string, password: string, requireKoreanId = false) {
-  const normalizedId = validateCredentials(loginId, password, requireKoreanId);
+async function internalCredentials(loginId: string, password: string) {
+  const normalizedId = validateCredentials(loginId, password);
   const digest = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(normalizedId));
   const hash = Array.from(new Uint8Array(digest), (byte) => byte.toString(16).padStart(2, "0")).join("");
   // The UI uses a four-digit PIN. Add an app-specific prefix before sending it
@@ -96,18 +94,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     if (error) throw error;
   }, []);
 
-  const signUp = useCallback(async (loginId: string, password: string) => {
-    const credentials = await internalCredentials(loginId, password, true);
-    const supabase = getSupabase();
-    const { data, error } = await supabase.auth.signUp({
-      email: credentials.email,
-      password: credentials.password,
-      options: { data: { username: credentials.normalizedId } },
-    });
-    if (error) throw error;
-    if (!data.session) throw new Error("auth/email-confirmation-required");
-  }, []);
-
   const changePassword = useCallback(async (currentPassword: string, newPassword: string) => {
     if (!user?.email) throw new Error("auth/not-signed-in");
     if (!/^\d{4}$/.test(currentPassword) || !/^\d{4}$/.test(newPassword)) {
@@ -119,7 +105,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       email: user.email,
       password: `Kmove:${currentPassword}`,
     });
-    if (verifyError) throw new Error("auth/current-password-incorrect");
+    if (verifyError) {
+      if (verifyError.code === "invalid_credentials") throw new Error("auth/current-password-incorrect");
+      throw verifyError;
+    }
     const { error } = await db.auth.updateUser({ password: `Kmove:${newPassword}` });
     if (error) throw error;
   }, [user]);
@@ -129,7 +118,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     if (error) throw error;
   }, []);
 
-  return <Ctx.Provider value={{ status, user, errorDetail, signIn, signUp, signOut, changePassword }}>{children}</Ctx.Provider>;
+  return <Ctx.Provider value={{ status, user, errorDetail, signIn, signOut, changePassword }}>{children}</Ctx.Provider>;
 }
 
 export function useAuth() {

@@ -21,6 +21,7 @@ function PasswordPage() {
 
   async function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
+    if (busy) return;
     setSuccess(false);
     setError("");
     if (next !== confirm) {
@@ -29,6 +30,10 @@ function PasswordPage() {
     }
     if (!/^[0-9]{4}$/.test(current) || !/^[0-9]{4}$/.test(next)) {
       setError("현재 및 새 비밀번호는 숫자 4자리로 입력해 주세요.");
+      return;
+    }
+    if (current === next) {
+      setError("현재 비밀번호와 다른 비밀번호를 선택해 주세요.");
       return;
     }
     setBusy(true);
@@ -45,6 +50,8 @@ function PasswordPage() {
           ? "현재 비밀번호가 일치하지 않습니다."
           : code === "auth/password-unchanged"
           ? "현재 비밀번호와 다른 비밀번호를 선택해 주세요."
+          : code === "auth/not-signed-in"
+          ? "로그인이 필요합니다. 다시 로그인해 주세요."
           : "비밀번호를 변경하지 못했습니다. 다시 시도해 주세요."
       );
     } finally {
@@ -72,7 +79,7 @@ function PasswordPage() {
         <div>
           <label htmlFor="current-password" className="mb-2 block text-sm font-medium">현재 비밀번호</label>
           <input id="current-password" type="password" required minLength={4} maxLength={4}
-            inputMode="numeric" pattern="[0-9]{4}"
+            inputMode="numeric" pattern="[0-9]{4}" disabled={busy}
             autoComplete="current-password" value={current} onChange={(event) => setCurrent(event.target.value.replace(/\D/g, "").slice(0, 4))}
             placeholder="현재 비밀번호 숫자 4자리"
             className="min-h-12 w-full border border-input bg-card px-3 text-base" />
@@ -80,7 +87,7 @@ function PasswordPage() {
         <div>
           <label htmlFor="new-password" className="mb-2 block text-sm font-medium">새 비밀번호</label>
           <input id="new-password" type="password" required minLength={4} maxLength={4}
-            inputMode="numeric" pattern="[0-9]{4}"
+            inputMode="numeric" pattern="[0-9]{4}" disabled={busy}
             autoComplete="new-password" value={next} onChange={(event) => setNext(event.target.value.replace(/\D/g, "").slice(0, 4))}
             placeholder="새 비밀번호 숫자 4자리"
             className="min-h-12 w-full border border-input bg-card px-3 text-base" />
@@ -89,7 +96,7 @@ function PasswordPage() {
         <div>
           <label htmlFor="confirm-password" className="mb-2 block text-sm font-medium">새 비밀번호 확인</label>
           <input id="confirm-password" type="password" required minLength={4} maxLength={4}
-            inputMode="numeric" pattern="[0-9]{4}"
+            inputMode="numeric" pattern="[0-9]{4}" disabled={busy}
             autoComplete="new-password" value={confirm} onChange={(event) => setConfirm(event.target.value.replace(/\D/g, "").slice(0, 4))}
             placeholder="새 비밀번호 4자리 확인"
             className="min-h-12 w-full border border-input bg-card px-3 text-base" />

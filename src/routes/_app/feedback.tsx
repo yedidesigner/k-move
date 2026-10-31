@@ -4,6 +4,7 @@ import { Check, ChevronDown } from "lucide-react";
 import { FeedbackWorkspace } from "@/components/FeedbackWorkspace";
 import { getSupabase } from "@/lib/supabase";
 import { useAuth } from "@/lib/auth";
+import { STUDENT_NAMES } from "@/data/student-roster";
 
 export const Route = createFileRoute("/_app/feedback")({
   head: () => ({ meta: [
@@ -15,10 +16,6 @@ export const Route = createFileRoute("/_app/feedback")({
 
 type Student = { id:string; name:string; major:string; user_id:string|null };
 type Profile = { id:string; username:string; role:string };
-const STUDENT_NAMES = [
-  "강민주","강유민","김다혜","김선미","김재은","김화민","류영진","오한별",
-  "이익제","이주희","이지원","임시윤","정여진","최지인","최형주"
-];
 const WEEKS = Array.from({length:24},(_,index)=>index+1);
 const fallback = STUDENT_NAMES.map(name=>({id:"",name,major:"",user_id:null}));
 
@@ -55,7 +52,8 @@ function FeedbackPage() {
           const profilesResult=await db.from("kmove_profiles")
             .select("id,username,role").eq("role","student").order("username");
           if(profilesResult.error) throw profilesResult.error;
-          if(active) setProfiles((profilesResult.data||[]) as Profile[]);
+          if(active) setProfiles(((profilesResult.data||[]) as Profile[])
+            .filter(profile=>STUDENT_NAMES.some(name=>name===profile.username)));
         }
       } catch(e) {
         if(active) {
@@ -88,12 +86,17 @@ function FeedbackPage() {
     };
   }, [studentPickerOpen]);
 
+  // The instructor's active course list follows the shared roster. Legacy
+  // students retain their own records; database RLS still enforces access.
+  const cohortStudents = STUDENT_NAMES.flatMap(name =>
+    students.filter(student => student.name === name));
   const selected = instructor
-    ? students.find(row => row.name === studentName) || students[0]
-    : students.find(row => row.user_id === user?.id) || students[0];
+    ? cohortStudents.find(row => row.name === studentName) || cohortStudents[0]
+    : students.find(row => row.user_id === user?.id);
 
   async function linkAccount(accountId:string) {
     if(!instructor || !selected?.id || mappingBusy) return;
+    if(accountId && !profiles.some(profile=>profile.id===accountId)) return;
     setMappingBusy(true);setSetupError("");
     try {
       const result=await getSupabase().from("kmove_feedback_students")
@@ -143,7 +146,7 @@ function FeedbackPage() {
                         aria-haspopup="menu"
                         aria-controls="feedback-student-options"
                         aria-expanded={studentPickerOpen}
-                        disabled={loading || students.length === 0}
+                        disabled={loading || cohortStudents.length === 0}
                         onClick={() => setStudentPickerOpen(open => !open)}
                         className="flex size-[18px] shrink-0 items-center justify-center rounded-sm border border-neutral-300 bg-white text-black transition-colors hover:bg-neutral-100 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-black disabled:opacity-50"
                       >
@@ -156,8 +159,8 @@ function FeedbackPage() {
                           aria-label="학생 이름 목록"
                           className="absolute left-0 top-full z-50 mt-1 max-h-72 min-w-44 overflow-y-auto border border-neutral-300 bg-white py-1 text-black shadow-lg"
                         >
-                          {students.map(item => {
-                            const active = selected?.id === item.id;
+                          {cohortStudents.map(item => {
+                            const active = selected?.name === item.name;
                             return (
                               <button
                                 key={item.id || item.name}
@@ -179,6 +182,9 @@ function FeedbackPage() {
                         </div>
                       )}
                     </div>
+                  )}
+                  {instructor && !loading && !setupError && (
+                    <span className="ml-1 text-xs text-neutral-500">수강생 {cohortStudents.length}명</span>
                   )}
                 </div>
 
