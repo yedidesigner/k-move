@@ -1,12 +1,19 @@
 /**
- * Source: 구글 AI 바이브 코딩 커리큘럼 (1~19주차).xlsx, 시트1!B10:F28.
- * The workbook states "정규 19회차 마스터": attach lessons by session number.
- * Calendar dates and homework are not supplied and must not be inferred.
+ * Source: 구글 시트 "K-MOVE DESIGN 커리큘럼" 시트2 (2026-11-01 개정) +
+ * 구글 드라이브 "K-MOVE_커리큘럼_2-9주차_제안.md".
+ *
+ * 구조
+ * - 1회차: OT 및 개별 상담
+ * - 2~9회차: Google AI Pro 요금제 + 무료 구글 도구(Stitch, AI Studio)만으로 바이브코딩.
+ *   2주 = 1사이클. 앞 주는 생각하는 주(기획·논리), 뒷 주는 만드는 주(제작·배포).
+ * - 10~19회차: 수업 주제 준비 중 (이 파일에 항목 없음 → schedule.ts가 "준비 중"으로 표시)
+ * - 20~24회차: 개별 피드백 (공통 주제 없음)
+ *
+ * Calendar dates live in schedule.ts; lessons attach by session number.
  */
 export interface CurriculumLesson {
   number: number;
   sourceWeek: string;
-  sourceRange: string;
   cycle: string;
   project: string;
   stage: string | null;
@@ -14,562 +21,352 @@ export interface CurriculumLesson {
   goalOutput: string;
   topics: string[];
   terms: { name: string; description: string }[];
+  /** 이번 회차에 쓰는 도구 */
+  tools?: string[];
+  /** 다음 회차까지 제출할 과제 */
+  homework?: string;
 }
 
 export const CURRICULUM_OVERVIEW = {
-  sourceName: "구글 AI 바이브 코딩 커리큘럼 (1~19주차).xlsx",
-  title: "구글 AI 바이브 코딩 실무 커리큘럼 (1~19주차)",
-  subtitle:
-    "비전공 디자이너를 위한 2주 단위 프로덕트 빌딩 & Gemini AI 기반 실전 웹 개발 마스터 코스",
+  title: "K-MOVE DESIGN · Gemini 바이브코딩 커리큘럼",
+  subtitle: "Google AI Pro 요금제 하나로 기획부터 배포까지, 디자이너를 위한 바이브코딩 과정",
   summary: [
-    {
-      label: "총 교육 기간",
-      value: "19주",
-      detail: "정규 19회차 마스터",
-    },
-    {
-      label: "프로젝트 사이클",
-      value: "6개 + 파이널",
-      detail: "2주 단위 스프린트",
-    },
-    {
-      label: "목표 웹 산출물",
-      value: "7개 웹사이트",
-      detail: "100% 라이브 상용 배포",
-    },
-    {
-      label: "핵심 기술 스택",
-      value: "Gemini AI & Web",
-      detail: "HTML/CSS/JS & Sheets API",
-    },
-    {
-      label: "교육 대상 및 특징",
-      value: "비전공 디자이너",
-      detail: "개발 용어 해설 & 코드 프리 빌딩",
-    },
+    { label: "총 교육 기간", value: "24주", detail: "1회차 OT · 2~9회차 공통 · 20~24회차 개별" },
+    { label: "프로젝트 사이클", value: "2주 = 1사이클", detail: "생각하는 주 + 만드는 주" },
+    { label: "목표 산출물", value: "3개 사이트 + 케이스 스터디", detail: "전부 실제 URL로 배포" },
+    { label: "핵심 도구", value: "Gemini · Stitch · AI Studio", detail: "AI Pro 1개 요금제 + 무료 도구" },
+    { label: "교육 대상", value: "디자인 베이스 수강생", detail: "개발 용어는 디자인 비유로 해설" },
   ],
-  totals: {
-    주차: "총계",
-    "구분(사이클)": "19주 코스 완성",
-    "목표 산출물": "19개 주차 / 7개 웹사이트 완성",
-    "주요 교육 내용":
-      "2주 단위 바이브 코딩 12주(6개 사이클) + 중간 기획 1주 + 파이널 프로젝트 6주 완성",
-    "핵심 개발 용어 (해석 포함)":
-      "10대 핵심 웹 개발 개념(HTML, CSS, JS, 배포, 호스팅, 도메인, 디버깅, 반응형, 크로스 브라우징, 임베드 등) 마스터",
-  },
+  phases: [
+    { range: "1회차", label: "OT 및 개별 상담" },
+    { range: "2~9회차", label: "Gemini 바이브코딩 공통 과정" },
+    { range: "10~19회차", label: "수업 주제 준비 중" },
+    { range: "20~24회차", label: "개별 피드백" },
+  ],
 };
+
+const FEEDBACK_LESSON = (number: number): CurriculumLesson => ({
+  number,
+  sourceWeek: `${number}주차`,
+  cycle: "개별 피드백",
+  project: "개별 피드백 & 포트폴리오 마무리",
+  stage: null,
+  title: "개별 피드백 & 포트폴리오 마무리",
+  goalOutput: "공통 주제 없음\n수강생별 진도에 맞춘 1:1 피드백",
+  topics: [
+    "개인별 프로젝트 진행 상황 점검 및 다음 단계 설정",
+    "포트폴리오·서비스 산출물 개별 리뷰 (UI 완성도, 반응형, 케이스 스터디 서술)",
+    "취업 자료(영문 케이스 스터디, 링크 정리) 개별 보완",
+  ],
+  terms: [],
+});
 
 export const CURRICULUM_LESSONS: CurriculumLesson[] = [
   {
     number: 1,
     sourceWeek: "1주차",
-    sourceRange: "시트1!B10:F10",
-    cycle: "사이클 1 (기초 탐색)",
-    project: "개인 포트폴리오 웹사이트",
-    stage: "1단계: 정적 UI 구조화",
-    title: "개인 포트폴리오 웹사이트 · 1단계: 정적 UI 구조화",
-    goalOutput: "개인 포트폴리오 웹사이트\n[1단계: 정적 UI 구조화]",
+    cycle: "오리엔테이션",
+    project: "OT 및 개별 상담",
+    stage: null,
+    title: "OT 및 개별 상담",
+    goalOutput: "과정 안내 · 도구 준비 · 개인별 목표 설정",
     topics: [
-      "바이브 코딩(Vibe Coding) 개념 소개 및 Gemini 프롬프트 작성 기초",
-      "디자인 시안/아이디어 텍스트를 HTML/CSS 기본 골격으로 변환",
-      "웹 페이지 레이아웃 구조와 디자이너를 위한 기초 코드 읽기",
+      "24주 과정 구조와 운영 방식 안내",
+      "Google AI Pro 요금제 가입 및 사용 도구 확인 (Gemini, Stitch, AI Studio, GitHub, Vercel)",
+      "수강생별 현재 역량·목표·관심 분야 개별 상담",
     ],
-    terms: [
-      {
-        name: "HTML (HyperText Markup Language)",
-        description: "웹페이지의 뼈대와 구조를 잡는 언어 (디자인의 와이어프레임 역할)",
-      },
-      {
-        name: "CSS (Cascading Style Sheets)",
-        description:
-          "색상, 폰트, 여백 등 시각적 스타일을 입히는 언어 (디자인의 스타일 가이드 역할)",
-      },
-    ],
+    terms: [],
   },
   {
     number: 2,
     sourceWeek: "2주차",
-    sourceRange: "시트1!B11:F11",
-    cycle: "사이클 1 (기초 탐색)",
-    project: "개인 포트폴리오 웹사이트",
-    stage: "2단계: 호스팅 & 웹 배포",
-    title: "개인 포트폴리오 웹사이트 · 2단계: 호스팅 & 웹 배포",
-    goalOutput: "개인 포트폴리오 웹사이트\n[2단계: 호스팅 & 웹 배포]",
+    cycle: "사이클 1 · 개인 포트폴리오 (생각하는 주)",
+    project: "개인 포트폴리오 사이트",
+    stage: "1단계: 기획서 + 첫 생성",
+    title: "개인 포트폴리오 사이트 · 1단계: 기획서 + 첫 생성",
+    goalOutput:
+      "포트폴리오 1페이지 기획서 (목적 / 보는 사람 / 섹션 목록 / 섹션별 메시지)\nGemini Canvas로 생성한 첫 포트폴리오 페이지 (미리보기 공유 링크)",
     topics: [
-      "생성된 웹 코드의 로컬 브라우저 검토 및 실시간 수정/스타일링 기법",
-      "깃허브 페이지(GitHub Pages) 또는 Vercel을 통한 원클릭 웹 배포 실습",
-      "내 포트폴리오를 실제 라이브 웹 링크(URL)로 공유하고 모바일 브라우저 확인",
+      "바이브코딩 개념: 코드를 쓰는 게 아니라 요구사항을 정확히 말하는 일. 디자이너가 유리한 이유",
+      "구글 AI 도구 지도: Gemini 앱/Canvas, Nano Banana, NotebookLM, Stitch, AI Studio — 각각 언제 쓰는지",
+      "사고 훈련 ①: 기획서 없이 프롬프트 쓰기 vs 기획서 쓰고 프롬프트 쓰기 — 같은 요청을 두 번 실행해 결과 비교",
+      "프롬프트 = 디자인 브리프 구조: 목적 → 대상 → 콘텐츠 → 구조 → 스타일 → 제약",
+      "Canvas 기본 조작: 생성 → 미리보기 → 수정 요청 → 버전 비교 → 공유 링크",
+    ],
+    terms: [
+      {
+        name: "HTML",
+        description:
+          "페이지의 뼈대. 와이어프레임에서 '여기 제목, 여기 이미지'라고 적어둔 것을 글로 쓴 버전",
+      },
+      {
+        name: "CSS",
+        description: "뼈대에 입히는 옷. 색·서체·여백·정렬 = 스타일 가이드를 코드로 쓴 것",
+      },
+      {
+        name: "프롬프트 (Prompt)",
+        description: "AI에게 주는 디자인 브리프. 브리프가 모호하면 결과도 모호함",
+      },
+    ],
+    tools: ["Gemini 앱 (Canvas)"],
+    homework: "기획서 수정본 + 프롬프트 3회 반복 기록 (무엇을 바꿔 말했더니 무엇이 달라졌는지)",
+  },
+  {
+    number: 3,
+    sourceWeek: "3주차",
+    cycle: "사이클 1 · 개인 포트폴리오 (만드는 주)",
+    project: "개인 포트폴리오 사이트",
+    stage: "2단계: 내 링크 만들기 (배포)",
+    title: "개인 포트폴리오 사이트 · 2단계: 내 링크 만들기 (배포)",
+    goalOutput: "실제 URL로 접속되는 포트폴리오 사이트 v1 (모바일 확인 완료)",
+    topics: [
+      "페이지 구조 읽기: Hero / About / Work / Contact — 코드 안에서 지금 어느 섹션을 보고 있는지 찾는 법 (태그 이름만 보면 됨)",
+      "수정 요청의 기술: '예쁘게'가 아니라 '제목 크기 1.5배, 섹션 간격 80px, 버튼 모서리 8px' — 디자이너의 수치 감각이 그대로 프롬프트가 됨",
+      "이미지 넣기: 이미지 파일과 경로(주소) 개념, Nano Banana로 임시 작품 썸네일·배경 생성",
+      "배포 실습: GitHub 웹 업로드(드래그 앤 드롭) → Vercel 연결 → URL 발급 → 모바일에서 열어보기",
+      "디버깅 루틴 ①: 화면이 깨지면 스크린샷을 찍어 Gemini에 보여주고 '이 부분이 이렇게 나온다'라고 말하기",
     ],
     terms: [
       {
         name: "배포 (Deployment)",
         description:
-          "내 컴퓨터에서 작업한 웹사이트 파일을 인터넷 서버에 올려 누구나 접속할 수 있게 하는 과정",
+          "내 컴퓨터 안의 파일을 인터넷에 올려 남이 볼 수 있게 하는 것. 인쇄소에 파일 넘기는 것과 같음",
       },
       {
         name: "호스팅 (Hosting)",
+        description: "그 파일을 24시간 올려두는 서버 공간. Vercel이 무료로 빌려줌",
+      },
+      {
+        name: "GitHub 저장소 (Repository)",
+        description: "프로젝트 파일을 담는 온라인 폴더. 이번 과정에선 '업로드 폴더'로만 사용",
+      },
+      {
+        name: "경로 (Path)",
         description:
-          "웹사이트 파일들을 24시간 인터넷에 띄워둘 수 있도록 서버 공간을 빌려주는 서비스",
+          "이미지 파일이 어디에 있는지 적는 주소. 경로가 틀리면 이미지가 안 뜸 — 가장 흔한 오류",
       },
     ],
-  },
-  {
-    number: 3,
-    sourceWeek: "3주차",
-    sourceRange: "시트1!B12:F12",
-    cycle: "사이클 2 (인터랙션 기초)",
-    project: "브랜드/제품 소개 랜딩페이지",
-    stage: "1단계: AI 기획 & 에셋",
-    title: "브랜드/제품 소개 랜딩페이지 · 1단계: AI 기획 & 에셋",
-    goalOutput: "브랜드/제품 소개 랜딩페이지\n[1단계: AI 기획 & 에셋]",
-    topics: [
-      "Gemini를 활용한 가상 브랜드 스토리, 제품 USP, 마케팅 카피라이팅 도출",
-      "AI 프롬프트 기반 배너 이미지 및 아이콘 에셋 자동 생성",
-      "텍스트 프롬프트 기반 1차 웹페이지 레이아웃 고속 생성 및 와이어프레임 정렬",
-    ],
-    terms: [
-      {
-        name: "프롬프트 엔지니어링 (Prompt Engineering)",
-        description: "AI에게 원하는 디자인과 코드 결과물을 유도하기 위한 구체적인 지시문 작성법",
-      },
-      {
-        name: "CTA (Call To Action)",
-        description: "'구매하기', '사전예약' 등 사용자의 특정 행동을 유도하는 핵심 버튼/링크",
-      },
-    ],
+    tools: ["Gemini 앱 (Canvas)", "Nano Banana", "GitHub", "Vercel"],
+    homework: "포트폴리오 URL 제출 + 모바일 스크린샷 + 깨진 부분 1개 이상 직접 고친 기록",
   },
   {
     number: 4,
     sourceWeek: "4주차",
-    sourceRange: "시트1!B13:F13",
-    cycle: "사이클 2 (인터랙션 기초)",
-    project: "브랜드/제품 소개 랜딩페이지",
-    stage: "2단계: 반응형 UI 최적화",
-    title: "브랜드/제품 소개 랜딩페이지 · 2단계: 반응형 UI 최적화",
-    goalOutput: "브랜드/제품 소개 랜딩페이지\n[2단계: 반응형 UI 최적화]",
+    cycle: "사이클 2 · 브랜드 랜딩페이지 (생각하는 주)",
+    project: "브랜드 랜딩페이지",
+    stage: "1단계: 기획력 — 무엇을 왜 만드는가",
+    title: "브랜드 랜딩페이지 · 1단계: 기획력 — 무엇을 왜 만드는가",
+    goalOutput:
+      "가상 브랜드 정의서 1장 (문제 / 타겟 / 한 줄 가치 / 톤)\n랜딩페이지 IA + 섹션별 '목적–메시지–행동(CTA)' 표\nStitch 와이어프레임 3안 + 1안 선정 근거",
     topics: [
-      "모바일, 태블릿, PC 화면 크기에 맞춰 자연스럽게 반응하는 레이아웃 구현",
-      "클릭 시 특정 섹션으로 부드럽게 이동하는 스크롤 및 마우스 호버(Hover) 효과",
-      "비전공자를 위한 디버깅 팁: 화면 깨짐 및 레이아웃 틀어짐 신속 해결",
+      "사고 훈련 ②: 레퍼런스 리서치 — NotebookLM/Deep Research로 같은 카테고리 랜딩 5개 분석 → 공통 구조 추출",
+      "기획 프레임: 문제 정의 → 타겟 → 가치 제안 → 사용자가 페이지에서 해야 할 단 하나의 행동",
+      "정보 구조(IA): 섹션 순서가 설득 순서. '왜 이 섹션이 이 위치인가'를 말로 설명하기",
+      "Stitch 실습: 텍스트 프롬프트로 3안 생성 → 비교 → Figma에 붙여넣어 정리",
+      "논리 훈련: 3안 중 1안 선정 시 '느낌'이 아니라 '타겟·목적 기준 3가지'로 근거 작성",
     ],
     terms: [
       {
-        name: "반응형 웹 (Responsive Web)",
-        description:
-          "PC, 태블릿, 모바일 등 화면 크기에 맞춰 레이아웃이 유연하게 최적화되는 웹 디자인 기술",
+        name: "IA (정보 구조)",
+        description: "메뉴·섹션의 순서와 위계. 디자이너에게 익숙한 개념, 이름만 새로움",
       },
       {
-        name: "디버깅 (Debugging)",
-        description: "코드에서 발생한 오류나 화면 깨짐 현상(버그)을 찾아내어 바로잡는 과정",
+        name: "유저 플로우 (User Flow)",
+        description: "사용자가 들어와서 나갈 때까지의 경로. 화살표 하나하나가 '다음 화면'",
+      },
+      {
+        name: "CTA (Call To Action)",
+        description: "페이지가 원하는 단 하나의 행동 버튼. 섹션마다 CTA가 다르면 기획이 흐려진 것",
+      },
+      {
+        name: "와이어프레임 / 로우파이·하이파이",
+        description: "선만 있는 설계도 vs 색·서체까지 입힌 시안",
       },
     ],
+    tools: ["NotebookLM / Deep Research", "Stitch", "Figma"],
+    homework: "브랜드 정의서 + IA 표 + 선정안과 근거 제출",
   },
   {
     number: 5,
     sourceWeek: "5주차",
-    sourceRange: "시트1!B14:F14",
-    cycle: "사이클 3 (데이터 수집)",
-    project: "이벤트 신청 & 뉴스레터 웹",
-    stage: "1단계: UI 및 입력 폼",
-    title: "이벤트 신청 & 뉴스레터 웹 · 1단계: UI 및 입력 폼",
-    goalOutput: "이벤트 신청 & 뉴스레터 웹\n[1단계: UI 및 입력 폼]",
+    cycle: "사이클 2 · 브랜드 랜딩페이지 (만드는 주)",
+    project: "브랜드 랜딩페이지",
+    stage: "2단계: 시안을 그대로 코드로 (반응형 배포)",
+    title: "브랜드 랜딩페이지 · 2단계: 시안을 그대로 코드로 (반응형 배포)",
+    goalOutput: "반응형 랜딩페이지 배포 (PC·모바일 정상, 호버·스크롤 인터랙션 포함)",
     topics: [
-      "사용자 참여 유도를 위한 이벤트 신청 폼 및 뉴스레터 구독 섹션 UI 디자인",
-      "텍스트 필드, 이메일, 드롭다운 셀렉트 등 입력 폼(Form) 태그 구성",
-      "구글 폼(Google Forms) 생성을 통한 백엔드 데이터 수집 기반 마련",
+      "디자인 시스템 토큰 정의: 색 5개, 서체 2개, 간격 단위(8px 배수), 모서리 반경 — 이 표를 프롬프트 맨 위에 붙이면 결과가 일관됨",
+      "Image-to-Code: Stitch/Figma 시안 이미지를 Gemini Canvas에 업로드 → '이 시안대로' 생성 → 토큰 표로 보정",
+      "반응형: 브레이크포인트 3개(모바일/태블릿/PC)에서 무엇이 바뀌어야 하는지 먼저 디자이너가 결정하고 AI에게 지시",
+      "인터랙션: 호버, 부드러운 스크롤 이동, 등장 애니메이션 — '어떤 느낌'이 아니라 '0.3초, 아래에서 20px 올라오며 나타남'으로 지시",
+      "디버깅 루틴 ②: 깨진 화면 스크린샷 + '어느 기기, 어느 브라우저, 어느 섹션'을 함께 전달",
     ],
     terms: [
       {
-        name: "임베드 (Embed)",
-        description:
-          "다른 서비스(구글 폼, 유튜브 영상, 지도 등)의 기능을 내 웹페이지 안에 코드 조각으로 삽입하는 방식",
+        name: "반응형 / 브레이크포인트",
+        description: "화면 폭에 따라 레이아웃이 바뀌는 지점. 아트보드를 3개 만드는 것과 같음",
       },
       {
-        name: "유효성 검사 (Validation)",
-        description:
-          "사용자가 이메일 형식(@ 포함)이나 필수 입력값을 올바르게 적었는지 확인하는 절차",
+        name: "CSS 변수 (토큰)",
+        description: "색·간격에 이름을 붙여 한 곳에서 관리. 피그마의 Variables와 같은 개념",
+      },
+      {
+        name: "호버 (Hover)",
+        description: "마우스를 올렸을 때의 상태. 피그마 프로토타입의 'While hovering'",
+      },
+      {
+        name: "디버깅 (Debugging)",
+        description: "깨진 곳을 찾아 고치는 과정. '증상을 정확히 설명하는 것'이 디버깅의 80%",
       },
     ],
+    tools: ["Stitch", "Gemini 앱 (Canvas)", "Vercel"],
+    homework: "랜딩페이지 URL + 토큰 표 + 반응형 3개 화면 스크린샷",
   },
   {
     number: 6,
     sourceWeek: "6주차",
-    sourceRange: "시트1!B15:F15",
-    cycle: "사이클 3 (데이터 수집)",
-    project: "이벤트 신청 & 뉴스레터 웹",
-    stage: "2단계: 구글 시트 자동화",
-    title: "이벤트 신청 & 뉴스레터 웹 · 2단계: 구글 시트 자동화",
-    goalOutput: "이벤트 신청 & 뉴스레터 웹\n[2단계: 구글 시트 자동화]",
+    cycle: "사이클 3 · 신청 서비스 (생각하는 주)",
+    project: "신청 서비스 (이벤트 신청 폼)",
+    stage: "1단계: 논리력 — 서비스는 입력과 상태로 이루어진다",
+    title: "신청 서비스 · 1단계: 논리력 — 서비스는 입력과 상태로 이루어진다",
+    goalOutput:
+      "기능 정의서 (이 서비스가 하는 일 5개 이하)\n화면 목록 + 화면별 상태 설계 (비어있음 / 입력 중 / 성공 / 실패)\nStitch로 만든 신청 플로우 화면 시안",
     topics: [
-      "웹페이지 폼 입력을 구글 스프레드시트로 실시간 전송 및 저장하는 워크플로우",
-      "Gemini를 활용한 데이터 전송 성공/실패 팝업 모달창 인터랙션 구현",
-      "폼 제출 완료 시 사용자 대상 자동 확인 이메일 발송 워크플로우 연결",
+      "'사이트'와 '서비스'의 차이: 보여주기만 하는가, 사용자의 입력을 받아 무언가 바뀌는가",
+      "사고 훈련 ③: 기능 분해 — '이벤트 신청'을 입력 항목 / 저장 / 확인 / 관리로 쪼개기. 쪼갤수록 AI 지시가 정확해짐",
+      "상태(State) 사고: 디자이너가 가장 자주 놓치는 것 — 빈 화면, 로딩, 오류, 완료 화면을 먼저 디자인",
+      "폼 UX 기본: 입력 항목 최소화, 필수/선택 구분, 오류 메시지 문구, 완료 후 다음 행동",
+      "데이터 흐름을 그림으로: 사용자 입력 → 어디에 저장 → 누가 어디서 보는가 (화살표 3개면 충분)",
     ],
     terms: [
       {
-        name: "JS (JavaScript)",
-        description:
-          "클릭, 팝업, 데이터 전송 등 웹페이지에 동적인 동작과 상호작용을 불어넣는 프로그래밍 언어",
+        name: "폼 (Form) / 입력 필드",
+        description: "사용자가 값을 넣는 영역. 텍스트·이메일·선택 등 종류가 있음",
       },
       {
-        name: "모달 (Modal)",
-        description:
-          "기존 페이지 위에 레이어 형태로 떠서 중요한 안내나 전송 결과를 보여주는 팝업 창",
+        name: "유효성 검사 (Validation)",
+        description: "입력이 올바른지 확인. '이메일에 @가 없음' 같은 오류 메시지가 그 결과",
+      },
+      {
+        name: "상태 (State)",
+        description: "같은 화면이 상황에 따라 다르게 보이는 것. 피그마의 Variants와 같은 개념",
+      },
+      {
+        name: "프론트엔드 / 백엔드",
+        description: "사용자가 보는 화면 / 보이지 않는 곳에서 저장·처리하는 부분. 매장과 창고",
       },
     ],
+    tools: ["Gemini 앱", "Stitch"],
+    homework: "기능 정의서 + 상태별 화면 4종 시안",
   },
   {
     number: 7,
     sourceWeek: "7주차",
-    sourceRange: "시트1!B16:F16",
-    cycle: "사이클 4 (비주얼 인터랙션)",
-    project: "인터랙티브 링크트리 & 프로필 웹",
-    stage: "1단계: 모바일 퍼스트 카드 UI",
-    title: "인터랙티브 링크트리 & 프로필 웹 · 1단계: 모바일 퍼스트 카드 UI",
-    goalOutput: "인터랙티브 링크트리 & 프로필 웹\n[1단계: 모바일 퍼스트 카드 UI]",
+    cycle: "사이클 3 · 신청 서비스 (만드는 주)",
+    project: "신청 서비스 (이벤트 신청 폼)",
+    stage: "2단계: AI Studio로 서비스 만들기",
+    title: "신청 서비스 · 2단계: AI Studio로 서비스 만들기",
+    goalOutput: "신청 폼 → 저장 → 성공/실패 안내 → 관리자 목록 화면까지 동작하는 서비스 배포 URL",
     topics: [
-      "모바일 퍼스트(Mobile First) 기반의 SNS 링크트리 스타일 카드 레이아웃",
-      "Figma 디자인 시안 이미지를 Gemini에 업로드하여 코드로 변환 (Image-to-Code)",
-      "카드 클릭 시 상세 정보가 펼쳐지는 아코디언 및 부드러운 전환 효과 적용",
+      "Google AI Studio Build 입문: Canvas와 다른 점 — 여러 파일, 데이터 저장, 배포가 한 화면에서",
+      "6주차 기능 정의서를 그대로 프롬프트로: 기능 → 화면 → 상태 순서로 지시",
+      "저장 연결: AI Studio가 제안하는 데이터 저장 사용 — 설정은 AI가 하고, 학생은 '무엇을 저장하는지'만 정의 (대안: 구글 폼 임베드 / 구글 시트 저장)",
+      "성공/실패 모달, 관리자 목록 화면 추가",
+      "AI Studio 배포 → URL 발급 → 동료가 실제로 신청해보기",
     ],
     terms: [
       {
-        name: "Image-to-Code",
-        description:
-          "디자인 시안이나 캡처 이미지를 AI에 업로드하여 웹 코드로 즉각 변환하는 최신 바이브 코딩 기법",
+        name: "데이터베이스 (DB)",
+        description: "입력값이 쌓이는 표. 구글 시트를 떠올리면 됨",
       },
       {
-        name: "모바일 퍼스트 (Mobile First)",
-        description: "데스크톱보다 모바일 화면의 사용성과 경험을 우선적으로 고려하여 설계하는 방식",
+        name: "API",
+        description: "화면과 저장소 사이의 창구. 주문서를 주방에 전달하는 서빙 직원",
+      },
+      {
+        name: "모달 (Modal)",
+        description: "화면 위에 뜨는 안내 창. 성공·실패 결과를 보여주는 자리",
+      },
+      {
+        name: "프로젝트 파일 구조",
+        description: "화면 파일, 스타일 파일, 데이터 파일이 나뉘어 있음. 폴더 이름만 읽을 수 있으면 됨",
       },
     ],
+    tools: ["Google AI Studio (Build)"],
+    homework: "서비스 URL + 동료 신청 테스트 결과 3건 + 발견한 오류와 수정 기록",
   },
   {
     number: 8,
     sourceWeek: "8주차",
-    sourceRange: "시트1!B17:F17",
-    cycle: "사이클 4 (비주얼 인터랙션)",
-    project: "인터랙티브 링크트리 & 프로필 웹",
-    stage: "2단계: 테마 전환 & 크로스 브라우징",
-    title: "인터랙티브 링크트리 & 프로필 웹 · 2단계: 테마 전환 & 크로스 브라우징",
-    goalOutput: "인터랙티브 링크트리 & 프로필 웹\n[2단계: 테마 전환 & 크로스 브라우징]",
+    cycle: "사이클 4 · 데이터 갤러리",
+    project: "구글 시트 연동 작품 갤러리",
+    stage: "콘텐츠를 데이터로 분리하기",
+    title: "구글 시트 연동 작품 갤러리 · 콘텐츠를 데이터로 분리하기",
+    goalOutput: "구글 시트에 작품을 추가하면 사이트에 자동 반영되는 작품 갤러리 (카테고리 필터 + 검색)",
     topics: [
-      "다크 모드 / 라이트 모드 전환 토글 스위치 및 CSS 변수 테마 시스템 구현",
-      "버튼 클릭감과 시각적 피드백을 극대화하는 마이크로 인터랙션 디테일링",
-      "아이폰 사파리, 안드로이드 크롬 등 다양한 모바일 브라우저 크로스 브라우징 점검",
+      "사고 훈련 ④: 콘텐츠 모델링 — 작품 1개를 설명하는 항목(제목·연도·카테고리·태그·썸네일·설명)을 표로 정의. 표 설계가 곧 화면 설계",
+      "구글 시트 = CMS: 코드를 안 건드리고 내용만 바꾸는 구조의 가치",
+      "AI Studio Build에서 시트 연결 → 카드 반복 → 필터·검색",
+      "컴포넌트 사고: 카드 1장을 완성하면 100장은 자동. 피그마 컴포넌트와 동일한 사고",
+      "빈 상태·검색 결과 없음 화면 디자인 (6주차 상태 사고 재적용)",
     ],
     terms: [
       {
-        name: "마이크로 인터랙션 (Micro-interaction)",
-        description:
-          "버튼 누름 효과, 스위치 온오프 등 미세한 피드백으로 UX 완성도를 높이는 시각 디테일",
+        name: "CMS",
+        description: "코드 수정 없이 콘텐츠를 관리하는 시스템. 이 과정에서는 구글 시트",
       },
       {
-        name: "크로스 브라우징 (Cross Browsing)",
-        description:
-          "크롬, 사파리, 엣지 등 어떤 브라우저에서도 웹사이트가 동일하게 보이고 작동하도록 하는 기술",
+        name: "JSON",
+        description: "데이터를 주고받을 때의 표준 형식. 시트의 한 줄이 {제목: ..., 연도: ...} 형태로 바뀐 것",
+      },
+      {
+        name: "컴포넌트 (Component)",
+        description: "반복되는 UI 단위. 피그마 컴포넌트와 같음",
+      },
+      {
+        name: "렌더링 (Rendering)",
+        description: "데이터를 화면으로 그려내는 일. 시트 100줄 → 카드 100장",
       },
     ],
+    tools: ["Google AI Studio (Build)", "Google Sheets"],
+    homework: "갤러리 URL + 시트 구조 캡처 + 본인 작품 5개 이상 등록",
   },
   {
     number: 9,
     sourceWeek: "9주차",
-    sourceRange: "시트1!B18:F18",
-    cycle: "사이클 5 (동적 콘텐츠)",
-    project: "구글 시트 연동 갤러리 웹",
-    stage: "1단계: 시트 DB 모델링",
-    title: "구글 시트 연동 갤러리 웹 · 1단계: 시트 DB 모델링",
-    goalOutput: "구글 시트 연동 갤러리 웹\n[1단계: 시트 DB 모델링]",
+    cycle: "통합 · 중간 쇼케이스",
+    project: "케이스 스터디 & 포트폴리오 허브 v2",
+    stage: "설명할 수 있는 포트폴리오",
+    title: "케이스 스터디 & 포트폴리오 허브 v2 · 설명할 수 있는 포트폴리오",
+    goalOutput:
+      "케이스 스터디 3편 (포트폴리오 / 랜딩 / 서비스) — 문제 → 접근 → 결과 → 배운 점\n포트폴리오 허브 v2: 3개 프로젝트 링크 + 케이스 스터디 연결\n중간 쇼케이스 발표 (5분) + 피어 리뷰",
     topics: [
-      "구글 시트를 노코드/코드리스 무료 데이터베이스(CMS)로 기획 및 구조화",
-      "시트에 작품명, 썸네일 이미지 URL, 카테고리, 태그, 상세 설명 데이터 구축",
-      "구글 시트 데이터를 웹페이지로 불러오는 기본 원리와 JSON 데이터 구조 이해",
+      "사고 훈련 ⑤: 미국형 케이스 스터디 구조 — 결과 이미지가 아니라 의사결정 과정이 평가 대상",
+      "프롬프트 로그를 프로세스 자료로 전환: 'AI에게 무엇을 어떻게 지시했는가'가 곧 디자이너의 사고 증거",
+      "2~8주차 산출물 전수 점검 체크리스트: 링크 작동, 모바일, 이미지 경로, 오타, 빈 상태",
+      "피어 리뷰 규칙: 칭찬 1 / 질문 1 / 제안 1",
+      "10주차 이후 개인 방향 설정: 포트폴리오 심화 / 서비스 심화 / 취업 자료 중 선택",
     ],
     terms: [
       {
-        name: "CMS (Content Management System)",
-        description:
-          "웹 코드를 수정하지 않고도 콘텐츠를 손쉽게 등록·수정·관리하는 콘텐츠 관리 시스템",
+        name: "케이스 스터디 (Case Study)",
+        description: "프로젝트를 '결과물'이 아니라 '문제 해결 이야기'로 쓴 문서",
       },
       {
-        name: "JSON (JavaScript Object Notation)",
-        description:
-          "서버와 웹페이지 사이에서 데이터를 가볍고 명확하게 주고받기 위한 표준 텍스트 데이터 형식",
+        name: "README",
+        description: "프로젝트 폴더 안의 설명서. 케이스 스터디의 짧은 버전",
+      },
+      {
+        name: "버전 (v1, v2)",
+        description: "같은 사이트의 개선 단계. 이전 버전 링크를 남겨두면 성장 기록이 됨",
       },
     ],
+    tools: ["Gemini 앱 (Canvas)", "Vercel"],
+    homework: "케이스 스터디 3편 + 허브 URL + 다음 10주 개인 목표 1문장",
   },
-  {
-    number: 10,
-    sourceWeek: "10주차",
-    sourceRange: "시트1!B19:F19",
-    cycle: "사이클 5 (동적 콘텐츠)",
-    project: "구글 시트 연동 갤러리 웹",
-    stage: "2단계: 동적 렌더링 & 필터",
-    title: "구글 시트 연동 갤러리 웹 · 2단계: 동적 렌더링 & 필터",
-    goalOutput: "구글 시트 연동 갤러리 웹\n[2단계: 동적 렌더링 & 필터]",
-    topics: [
-      "시트 데이터 수정 시 웹페이지에 실시간 반영되는 동적 카드 리스트 구현",
-      "카테고리별(브랜딩, UI/UX, 그래픽) 원클릭 필터링 버튼 인터랙션 추가",
-      "검색창 키워드 입력에 따른 실시간 즉시 검색 및 카드 필터링 기능 완성",
-    ],
-    terms: [
-      {
-        name: "API (Application Programming Interface)",
-        description:
-          "서로 다른 소프트웨어(구글 시트와 내 웹사이트)가 데이터를 주고받도록 잇는 통신 창구",
-      },
-      {
-        name: "동적 렌더링 (Dynamic Rendering)",
-        description:
-          "고정된 웹 문서가 아니라 저장된 데이터에 따라 화면 요소가 실시간으로 생성되어 표시되는 방식",
-      },
-    ],
-  },
-  {
-    number: 11,
-    sourceWeek: "11주차",
-    sourceRange: "시트1!B20:F20",
-    cycle: "사이클 6 (양방향 커뮤니케이션)",
-    project: "디자이너 Q&A & 피드백 보드",
-    stage: "1단계: GAS 백엔드 API",
-    title: "디자이너 Q&A & 피드백 보드 · 1단계: GAS 백엔드 API",
-    goalOutput: "디자이너 Q&A & 피드백 보드\n[1단계: GAS 백엔드 API]",
-    topics: [
-      "구글 앱스 스크립트(GAS)를 활용한 간단한 웹 API 엔드포인트 구축",
-      "Gemini로 비전공자도 쉽게 작성하는 백엔드 스크립트 프롬프트 패턴 학습",
-      "방문자가 남긴 질문과 피드백을 구글 시트에 안전하게 저장하는 양방향 통신",
-    ],
-    terms: [
-      {
-        name: "GAS (Google Apps Script)",
-        description:
-          "구글 시트, 폼 등 워크스페이스 앱을 자동화하고 웹 API로 만들어주는 구글의 클라우드 스크립트 도구",
-      },
-      {
-        name: "엔드포인트 (Endpoint)",
-        description: "API 통신에서 데이터가 도달하여 처리되는 특정 웹 주소(URL) 목적지",
-      },
-    ],
-  },
-  {
-    number: 12,
-    sourceWeek: "12주차",
-    sourceRange: "시트1!B21:F21",
-    cycle: "사이클 6 (양방향 커뮤니케이션)",
-    project: "디자이너 Q&A & 피드백 보드",
-    stage: "2단계: 실시간 피드 & 리뷰",
-    title: "디자이너 Q&A & 피드백 보드 · 2단계: 실시간 피드 & 리뷰",
-    goalOutput: "디자이너 Q&A & 피드백 보드\n[2단계: 실시간 피드 & 리뷰]",
-    topics: [
-      "등록된 질문과 댓글이 페이지 새로고침 없이 화면에 즉각 업데이트되는 UI",
-      "악성 글 방지를 위한 글자 수 제한, 필수 입력 체크, 비속어 필터링 기초",
-      "사이클 1~6(총 6개 사이클) 프로젝트 총정리 및 수강생 간 상호 피어 리뷰",
-    ],
-    terms: [
-      {
-        name: "비동기 통신 (Asynchronous / AJAX)",
-        description:
-          "웹페이지를 새로고침하지 않고도 백그라운드에서 필요한 데이터만 가져와 화면을 갱신하는 기술",
-      },
-      {
-        name: "피어 리뷰 (Peer Review)",
-        description:
-          "동료들과 서로의 완성작을 직접 사용해보고 장단점 피드백을 주고받는 상호 평가 과정",
-      },
-    ],
-  },
-  {
-    number: 13,
-    sourceWeek: "13주차",
-    sourceRange: "시트1!B22:F22",
-    cycle: "중간 점검 & 기획",
-    project: "파이널 프로젝트 기획서 & 와이어프레임 명세서",
-    stage: null,
-    title: "파이널 프로젝트 기획서 & 와이어프레임 명세서",
-    goalOutput: "파이널 프로젝트 기획서 &\n와이어프레임 명세서",
-    topics: [
-      "1~12주차 핵심 웹 개발 개념 총복습 (HTML/CSS/JS/API 구조 체계화)",
-      "나만의 실무 맞춤형 웹 서비스 기획 (디자인 스튜디오, 커머스, 커뮤니티 등)",
-      "Gemini를 페어 프로그래밍 파트너로 활용한 파이널 프로젝트 6주 로드맵 수립",
-    ],
-    terms: [
-      {
-        name: "페어 프로그래밍 (Pair Programming)",
-        description:
-          "두 사람이 협업하듯, 디자이너가 기획·디자인을 이끌고 AI가 코딩 파트너 역할을 하는 방식",
-      },
-      {
-        name: "와이어프레임 (Wireframe)",
-        description:
-          "웹페이지의 레이아웃, 화면 구조, 인터랙션 요소를 단순한 선과 도형으로 설계한 청사진",
-      },
-    ],
-  },
-  {
-    number: 14,
-    sourceWeek: "14주차",
-    sourceRange: "시트1!B23:F23",
-    cycle: "파이널 프로젝트 (실무 종합)",
-    project: "파이널 웹 서비스",
-    stage: "1단계: 기획 및 디자인 시스템 구축",
-    title: "파이널 웹 서비스 · 1단계: 기획 및 디자인 시스템 구축",
-    goalOutput: "파이널 웹 서비스 [1단계]:\n기획 및 디자인 시스템 구축",
-    topics: [
-      "Gemini와 함께 서비스 유저 플로우(User Flow) 및 정보 구조(IA) 정밀 설계",
-      "글로벌 컬러, 타이포그래피, 버튼, 폼 등 일관된 디자인 시스템 토큰 정의",
-      "메인 페이지 및 서브 페이지 화면 레이아웃 와이어프레임 확정",
-    ],
-    terms: [
-      {
-        name: "디자인 시스템 (Design System)",
-        description:
-          "일관된 브랜드 경험을 위해 색상, 서체, UI 컴포넌트 규칙을 체계적으로 정리한 디자인 규격",
-      },
-      {
-        name: "IA (Information Architecture)",
-        description:
-          "사용자가 원하는 정보에 쉽게 도달할 수 있도록 사이트의 메뉴와 정보 구조를 체계화하는 설계",
-      },
-    ],
-  },
-  {
-    number: 15,
-    sourceWeek: "15주차",
-    sourceRange: "시트1!B24:F24",
-    cycle: "파이널 프로젝트 (실무 종합)",
-    project: "파이널 웹 서비스",
-    stage: "2단계: 메인 UI 고속 바이브 코딩",
-    title: "파이널 웹 서비스 · 2단계: 메인 UI 고속 바이브 코딩",
-    goalOutput: "파이널 웹 서비스 [2단계]:\n메인 UI 고속 바이브 코딩",
-    topics: [
-      "Figma 확정 시안을 Image-to-Code 기법으로 고품질 웹 코드로 신속 변환",
-      "Flexbox 및 Grid 기반 모던 CSS 레이아웃 구조화 및 컴포넌트 모듈화",
-      "시각적 계층 구조(Hierarchy) 점검 및 디자이너 특유의 정밀 여백/패딩 보정",
-    ],
-    terms: [
-      {
-        name: "Flexbox & Grid",
-        description:
-          "웹페이지의 UI 요소들을 가로나 세로 방향으로 자유롭고 정교하게 배치할 수 있는 모던 CSS 레이아웃 도구",
-      },
-      {
-        name: "시각적 계층 구조 (Visual Hierarchy)",
-        description:
-          "폰트 크기, 명도 대비, 여백을 조절하여 사용자가 중요 정보부터 자연스럽게 읽도록 돕는 원칙",
-      },
-    ],
-  },
-  {
-    number: 16,
-    sourceWeek: "16주차",
-    sourceRange: "시트1!B25:F25",
-    cycle: "파이널 프로젝트 (실무 종합)",
-    project: "파이널 웹 서비스",
-    stage: "3단계: 인터랙션 & 구글 워크스페이스 연동",
-    title: "파이널 웹 서비스 · 3단계: 인터랙션 & 구글 워크스페이스 연동",
-    goalOutput: "파이널 웹 서비스 [3단계]:\n인터랙션 & 구글 워크스페이스 연동",
-    topics: [
-      "구글 시트 CMS 연동을 통한 동적 데이터(상품/콘텐츠 목록) 실시간 바인딩",
-      "문의/주문/예약 등 사용자 인터랙티브 입력 폼 및 실시간 유효성 체크 연결",
-      "스크롤 애니메이션(AOS) 및 모달 인터랙션을 결합한 인터랙티브 완성도 극대화",
-    ],
-    terms: [
-      {
-        name: "데이터 바인딩 (Data Binding)",
-        description:
-          "구글 시트에 입력된 실제 데이터와 화면의 텍스트·이미지를 자동으로 연결해 동기화하는 기술",
-      },
-      {
-        name: "AOS (Animate On Scroll)",
-        description:
-          "사용자가 스크롤을 내릴 때 특정 요소들이 부드럽게 나타나거나 움직이도록 연출하는 애니메이션 라이브러리",
-      },
-    ],
-  },
-  {
-    number: 17,
-    sourceWeek: "17주차",
-    sourceRange: "시트1!B26:F26",
-    cycle: "파이널 프로젝트 (실무 종합)",
-    project: "파이널 웹 서비스",
-    stage: "4단계: 반응형 고도화 & 크로스 브라우징",
-    title: "파이널 웹 서비스 · 4단계: 반응형 고도화 & 크로스 브라우징",
-    goalOutput: "파이널 웹 서비스 [4단계]:\n반응형 고도화 & 크로스 브라우징",
-    topics: [
-      "PC, 맥북, 태블릿, 모바일 기기별 완벽한 반응형 뷰포트 정밀 테스트",
-      "크롬, 사파리(iOS), 엣지 브라우저 간 스타일 오차 디버깅 및 호환성 확보",
-      "웹페이지 로딩 속도 향상을 위한 WebP 이미지 변환 및 리소스 최적화",
-    ],
-    terms: [
-      {
-        name: "뷰포트 (Viewport)",
-        description:
-          "스마트폰, 노트북, 모니터 등 사용자가 기기 화면을 통해 실제로 웹페이지를 보고 있는 디스플레이 표시 영역",
-      },
-      {
-        name: "최적화 (Optimization)",
-        description:
-          "불필요한 코드와 무거운 이미지를 압축·다듬어 웹페이지가 1초 이내로 빠르게 로딩되도록 성능을 개선하는 작업",
-      },
-    ],
-  },
-  {
-    number: 18,
-    sourceWeek: "18주차",
-    sourceRange: "시트1!B27:F27",
-    cycle: "파이널 프로젝트 (실무 종합)",
-    project: "파이널 웹 서비스",
-    stage: "5단계: 커스텀 도메인 & 상용 배포",
-    title: "파이널 웹 서비스 · 5단계: 커스텀 도메인 & 상용 배포",
-    goalOutput: "파이널 웹 서비스 [5단계]:\n커스텀 도메인 & 상용 배포",
-    topics: [
-      "Vercel / Netlify 클라우드 호스팅 플랫폼에 최종 소스코드 상용 배포",
-      "개인 커스텀 도메인(예: mybrand.com) 구매 및 DNS 레코드 연동 실습",
-      "구글/네이버 검색 노출을 위한 SEO 메타태그 및 카카오톡/SNS 공유용 OG 태그 설정",
-    ],
-    terms: [
-      {
-        name: "도메인 (Domain)",
-        description:
-          "복잡한 숫자 IP 주소 대신 누구나 쉽게 기억하고 접속할 수 있도록 부여한 나만의 웹사이트 주소",
-      },
-      {
-        name: "SEO (Search Engine Optimization)",
-        description:
-          "구글 등 검색 엔진 결과 상위에 내 사이트가 노출되도록 메타태그와 제목을 최적화하는 기법",
-      },
-      {
-        name: "SSL (Secure Sockets Layer)",
-        description:
-          "사용자 데이터를 암호화하여 브라우저에 안전한 자물쇠(https://)를 표시해주는 보안 인증서",
-      },
-    ],
-  },
-  {
-    number: 19,
-    sourceWeek: "19주차",
-    sourceRange: "시트1!B28:F28",
-    cycle: "파이널 프로젝트 (실무 종합)",
-    project: "파이널 웹 서비스",
-    stage: "6단계: 최종 런칭 쇼케이스 & 운영 가이드",
-    title: "파이널 웹 서비스 · 6단계: 최종 런칭 쇼케이스 & 운영 가이드",
-    goalOutput: "파이널 웹 서비스 [6단계]:\n최종 런칭 쇼케이스 & 운영 가이드",
-    topics: [
-      "완성된 나만의 라이브 웹 서비스 최종 발표 및 라이브 데모 쇼케이스",
-      "구글 시트를 활용한 비개발자 유지보수 및 일상 콘텐츠 운영 매뉴얼 가이드",
-      "전문 개발자와의 실무 협업 노하우 및 AI 바이브 코딩 기반 디자이너 성장 로드맵",
-    ],
-    terms: [
-      {
-        name: "런칭 (Launching)",
-        description:
-          "완성된 웹 서비스를 일반 대중과 실제 타깃 사용자에게 공식적으로 오픈하고 상용 운영을 시작하는 것",
-      },
-      {
-        name: "유지보수 (Maintenance)",
-        description:
-          "서비스 출시 이후에도 새로운 콘텐츠를 업데이트하고 오류나 기능을 지속적으로 관리·보수하는 활동",
-      },
-    ],
-  },
+  FEEDBACK_LESSON(20),
+  FEEDBACK_LESSON(21),
+  FEEDBACK_LESSON(22),
+  FEEDBACK_LESSON(23),
+  FEEDBACK_LESSON(24),
 ];

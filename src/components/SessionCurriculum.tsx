@@ -36,23 +36,58 @@ export function SessionCurriculum({ lesson }: { lesson: CurriculumLesson }) {
         </ol>
       </section>
 
-      <section aria-labelledby="session-terms-title">
-        <h2 id="session-terms-title" className="border-b border-foreground pb-3 text-lg font-bold">
-          핵심 개발 용어
-        </h2>
-        <dl className="divide-y divide-border">
-          {lesson.terms.map(({ name, description }) => (
-            <div key={name} className="py-5">
-              <dt className="break-keep text-base font-semibold leading-relaxed [overflow-wrap:anywhere]">
-                {name}
-              </dt>
-              <dd className="mt-2 break-keep text-base leading-7 text-muted-foreground [overflow-wrap:anywhere]">
-                {description}
-              </dd>
+      {lesson.terms.length > 0 && (
+        <section aria-labelledby="session-terms-title">
+          <h2 id="session-terms-title" className="border-b border-foreground pb-3 text-lg font-bold">
+            핵심 용어 (디자이너 해석)
+          </h2>
+          <dl className="divide-y divide-border">
+            {lesson.terms.map(({ name, description }) => (
+              <div key={name} className="py-5">
+                <dt className="break-keep text-base font-semibold leading-relaxed [overflow-wrap:anywhere]">
+                  {name}
+                </dt>
+                <dd className="mt-2 break-keep text-base leading-7 text-muted-foreground [overflow-wrap:anywhere]">
+                  {description}
+                </dd>
+              </div>
+            ))}
+          </dl>
+        </section>
+      )}
+
+      {(lesson.tools?.length || lesson.homework) && (
+        <section
+          aria-labelledby="session-tools-title"
+          className="grid gap-6 border-t border-border pt-6 sm:grid-cols-2"
+        >
+          {lesson.tools?.length ? (
+            <div>
+              <h2 id="session-tools-title" className="text-sm font-bold">
+                사용 도구
+              </h2>
+              <ul className="mt-3 flex flex-wrap gap-2">
+                {lesson.tools.map((tool) => (
+                  <li
+                    key={tool}
+                    className="border border-border px-3 py-1.5 text-sm text-foreground/90"
+                  >
+                    {tool}
+                  </li>
+                ))}
+              </ul>
             </div>
-          ))}
-        </dl>
-      </section>
+          ) : null}
+          {lesson.homework && (
+            <div>
+              <h2 className="text-sm font-bold">과제</h2>
+              <p className="mt-3 break-keep text-base leading-7 text-muted-foreground [overflow-wrap:anywhere]">
+                {lesson.homework}
+              </p>
+            </div>
+          )}
+        </section>
+      )}
     </div>
   );
 }

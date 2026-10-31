@@ -10,7 +10,7 @@ import {
   sessionStatusLabel,
   weekdayKo,
 } from "@/data/schedule";
-import { CURRICULUM_LESSONS } from "@/data/curriculum";
+import { CURRICULUM_OVERVIEW } from "@/data/curriculum";
 import { SessionCalendar } from "@/components/SessionCalendar";
 import { defaultCalendarMonth } from "@/lib/session-calendar";
 import { cn } from "@/lib/utils";
@@ -19,11 +19,11 @@ export const Route = createFileRoute("/_app/sessions/")({
   head: () => ({
     meta: [
       { title: "CURRICULUM | K-Move 미국 디자인 실무 취업 연수과정" },
-      { name: "description", content: "구글 AI 바이브 코딩 1~19회차 커리큘럼과 전체 수업 일정" },
+      { name: "description", content: "Gemini 바이브코딩 24회차 커리큘럼과 전체 수업 일정" },
       { property: "og:title", content: "CURRICULUM" },
       {
         property: "og:description",
-        content: "구글 AI 바이브 코딩 1~19회차 커리큘럼과 전체 수업 일정",
+        content: "Gemini 바이브코딩 24회차 커리큘럼과 전체 수업 일정",
       },
     ],
   }),
@@ -107,20 +107,19 @@ function Sessions() {
         className="mb-6 border border-border bg-card px-5 py-5 sm:px-6"
       >
         <p className="text-xs font-semibold text-muted-foreground">
-          {CURRICULUM_LESSONS.length}회차 커리큘럼 · 6개 사이클 + 파이널 프로젝트
+          {SESSIONS.length}회차 과정 · 2주 = 1사이클 (생각하는 주 + 만드는 주)
         </p>
         <h2
           id="curriculum-overview-title"
           className="mt-2 text-lg font-bold tracking-tight sm:text-xl"
         >
-          구글 AI 바이브 코딩 실무
+          {CURRICULUM_OVERVIEW.title}
         </h2>
         <p className="mt-2 max-w-3xl text-sm leading-relaxed text-muted-foreground">
-          Gemini AI와 함께 기획부터 UI 제작, 데이터 연동, 배포까지 배우고 7개의 웹사이트를
-          완성합니다.
+          {CURRICULUM_OVERVIEW.subtitle}
         </p>
         <p className="mt-3 text-xs leading-relaxed text-muted-foreground">
-          1~12회차 프로젝트 실습 · 13회차 중간 점검 및 기획 · 14~19회차 파이널 프로젝트
+          {CURRICULUM_OVERVIEW.phases.map((phase) => `${phase.range} ${phase.label}`).join(" · ")}
         </p>
       </section>
       {view === "calendar" ? (
