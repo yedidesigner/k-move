@@ -2,18 +2,12 @@ import foundation from "./editorial/guides-foundation.json";
 import practice from "./editorial/guides-practice.json";
 import ai from "./editorial/guides-ai.json";
 import glossary from "./glossary.json";
-import {
-  sourceReference,
-  type SourceCitation,
-  type StudyLevel,
-  type TopicId,
-} from "./design-sources";
-export { DESIGN_SOURCES, TOPICS, LEVELS } from "./design-sources";
+import { sourceReference, type SourceCitation, type TopicId } from "./design-sources";
+export { TOPICS } from "./design-sources";
 
 export type StudyGuide = {
   id: string;
   topic: TopicId;
-  level: StudyLevel;
   category: string;
   title: string;
   summary: string;
@@ -97,51 +91,11 @@ export const STUDY_GUIDES: StudyGuide[] = ([...foundation, ...practice, ...ai] a
     };
   })
   .sort((a, b) => order.indexOf(a.id) - order.indexOf(b.id));
-export const STUDY_PATHS = [
-  {
-    id: "beginner",
-    title: "디자인 준비생",
-    audience: "개념을 화면에서 알아보고 싶은 분",
-    description: "구조와 용어를 먼저 익힌 뒤, 작은 화면을 만들고 판단의 이유를 설명해 봅니다.",
-    guideIds: [
-      "ux-ui-foundations",
-      "visual-foundations",
-      "typography-reading",
-      "interaction-forms",
-      "ux-research",
-      "portfolio-case-study",
-    ],
-  },
-  {
-    id: "practitioner",
-    title: "경력 디자이너",
-    audience: "설계의 근거와 완성도를 높이고 싶은 분",
-    description:
-      "리서치 결과를 설계로 연결하고, 오류·접근성·반응형 조건에서 자신의 결정을 검토합니다.",
-    guideIds: [
-      "research-synthesis",
-      "mental-models-cognitive-load",
-      "navigation-information",
-      "form-validation",
-      "accessible-interaction",
-      "responsive-layout",
-      "component-states",
-      "ai-design-workflow",
-    ],
-  },
-  {
-    id: "professional",
-    title: "프로 디자이너",
-    audience: "팀의 판단 기준과 품질을 이끄는 분",
-    description:
-      "근거의 한계, 시스템 운영과 협업, AI 결과의 검증까지 팀이 재사용할 수 있는 기준으로 정리합니다.",
-    guideIds: [
-      "evidence-led-design",
-      "design-systems",
-      "system-governance",
-      "design-critique",
-      "design-handoff",
-      "ai-prototype-validation",
-    ],
-  },
-];
+
+/** Return only guides explicitly connected to this glossary term. */
+export function getGuidesForTerm(termId: string): StudyGuide[] {
+  return STUDY_GUIDES.filter(
+    (guide) =>
+      guide.relatedTerms.some((term) => term.id === termId) || guide.visualTermId === termId,
+  );
+}

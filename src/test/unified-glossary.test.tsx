@@ -6,6 +6,8 @@ import { getLearningMode, LEARNING_ENTRIES } from "@/data/glossary-learning";
 import type { LearningMode } from "@/data/learning/types";
 import entries from "@/data/glossary.json";
 import originalIds from "./fixtures/original-glossary-ids.json";
+import { STUDY_GUIDES, getGuidesForTerm } from "@/data/study-materials";
+import { getGlossaryDepth } from "@/data/glossary-depth";
 
 beforeEach(() => {
   // jsdom has no scrolling implementation; real scrolling is covered by browser QA.
@@ -51,6 +53,15 @@ describe("Unified glossary", () => {
     expect(filterGroup.getByRole("button", { name: /^예시 \+ 실습/ })).toBeInTheDocument();
     expect(filterGroup.queryByRole("button", { name: /^직접 해보기/ })).not.toBeInTheDocument();
     expect(screen.queryByRole("button", { name: /시각 학습 열기/ })).not.toBeInTheDocument();
+    const library = screen.getByRole("region", { name: "주제별로 이어 배우기" });
+    expect(library.querySelector("details")).not.toHaveAttribute("open");
+    const termList = screen.getByRole("list", { name: "용어 카드" });
+    expect(
+      termList.compareDocumentPosition(library) & Node.DOCUMENT_POSITION_FOLLOWING,
+    ).toBeTruthy();
+    expect(
+      screen.queryAllByRole("link").some((link) => link.getAttribute("href") === "/materials"),
+    ).toBe(false);
   });
 
   it("combines practice, letter, and search filters and clears an empty result without trapping the learner", () => {
@@ -162,6 +173,27 @@ describe("Unified glossary", () => {
       expect(
         await within(dialog).findByRole("heading", { name: "직접 해보기" }),
       ).toBeInTheDocument();
+      const termId = {
+        CTA: "call-to-action-cta",
+        "Hamburger menus": "hamburger-menus",
+        Carousels: "carousels",
+        Proximity: "proximity",
+      }[term]!;
+      const expectedGuides = getGuidesForTerm(termId);
+      const related = within(dialog).queryByRole("region", { name: "이 개념을 더 이해하기" });
+      if (expectedGuides.length) {
+        expect(related).toBeInTheDocument();
+        expect(
+          Array.from(related!.querySelectorAll("details[data-guide-id]"), (item) =>
+            item.getAttribute("data-guide-id"),
+          ),
+        ).toEqual(expectedGuides.map((guide) => guide.id));
+        related!
+          .querySelectorAll("details[data-guide-id]")
+          .forEach((details) => expect(details).not.toHaveAttribute("open"));
+      } else {
+        expect(related).not.toBeInTheDocument();
+      }
       fireEvent.click(within(dialog).getByRole("button", { name: "학습 화면 닫기" }));
       await waitFor(() => expect(screen.queryByRole("dialog")).not.toBeInTheDocument());
       expect(flip).toHaveAttribute("aria-pressed", "false");
@@ -170,6 +202,108 @@ describe("Unified glossary", () => {
       await waitFor(() => expect(learn).toHaveFocus());
     },
   );
+
+  it("opens deeper reasoning and a related guide inside the lesson without losing the glossary search, filters, or flipped card", async () => {
+    render(<Glossary />);
+    const entry = GLOSSARY.find((term) => term.id === "call-to-action-cta")!;
+    const topic = screen.getByRole("combobox", { name: "학습 주제" });
+    const topicId = getGlossaryDepth(entry.id)!.topic;
+    fireEvent.change(topic, { target: { value: topicId } });
+    fireEvent.click(practiceFilter());
+    const letter = screen.getByRole("button", { name: "C로 시작하는 용어" });
+    fireEvent.click(letter);
+    const search = screen.getByRole("searchbox", { name: "용어 검색" });
+    fireEvent.change(search, { target: { value: "CTA" } });
+    const flip = cards().getByRole("button", { name: "CTA — 설명 보기" });
+    fireEvent.click(flip);
+    const learn = cards().getByRole("button", { name: "CTA 예시와 직접 해보기" });
+    learn.focus();
+    fireEvent.click(learn);
+    const dialog = screen.getByRole("dialog", { name: "CTA 학습" });
+    const depth = within(dialog).getByRole("region", { name: "용어 실무 해설" });
+    const reasoning = within(depth)
+      .getByText("판단 기준 더 보기", { exact: false })
+      .closest("details")!;
+    expect(reasoning).not.toHaveAttribute("open");
+    fireEvent.click(reasoning.querySelector("summary")!);
+    expect(reasoning).toHaveAttribute("open");
+    expect(reasoning).toHaveTextContent(getGlossaryDepth(entry.id)!.critique.evidence);
+
+    const guide = getGuidesForTerm(entry.id)[0]!;
+    const related = within(dialog).getByRole("region", { name: "이 개념을 더 이해하기" });
+    const guideDetails = related.querySelector<HTMLDetailsElement>(
+      `details[data-guide-id="${guide.id}"]`,
+    )!;
+    expect(guideDetails).not.toHaveAttribute("open");
+    fireEvent.click(guideDetails.querySelector("summary")!);
+    const article = await within(guideDetails).findByRole("article", { name: guide.title });
+    expect(article).toHaveTextContent(guide.decision.choice);
+    const sources = within(article).getByText("출처·제작 정보").closest("details")!;
+    expect(sources).not.toHaveAttribute("open");
+    fireEvent.click(sources.querySelector("summary")!);
+    expect(sources).toHaveAttribute("open");
+    expect(guideDetails).toHaveAttribute("open");
+    expect(screen.getAllByRole("dialog")).toHaveLength(1);
+    const relatedTerms = within(article).getByRole("region", { name: "함께 볼 용어" });
+    const sameTerm = within(relatedTerms).getByText(entry.english).closest("a")!;
+    fireEvent.click(sameTerm);
+    expect(guideDetails).toHaveAttribute("open");
+    expect(sources).toHaveAttribute("open");
+    expect(reasoning).toHaveAttribute("open");
+    fireEvent.click(guideDetails.querySelector("summary")!);
+    expect(guideDetails).not.toHaveAttribute("open");
+    expect(reasoning).toHaveAttribute("open");
+    fireEvent.click(guideDetails.querySelector("summary")!);
+    expect(sources).toHaveAttribute("open");
+    const nextTerm = guide.relatedTerms.find((term) => term.id !== entry.id)!;
+    fireEvent.click(within(relatedTerms).getByText(nextTerm.english).closest("a")!);
+    const nextDialog = await screen.findByRole("dialog", { name: `${nextTerm.english} 학습` });
+    await within(nextDialog).findByRole("heading", { name: nextTerm.english, level: 2 });
+    expect(screen.getAllByRole("dialog")).toHaveLength(1);
+    expect(search).toHaveValue("CTA");
+    expect(topic).toHaveValue(topicId);
+    fireEvent.click(within(nextDialog).getByRole("button", { name: "학습 화면 닫기" }));
+    await waitFor(() => expect(screen.queryByRole("dialog")).not.toBeInTheDocument());
+    expect(search).toHaveValue("CTA");
+    expect(topic).toHaveValue(topicId);
+    expect(letter).toHaveAttribute("aria-pressed", "true");
+    expect(practiceFilter()).toHaveAttribute("aria-pressed", "true");
+    expect(flip).toHaveAttribute("aria-pressed", "true");
+    await waitFor(() => expect(learn).toHaveFocus());
+  });
+
+  it("opens a term from the supplementary guide library and returns to the same glossary page, flipped card, and guide link", async () => {
+    render(<Glossary />);
+    fireEvent.click(screen.getByRole("button", { name: "다음 페이지" }));
+    expect(screen.getByLabelText("10페이지 중 2페이지")).toBeInTheDocument();
+    const flip = cards().getAllByRole("button", { name: /— 설명 보기/ })[0]!;
+    fireEvent.click(flip);
+    const library = screen.getByRole("region", { name: "주제별로 이어 배우기" });
+    const libraryDetails = library.querySelector("details")!;
+    fireEvent.click(libraryDetails.querySelector("summary")!);
+    await within(library).findByRole("searchbox", { name: "학습 가이드 검색" });
+    const guide = STUDY_GUIDES[0]!;
+    const guideDetails = library.querySelector<HTMLDetailsElement>(
+      `details[data-guide-id="${guide.id}"]`,
+    )!;
+    fireEvent.click(guideDetails.querySelector("summary")!);
+    const article = await within(guideDetails).findByRole("article", { name: guide.title });
+    const target = guide.relatedTerms[0]!;
+    const link = within(within(article).getByRole("region", { name: "함께 볼 용어" }))
+      .getByText(target.english)
+      .closest("a")!;
+    link.focus();
+    fireEvent.click(link);
+    const dialog = await screen.findByRole("dialog", { name: `${target.english} 학습` });
+    await within(dialog).findByRole("heading", { name: target.english, level: 2 });
+    fireEvent.click(within(dialog).getByRole("button", { name: "학습 화면 닫기" }));
+    await waitFor(() => expect(screen.queryByRole("dialog")).not.toBeInTheDocument());
+    expect(screen.getByLabelText("10페이지 중 2페이지")).toBeInTheDocument();
+    expect(flip).toHaveAttribute("aria-pressed", "true");
+    expect(libraryDetails).toHaveAttribute("open");
+    expect(guideDetails).toHaveAttribute("open");
+    await waitFor(() => expect(link).toHaveFocus());
+  });
 
   it.each<LearningMode>(["example", "practice"])(
     "filters %s learning and preserves its state when closing with Escape",
@@ -239,7 +373,7 @@ describe("Unified glossary", () => {
       const dialog = screen.getByRole("dialog", { name: `${term} 학습` });
       expect(await within(dialog).findByRole("heading", { name: "시각 예시" })).toBeInTheDocument();
       expect(within(dialog).getByRole("figure")).toBeInTheDocument();
-      const references = within(within(dialog).getByRole("region", { name: "참고 자료" }));
+      const references = within(within(dialog).getByRole("region", { name: "실제 사례 더 보기" }));
       expect(
         references
           .getAllByRole("link")
@@ -275,7 +409,7 @@ describe("Glossary content and expansion", () => {
         expect(entry[field].trim().length, `${entry.id}.${field}`).toBeGreaterThan(0);
         expect(entry[field], `${entry.id}.${field}`).not.toMatch(/TODO|TBD|준비 중|작성 예정/i);
       }
-      expect(entry.pronunciation, entry.id).not.toMatch(/[\[\]]/);
+      expect(entry.pronunciation, entry.id).not.toMatch(/\[|\]/);
       expect(entry.example, entry.id).not.toBe(entry.description);
     }
     expect(GLOSSARY.map((entry) => entry.english)).toEqual(

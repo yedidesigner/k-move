@@ -1019,7 +1019,7 @@ export function GlossaryExampleFigure({ figure, termId }: FigureProps) {
       {contextual && termId ? (
         <>
           <div className="gl-contextual-body">
-            <details className="cx-key-structure">
+            <details className="cx-key-structure" open>
               <summary>핵심 구조 살펴보기</summary>
               <div className="gl-example-body">
                 <FigureBody figure={figure} termId={termId} />

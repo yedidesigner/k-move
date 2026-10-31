@@ -148,7 +148,7 @@ describe("Learning modes and editorial coverage", () => {
       expectedContent.forEach((text) => expect(example.getByText(text)).toBeInTheDocument());
       expect(within(figure).getByText("설계 방향을 보여 주는 정적 예시")).toBeInTheDocument();
       expect(within(figure).getByText("K-Move 교육용 재구성")).toBeInTheDocument();
-      const references = within(screen.getByRole("region", { name: "참고 자료" }));
+      const references = within(screen.getByRole("region", { name: "실제 사례 더 보기" }));
       for (const reference of learning.references) {
         const link = references
           .getAllByRole("link")

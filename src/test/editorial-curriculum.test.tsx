@@ -3,9 +3,12 @@ import { afterEach, describe, expect, it } from "vitest";
 import { GLOSSARY } from "@/data/glossary";
 import { GLOSSARY_DEPTH } from "@/data/glossary-depth";
 import { DESIGN_SOURCES, TOPICS, type SourceCitation } from "@/data/design-sources";
-import { STUDY_GUIDES, STUDY_PATHS } from "@/data/study-materials";
+import { STUDY_GUIDES, getGuidesForTerm } from "@/data/study-materials";
 import { Glossary } from "@/components/Glossary";
-import { GlossaryDepthPanel } from "@/components/glossary/GlossaryDepthPanel";
+import {
+  GlossaryDepthPanel,
+  GlossarySourceDetails,
+} from "@/components/glossary/GlossaryDepthPanel";
 
 afterEach(cleanup);
 const terms = new Map(GLOSSARY.map((term) => [term.id, term]));
@@ -51,7 +54,7 @@ describe("Source-aware design curriculum", () => {
       }
     }
   });
-  it("uses all ten supplied sources in substantive guides and connects every guide to a learning path", () => {
+  it("retains all ten sources as guide references and connects every guide to explicit glossary terms", () => {
     expect(DESIGN_SOURCES).toHaveLength(10);
     expect(STUDY_GUIDES).toHaveLength(20);
     const cited = new Set(
@@ -70,10 +73,11 @@ describe("Source-aware design curriculum", () => {
       for (const ref of guide.sourceRefs) validCitation(ref, guide.id);
       expect(terms.has(guide.visualTermId!), guide.id).toBe(true);
     }
-    expect(STUDY_PATHS).toHaveLength(3);
-    expect([...new Set(STUDY_PATHS.flatMap((path) => path.guideIds))].sort()).toEqual(
-      STUDY_GUIDES.map((guide) => guide.id).sort(),
+    const reachableGuideIds = new Set(
+      GLOSSARY.flatMap((term) => getGuidesForTerm(term.id).map((guide) => guide.id)),
     );
+    expect([...reachableGuideIds].sort()).toEqual(STUDY_GUIDES.map((guide) => guide.id).sort());
+    expect(STUDY_GUIDES.every((guide) => !("level" in guide))).toBe(true);
     const excerpt = sources.get("design-psychology")!;
     expect(excerpt.edition).toContain("발췌본");
     expect(excerpt.pageCount).toBe(28);
@@ -95,19 +99,41 @@ describe("Source-aware design curriculum", () => {
     expect(topic).toHaveValue("all");
     expect(screen.getByRole("searchbox", { name: "용어 검색" })).toHaveValue("");
   });
-  it("keeps professional analysis and citation scope available without pretending it is an interactive demo", () => {
-    render(<GlossaryDepthPanel termId="proximity" />);
+  it("reveals design rationale progressively and keeps optional source information closed", () => {
+    render(
+      <>
+        <GlossaryDepthPanel termId="proximity" />
+        <GlossarySourceDetails termId="proximity" />
+      </>,
+    );
     const panel = screen.getByRole("region", { name: "용어 실무 해설" });
     expect(
       within(panel).getByText("실무에 적용하기", { exact: false }).closest("details"),
     ).toHaveAttribute("open");
     const advanced = within(panel)
-      .getByText("한 단계 더 깊게", { exact: false })
+      .getByText("판단 기준 더 보기", { exact: false })
       .closest("details")!;
     expect(advanced).not.toHaveAttribute("open");
     fireEvent.click(advanced.querySelector("summary")!);
     expect(advanced).toHaveAttribute("open");
+    expect(within(panel).getByRole("heading", { name: "왜 이렇게 설계할까?" })).toBeVisible();
     expect(within(panel).queryByRole("button")).not.toBeInTheDocument();
-    expect(within(panel).getByText("학습 근거와 적용 범위", { exact: false })).toBeInTheDocument();
+    const sources = screen.getByText("출처·제작 정보", { exact: false }).closest("details")!;
+    expect(sources).not.toHaveAttribute("open");
+    expect(
+      within(panel).queryByRole("link", { name: /주제별 가이드와 참고 자료/ }),
+    ).not.toBeInTheDocument();
+    fireEvent.click(sources.querySelector("summary")!);
+    expect(sources).toHaveAttribute("open");
+    const profile = GLOSSARY_DEPTH.find((item) => item.id === "proximity")!;
+    expect(panel).toHaveTextContent(profile.critique.tradeoff);
+    expect(panel).toHaveTextContent(profile.critique.evidence);
+    for (const ref of profile.sourceRefs)
+      expect(
+        within(sources).getAllByText(
+          DESIGN_SOURCES.find((source) => source.id === ref.sourceId)!.title,
+          { exact: false },
+        ).length,
+      ).toBeGreaterThan(0);
   });
 });

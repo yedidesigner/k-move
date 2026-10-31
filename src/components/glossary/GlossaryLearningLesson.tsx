@@ -6,7 +6,8 @@ import type { GlossaryPractice } from "@/data/practice/types";
 import { GlossaryExampleFigure } from "./GlossaryExampleFigure";
 import { PracticeExercise } from "./GlossaryPracticeLesson";
 import "./glossary-learning.css";
-import { GlossaryDepthPanel } from "./GlossaryDepthPanel";
+import { RelatedDesignGuides } from "../StudyMaterials";
+import { GlossaryDepthPanel, GlossarySourceDetails } from "./GlossaryDepthPanel";
 
 function LessonSection({ title, children }: { title: string; children: ReactNode }) {
   const id = useId();
@@ -43,7 +44,7 @@ export function GlossaryLearningLesson({
         <GlossaryExampleFigure figure={learning.figure} termId={entry.id} />
       </LessonSection>
       {learning.references.length > 0 && (
-        <LessonSection title="참고 자료">
+        <LessonSection title="실제 사례 더 보기">
           <ul className="gl-references">
             {learning.references.map((reference, index) => (
               <li key={`${reference.url}-${index}`}>
@@ -77,6 +78,8 @@ export function GlossaryLearningLesson({
           {practice?.takeaway || note?.trim() || learning.figure.caption}
         </p>
       </LessonSection>
+      <RelatedDesignGuides termId={entry.id} />
+      <GlossarySourceDetails termId={entry.id} />
     </article>
   );
 }
