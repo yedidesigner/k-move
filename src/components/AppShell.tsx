@@ -19,7 +19,7 @@ import { useAuth } from "@/lib/auth";
 const NAV = [
   { to: "/", label: "홈", icon: Home },
   { to: "/sessions", label: "전체 수업", icon: CalendarDays },
-  { to: "/materials", label: "자료실", icon: FolderOpen },
+  { to: "/materials", label: "학습자료", icon: FolderOpen },
   { to: "/glossary", label: "용어집", icon: BookOpen },
   { to: "/assignments", label: "과제", icon: ClipboardList },
   { to: "/portfolio", label: "내 포트폴리오", icon: Briefcase },
@@ -39,7 +39,9 @@ export function AppShell({ children }: { children: ReactNode }) {
 
   return (
     <div className="min-h-screen bg-background md:flex">
-      <aside className={`hidden shrink-0 flex-col border-r border-sidebar-border bg-sidebar md:sticky md:top-0 md:flex md:h-screen ${isFeedback ? "md:w-80" : "md:w-72"}`}>
+      <aside
+        className={`hidden shrink-0 flex-col border-r border-sidebar-border bg-sidebar md:sticky md:top-0 md:flex md:h-screen ${isFeedback ? "md:w-80" : "md:w-72"}`}
+      >
         <div className="shrink-0 border-b border-sidebar-border px-6 py-10">
           <p className="text-2xl font-bold leading-[1.2] tracking-tight text-sidebar-foreground">
             <span className="block">K-MOVE</span>
@@ -74,7 +76,10 @@ export function AppShell({ children }: { children: ReactNode }) {
           <p className="truncate text-sm text-foreground">
             {user?.user_metadata?.["username"] ?? user?.email}
           </p>
-          <Link to="/password" className="mt-3 inline-flex min-h-10 items-center gap-2 text-sm text-muted-foreground hover:text-foreground">
+          <Link
+            to="/password"
+            className="mt-3 inline-flex min-h-10 items-center gap-2 text-sm text-muted-foreground hover:text-foreground"
+          >
             <KeyRound className="h-4 w-4" aria-hidden /> 비밀번호 변경
           </Link>
           <button
@@ -131,7 +136,13 @@ export function AppShell({ children }: { children: ReactNode }) {
         </div>
       </header>
 
-      <main className={isFeedback ? "min-w-0 w-full flex-1 p-0" : "mx-auto min-w-0 w-full max-w-5xl flex-1 px-4 pb-28 pt-6 md:px-10 md:pb-12 md:pt-10"}>
+      <main
+        className={
+          isFeedback
+            ? "min-w-0 w-full flex-1 p-0"
+            : "mx-auto min-w-0 w-full max-w-5xl flex-1 px-4 pb-28 pt-6 md:px-10 md:pb-12 md:pt-10"
+        }
+      >
         {children}
       </main>
 

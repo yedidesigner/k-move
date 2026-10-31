@@ -6,6 +6,7 @@ import type { GlossaryPractice } from "@/data/practice/types";
 import { GlossaryExampleFigure } from "./GlossaryExampleFigure";
 import { PracticeExercise } from "./GlossaryPracticeLesson";
 import "./glossary-learning.css";
+import { GlossaryDepthPanel } from "./GlossaryDepthPanel";
 
 function LessonSection({ title, children }: { title: string; children: ReactNode }) {
   const id = useId();
@@ -70,6 +71,7 @@ export function GlossaryLearningLesson({
           <PracticeExercise practice={practice} />
         </LessonSection>
       )}
+      <GlossaryDepthPanel termId={entry.id} />
       <LessonSection title="기억할 점">
         <p className="gl-takeaway">
           {practice?.takeaway || note?.trim() || learning.figure.caption}
