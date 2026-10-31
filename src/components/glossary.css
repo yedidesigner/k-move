@@ -1,8 +1,48 @@
+.glossary-type-filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 18px;
+}
+.glossary-type-filters button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 44px;
+  padding: 10px 16px;
+  border: 1px solid var(--border);
+  background: var(--card);
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+}
+.glossary-type-filters button[aria-pressed="true"] {
+  border-color: var(--foreground);
+  background: var(--foreground);
+  color: var(--background);
+}
+.glossary-type-filters button:not([aria-pressed="true"]):hover {
+  border-color: var(--foreground);
+}
+.glossary-card-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 14px;
+}
+.glossary-card-shell {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  min-width: 0;
+  min-height: 272px;
+}
 .glossary-card {
   display: block;
+  position: relative;
+  flex: 1;
   width: 100%;
-  height: 100%;
-  min-height: 288px;
+  min-height: 224px;
   padding: 0;
   border: 0;
   background: transparent;
@@ -11,23 +51,22 @@
   perspective: 1200px;
   -webkit-tap-highlight-color: transparent;
 }
-
 .glossary-card-inner {
+  position: relative;
   display: grid;
   min-height: inherit;
   height: 100%;
   transform-style: preserve-3d;
-  transition: transform 550ms cubic-bezier(0.22, 0.7, 0.25, 1);
+  transition: transform 450ms cubic-bezier(0.22, 0.7, 0.25, 1);
 }
-
 .glossary-card[data-flipped="true"] .glossary-card-inner {
   transform: rotateY(180deg);
 }
-
 .glossary-card-face {
   grid-area: 1 / 1;
   display: flex;
   min-width: 0;
+  min-height: inherit;
   flex-direction: column;
   padding: 24px;
   border: 1px solid var(--border);
@@ -35,49 +74,132 @@
   backface-visibility: hidden;
   overflow-wrap: anywhere;
 }
-
 .glossary-card-front {
+  position: relative;
   background: var(--card);
   color: var(--card-foreground);
   transition: border-color 180ms;
 }
-
 .glossary-card:hover .glossary-card-front {
   border-color: var(--foreground);
 }
-
+.glossary-interactive-badge {
+  align-self: flex-end;
+  margin: -8px -8px 10px 0;
+  padding: 3px 7px;
+  border: 1px solid #a0cbc6;
+  color: #25675f;
+  background: #f7fcfb;
+  border-radius: 4px;
+  font-size: 10px;
+  font-weight: 600;
+  line-height: 1.4;
+  letter-spacing: 0;
+}
 .glossary-card-term {
   display: flex;
   flex: 1;
   flex-direction: column;
-  justify-content: center;
   align-items: flex-start;
-  padding-block: 32px;
-  font-size: clamp(22px, 2.2vw, 28px);
+  gap: 10px;
+  padding-block: 4px 28px;
+  font-size: clamp(22px, 2vw, 26px);
   font-weight: 500;
   line-height: 1.25;
   letter-spacing: -0.035em;
   word-break: normal;
 }
-
-.glossary-card-shell {
-  display: flex;
-  flex-direction: column;
-  height: 100%;
-  min-width: 0;
-}
-.glossary-card-shell > .glossary-card {
-  flex: 1;
-}
 .glossary-card-pronunciation {
   display: block;
-  margin-top: 14px;
   font-size: 13px;
   font-weight: 400;
   line-height: 1.7;
   letter-spacing: 0;
   color: var(--muted-foreground);
   word-break: keep-all;
+  overflow-wrap: anywhere;
+}
+.glossary-card-action {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: auto;
+  padding-top: 16px;
+  border-top: 1px solid var(--border);
+  color: var(--muted-foreground);
+  font-size: 12px;
+  line-height: 1.5;
+}
+.glossary-card-action svg {
+  flex-shrink: 0;
+}
+.glossary-card-back {
+  position: absolute;
+  inset: 0;
+  transform: rotateY(180deg);
+  border-color: var(--primary);
+  background: var(--primary);
+  color: var(--primary-foreground);
+}
+/* Only the active face determines height, so long explanations stay readable
+   without making every unopened card as tall as its full definition. */
+.glossary-card[data-flipped="true"] .glossary-card-front {
+  position: absolute;
+  inset: 0;
+}
+.glossary-card[data-flipped="true"] .glossary-card-back {
+  position: relative;
+}
+.glossary-card-explanation {
+  display: block;
+  flex: 1;
+  padding-bottom: 24px;
+  word-break: keep-all;
+  overflow-wrap: anywhere;
+}
+.glossary-card-back-term {
+  display: block;
+  font-size: 12px;
+  line-height: 1.5;
+  opacity: 0.65;
+}
+.glossary-card-meaning {
+  display: block;
+  margin-top: 8px;
+  font-size: 20px;
+  font-weight: 600;
+  line-height: 1.4;
+  letter-spacing: -0.03em;
+}
+.glossary-card-definition {
+  display: block;
+  margin-top: 14px;
+  white-space: pre-line;
+  font-size: 14px;
+  line-height: 1.8;
+  opacity: 0.9;
+}
+.glossary-card-example {
+  display: block;
+  margin-top: 16px;
+  padding-top: 14px;
+  border-top: 1px solid #ffffff38;
+  font-size: 13px;
+  line-height: 1.8;
+  opacity: 0.85;
+}
+.glossary-card-example-label {
+  display: block;
+  margin-bottom: 4px;
+  font-size: 11px;
+  font-weight: 600;
+  opacity: 0.7;
+}
+.glossary-card-back .glossary-card-action {
+  border-color: #ffffff38;
+  color: inherit;
+  opacity: 0.7;
 }
 .glossary-learn-button {
   display: flex;
@@ -85,63 +207,50 @@
   align-items: center;
   justify-content: space-between;
   gap: 12px;
-  padding: 12px 20px;
-  border: 1px solid var(--border);
+  padding: 12px 24px;
+  border: 1px solid #bdd8d3;
   border-top: 0;
-  background: var(--card);
+  background: #f2f8f7;
+  color: #183a34;
   font-size: 12px;
   font-weight: 600;
-  cursor: pointer;
-}
-.glossary-learn-button:hover {
-  background: var(--muted);
-}
-.glossary-visual-shortcuts {
-  margin-bottom: 24px;
-  padding: 20px;
-  border: 1px solid var(--border);
-  background: var(--card);
-}
-.glossary-visual-shortcuts-heading h2 {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  font-size: 14px;
-  font-weight: 600;
-}
-.glossary-visual-shortcuts-heading p {
-  margin-top: 7px;
-  font-size: 12px;
-  line-height: 1.7;
-  color: var(--muted-foreground);
-  word-break: keep-all;
-}
-.glossary-visual-shortcut-list {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 8px;
-  margin-top: 16px;
-}
-.glossary-visual-shortcut-list button {
-  display: flex;
-  min-height: 46px;
-  align-items: center;
-  justify-content: space-between;
-  gap: 10px;
-  padding: 10px 14px;
-  border: 1px solid var(--border);
-  background: var(--background);
-  font-size: 13px;
-  font-weight: 500;
   text-align: left;
   cursor: pointer;
 }
-.glossary-visual-shortcut-list button:hover {
-  border-color: var(--foreground);
-}
-.glossary-visual-shortcut-list svg {
+.glossary-learn-button svg {
   flex-shrink: 0;
 }
+.glossary-learn-button:hover {
+  background: #e6f2ef;
+}
+.glossary-card:focus-visible,
+.glossary-type-filters button:focus-visible {
+  outline: 2px solid var(--foreground);
+  outline-offset: 4px;
+  z-index: 1;
+}
+@media (min-width: 640px) {
+  .glossary-card-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+@media (min-width: 1180px) {
+  .glossary-card-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+@media (max-width: 600px) {
+  .glossary-card-shell {
+    min-height: 248px;
+  }
+  .glossary-card-face {
+    padding: 20px;
+  }
+  .glossary-learn-button {
+    padding-inline: 20px;
+  }
+}
+
 .glossary-lesson-overlay {
   position: fixed;
   inset: 0;
@@ -202,18 +311,11 @@
   background: #f5f5f2;
 }
 .glossary-learn-button:focus-visible,
-.glossary-visual-shortcut-list button:focus-visible,
 .glossary-lesson-dialog button:focus-visible {
   outline: 2px solid currentColor;
   outline-offset: 3px;
 }
 @media (max-width: 600px) {
-  .glossary-visual-shortcut-list {
-    grid-template-columns: 1fr;
-  }
-  .glossary-visual-shortcuts {
-    padding: 16px;
-  }
   .glossary-lesson-dialog {
     inset: 0;
     width: 100%;
@@ -227,13 +329,6 @@
   .glossary-lesson-dialog > .vux-lesson {
     padding: 24px 16px 32px;
   }
-}
-
-.glossary-card-back {
-  transform: rotateY(180deg);
-  border-color: var(--primary);
-  background: var(--primary);
-  color: var(--primary-foreground);
 }
 
 .glossary-search::-webkit-search-cancel-button {
