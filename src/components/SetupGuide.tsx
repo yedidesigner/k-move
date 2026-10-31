@@ -22,8 +22,8 @@ export function SetupGuide() {
         {missing.length > 0 && <p className="mt-3 text-sm">누락: {missing.join(", ")}</p>}
       </Panel>
       <Panel>
-        <h2 className="font-semibold">2. 아이디 회원가입 설정</h2>
-        <p className="mt-1 text-sm text-muted-foreground">Authentication → Providers → Email에서 이메일 로그인을 켜고 Confirm email을 끕니다. 이 앱은 아이디를 내부 전용 이메일로 변환하므로 확인 메일을 사용하지 않습니다.</p>
+        <h2 className="font-semibold">2. 수강생 계정 등록</h2>
+        <p className="mt-1 text-sm text-muted-foreground">수강생 계정은 운영자가 미리 등록합니다. 이 앱은 로그인 이름을 내부 전용 이메일로 변환하며, 공개 회원가입 화면을 제공하지 않습니다. 등록 시 이메일 인증을 완료한 계정으로 만들고, 로그인 후 본인이 비밀번호를 변경할 수 있도록 안내합니다.</p>
       </Panel>
       <Panel>
         <h2 className="font-semibold">3. 강사 계정 지정</h2>
