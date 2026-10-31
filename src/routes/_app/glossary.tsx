@@ -2,6 +2,10 @@ import { createFileRoute } from "@tanstack/react-router";
 import { Glossary } from "@/components/Glossary";
 
 export const Route = createFileRoute("/_app/glossary")({
+  validateSearch: (search: Record<string, unknown>): { term?: string } =>
+    typeof search["term"] === "string" && search["term"].trim()
+      ? { term: search["term"].trim().slice(0, 160) }
+      : {},
   head: () => ({
     meta: [
       { title: "UX/UI 용어집 | K-Move LMS" },
@@ -11,5 +15,10 @@ export const Route = createFileRoute("/_app/glossary")({
       },
     ],
   }),
-  component: Glossary,
+  component: GlossaryPage,
 });
+
+function GlossaryPage() {
+  const { term = "" } = Route.useSearch();
+  return <Glossary key={term} initialQuery={term} />;
+}

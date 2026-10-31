@@ -119,8 +119,8 @@ function GlossaryCard({
   );
 }
 
-export function Glossary() {
-  const [query, setQuery] = useState("");
+export function Glossary({ initialQuery = "" }: { initialQuery?: string } = {}) {
+  const [query, setQuery] = useState(initialQuery);
   const [letter, setLetter] = useState("ALL");
   const [filter, setFilter] = useState<GlossaryFilter>("all");
   const [page, setPage] = useState(1);
@@ -343,8 +343,14 @@ export function Glossary() {
         <p>
           용어 목록 원본: Google UX Design Certificate · 비공식 한국어 참고 자료
           <br />
-          발음·설명·예시는 K-Move 학습용으로 정리했습니다.
+          실무에서 쓰는 원어·외래어는 살리고, 설명은 한국어로 정리했습니다.
         </p>
+        <a
+          href="/materials"
+          className="inline-flex min-h-11 items-center gap-1.5 underline underline-offset-4 hover:text-foreground"
+        >
+          주제별 학습 가이드 <ArrowUpRight className="size-3.5" aria-hidden />
+        </a>
         <a
           href={GLOSSARY_SOURCE_URL}
           target="_blank"
