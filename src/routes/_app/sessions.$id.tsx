@@ -4,6 +4,7 @@ import { EmptyState, PageHeader, Panel, StatusBadge } from "@/components/lms";
 import { SessionCurriculum } from "@/components/SessionCurriculum";
 import { usePublishedContent, PublishedAnnouncements } from "@/lib/published-content";
 import { useAuth } from "@/lib/auth";
+import { WeekTwoResources } from "@/components/WeekTwoResources";
 
 export const Route = createFileRoute("/_app/sessions/$id")({
   loader: ({ params }) => {
@@ -99,6 +100,7 @@ function Detail() {
       <div className="mt-5">
         <PublishedAnnouncements sessionNumber={s.number} />
       </div>
+      <WeekTwoResources sessionId={s.id} />
       {s.body && (
         <section className="mt-6 border-y border-neutral-200 py-6">
           <h2 className="mb-3 text-lg font-semibold">수업 안내</h2>
