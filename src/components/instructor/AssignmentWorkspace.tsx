@@ -6,6 +6,7 @@ import {
   useMemo,
   useRef,
   useState,
+  type ComponentProps,
   type FormEvent,
   type ReactNode,
 } from "react";
@@ -143,6 +144,22 @@ function Workspace({
     [legacyStudent, setLegacyStudent] = useState("");
   const [studentFilter, setStudentFilter] = useState("all");
   const [legacyOwn, setLegacyOwn] = useState<LegacyStudent | null>(null);
+  const [materialsRevision, setMaterialsRevision] = useState(0);
+  const [materialsRefresh, setMaterialsRefresh] = useState(0);
+  const [materialsBusy, setMaterialsBusy] = useState(false);
+  const studentLeaveGuards = useRef(new Map<string, () => Promise<boolean>>());
+  const registerStudentLeaveGuard = useCallback(
+    (id: string, guard: (() => Promise<boolean>) | null) => {
+      if (guard) studentLeaveGuards.current.set(id, guard);
+      else studentLeaveGuards.current.delete(id);
+    },
+    [],
+  );
+  useEditorExitGuard(() => !materialsBusy);
+  useBlocker({
+    shouldBlockFn: () => materialsBusy,
+    enableBeforeUnload: () => materialsBusy,
+  });
   const leaveGuard = useRef<(() => Promise<boolean>) | null>(null);
   const registerLeaveGuard = useCallback((fn: (() => Promise<boolean>) | null) => {
     leaveGuard.current = fn;
@@ -260,7 +277,13 @@ function Workspace({
     };
   }, [student?.student_id, assignment?.session_number, revision]);
   async function changeContext(action: () => void) {
-    if (leaveGuard.current && !(await leaveGuard.current())) {
+    if (materialsBusy) {
+      setError("자료 업로드가 완료된 뒤 이동해 주세요.");
+      return;
+    }
+    const guards = [...studentLeaveGuards.current.values()];
+    if (leaveGuard.current) guards.push(leaveGuard.current);
+    if (!(await Promise.all(guards.map((guard) => guard()))).every(Boolean)) {
       setError(
         "작성 중인 내용을 저장하지 못해 화면 이동을 멈췄습니다. 현재 화면에서 저장을 다시 시도해 주세요.",
       );
@@ -321,9 +344,6 @@ function Workspace({
       setSelectedAssignment(ownAssignment.id);
     }
   }, [instructor, loading, ownAssignment?.id, selectedAssignment, studentAssignments]);
-  const target = ownAssignment
-    ? data.targets.find((t) => t.assignment_id === ownAssignment.id && t.user_id === userId)
-    : undefined;
   const versions = submission
     ? data.submissions
         .filter(
@@ -422,6 +442,12 @@ function Workspace({
       setSelectedSubmission(next?.id ?? "");
     });
   }
+  const visibleStudentAssignments = studentAssignments.filter(
+    (item) => item.session_number === documentWeek,
+  );
+  const lockedAssetIds = data.assetRefs
+    .map((row) => row.image_id ?? row.attachment_id)
+    .filter((id): id is string => Boolean(id));
   const description = instructor
     ? "제출물을 확인하고, 피드백을 작성해 학생에게 공개하세요."
     : "자료를 모아 제출하고, 강사의 피드백과 수정 이력을 확인하세요.";
@@ -643,7 +669,7 @@ function Workspace({
               {!feedback && reviewFilters}
               <div className="iw-review-workbench">
                 <div className="iw-review-queue">
-                  <SubmissionList feedback={feedback} selected={!!submission}>
+                  <SubmissionList feedback={feedback}>
                     {feedback && reviewFilters}
                     {!loading && (
                       <div className="iw-queue" aria-label="제출 검토 목록">
@@ -781,95 +807,79 @@ function Workspace({
         </>
       ) : (
         <>
-          <div className="iw-toolbar">
-            <label className="iw-label min-w-0 flex-1">
-              과제 선택
-              <select
-                className="iw-input"
-                value={ownAssignment?.id ?? ""}
-                onChange={(e) => void changeContext(() => setSelectedAssignment(e.target.value))}
+          <section className="iw-section" aria-labelledby="feedback-materials-title">
+            <div className="flex flex-wrap items-center justify-between gap-3">
+              <h2 id="feedback-materials-title" className="iw-section-title">
+                과제와 피드백 자료 업로드
+              </h2>
+              <button
+                className="iw-button"
+                onClick={() =>
+                  void changeContext(() => {
+                    setMaterialsRevision((value) => value + 1);
+                    setMaterialsRefresh((value) => value + 1);
+                    reload();
+                  })
+                }
+                disabled={loading || materialsBusy}
               >
-                <option value="" disabled>
-                  과제를 선택하세요
-                </option>
-                {studentAssignments.map((a) => (
-                  <option key={a.id} value={a.id}>
-                    {String(a.session_number).padStart(2, "0")}회차 · {a.title}
-                  </option>
-                ))}
-              </select>
-            </label>
-            <button
-              className="iw-button"
-              onClick={() => void changeContext(reload)}
-              disabled={loading}
-            >
-              <RefreshCw size={14} />
-              새로고침
-            </button>
-          </div>
-          {!loading && own && ownAssignment && target ? (
-            <StudentSubmissions
-              assignment={ownAssignment}
-              student={own}
-              target={target}
-              initialDraft={data.submissionDrafts.find(
-                (d) => d.assignment_id === ownAssignment.id && d.user_id === userId,
-              )}
-              submissions={data.submissions
-                .filter((s) => s.assignment_id === ownAssignment.id && s.user_id === userId)
-                .sort((a, b) => b.version - a.version)}
-              allSubmissions={data.submissions}
-              assetRefs={data.assetRefs}
-              publications={data.publications}
-              onChanged={() => {
-                setNotice("과제 제출이 완료되었습니다. 제출 이력에서 확인할 수 있습니다.");
-                reload();
-              }}
-              onDraftSaved={submissionDraftSaved}
-              registerLeaveGuard={registerLeaveGuard}
-            />
-          ) : (
-            !loading && (
-              <p className="iw-empty">
-                {own
-                  ? feedback
-                    ? "이 주차에 배정된 과제가 아직 없습니다. 다른 주차를 선택하거나 기존 등록 자료를 확인해 주세요."
-                    : "배정된 과제가 아직 없습니다. 강사가 과제를 공개하면 이곳에서 제출할 수 있습니다."
-                  : "현재 과정에 연결된 수강 정보가 없습니다. 강사에게 문의해 주세요."}
-              </p>
-            )
-          )}
-          <details className="iw-section">
-            <summary className="cursor-pointer text-sm font-semibold">
-              내 Google Drive 과제 폴더
-            </summary>
-            <div className="mt-4">
-              <StudentDriveFolders kind="assignment" />
+                <RefreshCw size={14} />
+                새로고침
+              </button>
             </div>
-          </details>
-          <details
-            className="iw-section"
-            onToggle={(event) => {
-              if (event.currentTarget.open) setTab("legacy");
-            }}
-          >
-            <summary className="cursor-pointer text-sm font-semibold">
-              기존에 등록한 자료와 피드백
-            </summary>
-            {tab === "legacy" && (
-              <LegacyWorkspace
-                enrollment={currentLegacy}
-                enrollments={data.enrollments}
-                instructor={false}
-                userId={userId}
-                week={feedback ? documentWeek : week}
-                setWeek={feedback ? changeFeedbackWeek : setWeek}
-                selectedStudent={legacyStudent}
-                setStudent={setLegacyStudent}
-              />
-            )}
-          </details>
+            <div className="mt-4">
+              <StudentDriveFolders key={materialsRefresh} kind="assignment" embedded />
+            </div>
+            <LegacyWorkspace
+              key={materialsRefresh}
+              enrollment={currentLegacy}
+              enrollments={data.enrollments}
+              instructor={false}
+              userId={userId}
+              week={documentWeek}
+              setWeek={feedback ? changeFeedbackWeek : setWeek}
+              selectedStudent={legacyStudent}
+              setStudent={setLegacyStudent}
+              showWeekPicker={!feedback}
+              loading={loading && !currentLegacy}
+              lockedAssetIds={lockedAssetIds}
+              onAssetsChanged={() => setMaterialsRevision((value) => value + 1)}
+              onUploadBusyChange={setMaterialsBusy}
+            />
+          </section>
+          {own &&
+            visibleStudentAssignments.map((item) => {
+              const target = data.targets.find(
+                (entry) => entry.assignment_id === item.id && entry.user_id === userId,
+              );
+              if (!target) return null;
+              return (
+                <GuardedStudentSubmissions
+                  key={item.id}
+                  assignment={item}
+                  student={own}
+                  target={target}
+                  initialDraft={data.submissionDrafts.find(
+                    (draft) => draft.assignment_id === item.id && draft.user_id === userId,
+                  )}
+                  submissions={data.submissions
+                    .filter((entry) => entry.assignment_id === item.id && entry.user_id === userId)
+                    .sort((a, b) => b.version - a.version)}
+                  allSubmissions={data.submissions}
+                  assetRefs={data.assetRefs}
+                  publications={data.publications}
+                  onChanged={() => {
+                    setNotice("과제 제출이 완료되었습니다. 제출 이력에서 확인할 수 있습니다.");
+                    reload();
+                  }}
+                  onDraftSaved={submissionDraftSaved}
+                  materialsManagedExternally
+                  materialsRevision={materialsRevision}
+                  materialsBusy={materialsBusy}
+                  registerGuard={registerStudentLeaveGuard}
+                />
+              );
+            })}
         </>
       )}
       {loading && (
@@ -936,20 +946,25 @@ function Workspace({
   );
 }
 
-function SubmissionList({
-  children,
-  feedback,
-  selected,
-}: {
-  children: ReactNode;
-  feedback: boolean;
-  selected: boolean;
+function GuardedStudentSubmissions({
+  registerGuard,
+  ...props
+}: Omit<ComponentProps<typeof StudentSubmissions>, "registerLeaveGuard"> & {
+  registerGuard: (id: string, guard: (() => Promise<boolean>) | null) => void;
 }) {
+  const register = useCallback(
+    (guard: (() => Promise<boolean>) | null) => registerGuard(props.assignment.id, guard),
+    [props.assignment.id, registerGuard],
+  );
+  return <StudentSubmissions {...props} registerLeaveGuard={register} />;
+}
+
+function SubmissionList({ children, feedback }: { children: ReactNode; feedback: boolean }) {
   return feedback ? (
-    <details className="feedback-submission-list" open={!selected}>
-      <summary>제출 목록 · 필터</summary>
+    <section className="feedback-submission-list" aria-label="제출 목록 · 필터">
+      <h2>제출 목록 · 필터</h2>
       {children}
-    </details>
+    </section>
   ) : (
     <>{children}</>
   );
@@ -964,6 +979,11 @@ function LegacyWorkspace({
   setWeek,
   selectedStudent,
   setStudent,
+  showWeekPicker = true,
+  loading = false,
+  lockedAssetIds,
+  onAssetsChanged,
+  onUploadBusyChange,
 }: {
   enrollment?: LegacyStudent | undefined;
   enrollments: Enrollment[];
@@ -973,48 +993,55 @@ function LegacyWorkspace({
   setWeek: (week: number) => void;
   selectedStudent: string;
   setStudent: (id: string) => void;
+  showWeekPicker?: boolean;
+  loading?: boolean;
+  lockedAssetIds?: readonly string[];
+  onAssetsChanged?: () => void;
+  onUploadBusyChange?: (busy: boolean) => void;
 }) {
   const sessions = usePublishedSessions();
   return (
     <section className="mt-5">
-      <p className="iw-notice">
-        기존 등록 자료는 최종 제출 기록과 구분해 보존합니다.{" "}
-        {instructor
-          ? "새 과제의 피드백은 ‘제출 검토’에서 초안으로 작성해 공개해 주세요."
-          : "새 과제에 제출하려면 과제를 선택하고 해당 자료를 포함해 ‘제출하기’를 눌러 주세요."}
-      </p>
-      <div className="my-4 grid gap-3 sm:grid-cols-2">
-        {instructor && (
+      {instructor && (
+        <p className="iw-notice">
+          기존 등록 자료는 최종 제출 기록과 구분해 보존합니다. 새 과제의 피드백은 ‘제출 검토’에서
+          초안으로 작성해 공개해 주세요.
+        </p>
+      )}
+      {(instructor || showWeekPicker) && (
+        <div className="my-4 grid gap-3 sm:grid-cols-2">
+          {instructor && (
+            <label className="iw-label">
+              학생
+              <select
+                className="iw-input"
+                value={selectedStudent || enrollment?.user_id || ""}
+                onChange={(e) => setStudent(e.target.value)}
+              >
+                {enrollments.map((e) => (
+                  <option key={e.user_id} value={e.user_id}>
+                    {e.name}
+                  </option>
+                ))}
+              </select>
+            </label>
+          )}
           <label className="iw-label">
-            학생
+            회차
             <select
               className="iw-input"
-              value={selectedStudent || enrollment?.user_id || ""}
-              onChange={(e) => setStudent(e.target.value)}
+              value={week}
+              onChange={(e) => setWeek(Number(e.target.value))}
             >
-              {enrollments.map((e) => (
-                <option key={e.user_id} value={e.user_id}>
-                  {e.name}
+              {sessions.map((s) => (
+                <option value={s.number} key={s.id}>
+                  {s.number}회차 · {s.date}
                 </option>
               ))}
             </select>
           </label>
-        )}
-        <label className="iw-label">
-          회차
-          <select
-            className="iw-input"
-            value={week}
-            onChange={(e) => setWeek(Number(e.target.value))}
-          >
-            {sessions.map((s) => (
-              <option value={s.number} key={s.id}>
-                {s.number}회차 · {s.date}
-              </option>
-            ))}
-          </select>
-        </label>
-      </div>
+        </div>
+      )}
       {enrollment ? (
         <FeedbackWorkspace
           key={`${enrollment.user_id}:${week}`}
@@ -1024,9 +1051,16 @@ function LegacyWorkspace({
           userId={userId}
           instructor={false}
           readOnly={instructor}
+          {...(lockedAssetIds ? { lockedAssetIds } : {})}
+          {...(onAssetsChanged ? { onAssetsChanged } : {})}
+          {...(onUploadBusyChange ? { onUploadBusyChange } : {})}
         />
+      ) : loading ? (
+        <p role="status" className="iw-muted">
+          자료를 불러오는 중…
+        </p>
       ) : (
-        <p className="iw-empty">연결된 학생이 없습니다.</p>
+        <p className="iw-muted">연결된 학생이 없습니다. 강사에게 문의해 주세요.</p>
       )}
     </section>
   );

@@ -145,12 +145,12 @@ function StudentHome() {
             <ArrowUpRight aria-hidden className="size-5 shrink-0" />
           </Link>
           <Link
-            to="/assignments"
+            to="/feedback"
             className="group flex min-h-28 items-center justify-between gap-4 px-6 py-6 transition-colors hover:bg-muted"
           >
             <span>
-              <span className="block text-xs text-muted-foreground">과제 바로가기</span>
-              <span className="mt-2 block text-lg font-semibold">과제</span>
+              <span className="block text-xs text-muted-foreground">과제&피드백 바로가기</span>
+              <span className="mt-2 block text-lg font-semibold">과제&피드백</span>
             </span>
             <ArrowUpRight aria-hidden className="size-5 shrink-0" />
           </Link>

@@ -272,7 +272,7 @@ function FeedbackWorkspaceContent({
           <ImagePlus className="mb-2 size-5 text-neutral-400" aria-hidden="true" />
           <p className="text-sm text-neutral-500">업로드한 이미지가 없습니다.</p>
           <p className="mt-1 text-xs text-neutral-400">
-            위의 ‘과제 업로드’에서 이미지를 선택해 주세요.
+            위의 ‘자료 업로드’에서 이미지를 선택해 주세요.
           </p>
         </div>
       )}

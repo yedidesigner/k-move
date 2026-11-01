@@ -8,14 +8,16 @@ import {
   Outlet,
   RouterProvider,
 } from "@tanstack/react-router";
-import { afterEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { AppShell } from "@/components/AppShell";
+import { Route as AssignmentsRoute } from "@/routes/_app/assignments";
 import { Route as MaterialsRoute } from "@/routes/_app/materials";
 import { STUDY_GUIDES } from "@/data/study-materials";
 
+const auth = vi.hoisted(() => ({ status: "student" }));
 vi.mock("@/lib/auth", () => ({
   useAuth: () => ({
-    status: "student",
+    status: auth.status,
     user: { email: "learner@example.test", user_metadata: { username: "학습자" } },
     signOut: vi.fn(),
   }),
@@ -23,6 +25,9 @@ vi.mock("@/lib/auth", () => ({
 vi.mock("@/components/glossary/GlossaryExampleFigure", () => ({
   GlossaryExampleFigure: () => <figure aria-label="시각 예시" />,
 }));
+beforeEach(() => {
+  auth.status = "student";
+});
 afterEach(cleanup);
 
 async function renderLearningNavigation(initialEntries = ["/glossary"]) {
@@ -59,9 +64,26 @@ async function renderLearningNavigation(initialEntries = ["/glossary"]) {
     },
     component: MaterialsRoute.options.component!,
   });
+  const assignments = createRoute({
+    getParentRoute: () => app,
+    path: "/assignments",
+    beforeLoad: (context) => {
+      const beforeLoad = AssignmentsRoute.options.beforeLoad;
+      if (typeof beforeLoad !== "function")
+        throw new Error("Assignments route requires a redirect");
+      return Reflect.apply(beforeLoad, undefined, [context]);
+    },
+  });
+  const feedback = createRoute({
+    getParentRoute: () => app,
+    path: "/feedback",
+    component: () => <h1>과제&피드백</h1>,
+  });
   const history = createMemoryHistory({ initialEntries, initialIndex: initialEntries.length - 1 });
   const router = createRouter({
-    routeTree: root.addChildren([app.addChildren([glossary, original, materials])]),
+    routeTree: root.addChildren([
+      app.addChildren([glossary, original, materials, assignments, feedback]),
+    ]),
     context: { queryClient: new QueryClient() },
     history,
     defaultPendingMinMs: 0,
@@ -71,7 +93,9 @@ async function renderLearningNavigation(initialEntries = ["/glossary"]) {
   await screen.findByRole("heading", {
     name: initialEntries[initialEntries.length - 1]?.startsWith("/materials")
       ? "학습자료"
-      : "디자인 용어집",
+      : /^\/(assignments|feedback)/.test(initialEntries[initialEntries.length - 1] ?? "")
+        ? "과제&피드백"
+        : "디자인 용어집",
     level: 1,
   });
   return { router, history };
@@ -84,11 +108,14 @@ describe("Separate glossary and study materials navigation", () => {
       const menu = within(screen.getByRole("navigation", { name }));
       expect(menu.getByRole("link", { name: "용어집" })).toHaveAttribute("href", "/glossary");
       expect(menu.getByRole("link", { name: "학습자료" })).toHaveAttribute("href", "/materials");
-      expect(menu.getByRole("link", { name: "과제" })).toHaveAttribute("href", "/assignments");
+      expect(menu.getByRole("link", { name: "과제&피드백" })).toHaveAttribute("href", "/feedback");
+      expect(menu.queryByRole("link", { name: "과제" })).not.toBeInTheDocument();
     }
     const moreMenu = within(screen.getByRole("banner")).getByText("추가 메뉴");
     expect(
-      within(screen.getByRole("navigation", { name: "주요 메뉴" })).getByRole("link", { name: "우리의 약속" }),
+      within(screen.getByRole("navigation", { name: "주요 메뉴" })).getByRole("link", {
+        name: "우리의 약속",
+      }),
     ).toHaveAttribute("href", "/promises");
     expect(moreMenu.closest("details")).not.toHaveAttribute("open");
     fireEvent.click(moreMenu);
@@ -99,6 +126,62 @@ describe("Separate glossary and study materials navigation", () => {
       within(screen.getByRole("banner")).getByRole("link", { name: "내 포트폴리오" }),
     ).toHaveAttribute("href", "/portfolio");
   });
+
+  it.each(["student", "instructor"])(
+    "offers one assignments-and-feedback destination for %s on desktop and mobile",
+    async (role) => {
+      auth.status = role;
+      await renderLearningNavigation(["/feedback"]);
+      for (const name of [role === "instructor" ? "강사 주요 메뉴" : "주요 메뉴", "하단 메뉴"]) {
+        const menu = within(screen.getByRole("navigation", { name }));
+        const link = menu.getByRole("link", { name: "과제&피드백" });
+        expect(link).toHaveAttribute("href", "/feedback");
+        expect(link).toHaveAttribute("data-nav-active", "true");
+        expect(
+          menu.queryByRole("link", { name: /^(과제|과제 관리|피드백)$/ }),
+        ).not.toBeInTheDocument();
+        expect(
+          menu.getAllByRole("link").some((item) => item.getAttribute("href") === "/assignments"),
+        ).toBe(false);
+      }
+      fireEvent.click(
+        within(screen.getByRole("banner")).getByText(
+          role === "instructor" ? "전체 메뉴" : "추가 메뉴",
+        ),
+      );
+      const mobileMenu = within(screen.getByRole("navigation", { name: "모바일 전체 메뉴" }));
+      expect(mobileMenu.getByRole("link", { name: "과제&피드백" })).toHaveAttribute(
+        "href",
+        "/feedback",
+      );
+      expect(
+        mobileMenu.queryByRole("link", { name: /^(과제|과제 관리|피드백)$/ }),
+      ).not.toBeInTheDocument();
+    },
+  );
+
+  it.each(["student", "instructor"])(
+    "redirects a legacy %s assignment bookmark without dropping submission filters or adding a history entry",
+    async (role) => {
+      auth.status = role;
+      const { router, history } = await renderLearningNavigation([
+        "/origin",
+        "/assignments?session=2&assignment=assignment-a&submission=submission-a",
+      ]);
+      expect(router.state.location.pathname).toBe("/feedback");
+      expect(router.state.location.search).toEqual({
+        session: 2,
+        assignment: "assignment-a",
+        submission: "submission-a",
+      });
+      expect(history.length).toBe(2);
+      await act(async () => {
+        history.back();
+      });
+      expect(await screen.findByRole("heading", { name: "이전 화면" })).toBeVisible();
+      expect(router.state.location.pathname).toBe("/origin");
+    },
+  );
 
   it("renders the materials page without redirect and preserves guide state through Back and Forward", async () => {
     const { router, history } = await renderLearningNavigation(["/origin", "/materials"]);

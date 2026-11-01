@@ -43,7 +43,7 @@ export function FeedbackDocument({
 
   return (
     <div className="feedback-document">
-      <h1 className="feedback-document-title">FEEDBACK</h1>
+      <h1 className="feedback-document-title">과제&amp;피드백</h1>
       <section className="feedback-paper-stack" aria-label="주차별 피드백 문서">
         <div className="feedback-paper-layer feedback-paper-layer-back" aria-hidden="true" />
         <div className="feedback-paper-layer feedback-paper-layer-front" aria-hidden="true" />

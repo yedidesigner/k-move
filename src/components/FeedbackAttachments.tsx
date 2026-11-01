@@ -225,11 +225,11 @@ function AttachmentContent({
         if (kind === "image") savedImages++;
         else savedFiles++;
       }
-      if (alive.current && saved) setNotice(`과제 ${saved}개를 업로드했습니다.`);
+      if (alive.current && saved) setNotice(`자료 ${saved}개를 업로드했습니다.`);
     } catch (e) {
       if (alive.current)
         setError(
-          `${saved ? `과제 ${saved}개는 업로드되었습니다. 나머지 ` : ""}과제 업로드 실패: ${errorText(e)}`,
+          `${saved ? `자료 ${saved}개는 업로드되었습니다. 나머지 ` : ""}자료 업로드 실패: ${errorText(e)}`,
         );
     } finally {
       if (savedFiles) refresh();
@@ -409,7 +409,7 @@ function AttachmentContent({
               type="file"
               multiple
               accept={FEEDBACK_UPLOAD_ACCEPT}
-              aria-label="과제 파일 선택"
+              aria-label="자료 파일 선택"
               aria-describedby="feedback-upload-formats"
               disabled={busy || uploadDisabled}
               className="sr-only"
@@ -423,7 +423,7 @@ function AttachmentContent({
               className="inline-flex min-h-10 items-center justify-center gap-2 border border-black bg-black px-4 text-xs font-semibold text-white disabled:opacity-50"
             >
               <FileUp className="size-4" aria-hidden="true" />
-              {uploading ? "업로드 중…" : "과제 업로드"}
+              {uploading ? "업로드 중…" : "자료 업로드"}
             </button>
             <button
               type="button"

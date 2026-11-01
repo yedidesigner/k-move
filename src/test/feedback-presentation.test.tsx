@@ -1,4 +1,4 @@
-import { cleanup, fireEvent, render, screen, waitFor } from "@testing-library/react";
+import { cleanup, fireEvent, render, screen, waitFor, within } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { AssignmentWorkspace } from "@/components/instructor/AssignmentWorkspace";
 import type { Assignment, AssignmentTarget, Enrollment, Submission } from "@/lib/instructor-api";
@@ -49,9 +49,17 @@ vi.mock("@/lib/instructor-api", () => ({
   saveAssignmentTarget: vi.fn(),
 }));
 vi.mock("@/components/FeedbackWorkspace", () => ({
-  FeedbackWorkspace: ({ week }: { week: number }) => (
+  FeedbackWorkspace: ({
+    week,
+    onUploadBusyChange,
+  }: {
+    week: number;
+    onUploadBusyChange?: (value: boolean) => void;
+  }) => (
     <div data-testid="legacy-workspace" data-week={week}>
       기존 자료 보기
+      <button onClick={() => onUploadBusyChange?.(true)}>자료 업로드</button>
+      <button onClick={() => onUploadBusyChange?.(false)}>업로드 완료</button>
     </div>
   ),
 }));
@@ -169,13 +177,13 @@ describe("feedback paper presentation", () => {
   it("keeps the ordinary assignment workspace presentation unchanged", async () => {
     render(<AssignmentWorkspace />);
     expect(await screen.findByRole("heading", { name: "과제·피드백" })).toBeVisible();
-    expect(screen.queryByRole("heading", { name: "FEEDBACK" })).not.toBeInTheDocument();
+    expect(screen.queryByRole("heading", { name: "과제&피드백" })).not.toBeInTheDocument();
     expect(screen.queryByRole("button", { name: "2주차 피드백 보기" })).not.toBeInTheDocument();
   });
 
   it("shows the feedback identity and current week navigation without removing management controls", async () => {
     render(<AssignmentWorkspace presentation="feedback" />);
-    expect(await screen.findByRole("heading", { name: "FEEDBACK" })).toBeVisible();
+    expect(await screen.findByRole("heading", { name: "과제&피드백" })).toBeVisible();
     expect(screen.getByText("WEEK 02", { exact: true })).toBeVisible();
     expect(screen.getByRole("button", { name: "2주차 피드백 보기" })).toHaveAttribute(
       "aria-pressed",
@@ -235,12 +243,69 @@ describe("feedback paper presentation", () => {
       "data-assignment",
       "assignment-3",
     );
-    fireEvent.click(screen.getByText("기존에 등록한 자료와 피드백"));
     expect(await screen.findByTestId("legacy-workspace")).toHaveAttribute("data-week", "3");
-    expect(screen.getByRole("combobox", { name: "회차" })).toHaveValue("3");
+    expect(screen.queryByRole("combobox", { name: "회차" })).not.toBeInTheDocument();
     expect(screen.getByRole("button", { name: "3주차 피드백 보기" })).toHaveAttribute(
       "aria-pressed",
       "true",
+    );
+  });
+
+  it("shows one permanent shared upload area with Drive and no assignment selector", async () => {
+    state.auth = { status: "student", user: { id: "student-a" } };
+    render(<AssignmentWorkspace presentation="feedback" />);
+    await screen.findByTestId("student-editor");
+    const region = screen.getByRole("region", { name: "과제와 피드백 자료 업로드" });
+    expect(within(region).getByText("본인 Drive 폴더")).toBeVisible();
+    expect(within(region).getByRole("button", { name: "자료 업로드" })).toBeVisible();
+    expect(screen.getAllByTestId("legacy-workspace")).toHaveLength(1);
+    expect(screen.queryByRole("combobox", { name: "과제 선택" })).not.toBeInTheDocument();
+    expect(screen.queryByText("과제를 선택하세요")).not.toBeInTheDocument();
+    expect(region.querySelector("details")).toBeNull();
+  });
+
+  it("keeps every assigned task in the selected week accessible and checks all drafts before switching", async () => {
+    state.auth = { status: "student", user: { id: "student-a" } };
+    state.assignments.push(assignment("assignment-2b", 2));
+    state.assignments.push(assignment("assignment-3", 3));
+    state.targets.push({ ...state.targets[0]!, assignment_id: "assignment-2b" });
+    state.targets.push({ ...state.targets[0]!, assignment_id: "assignment-3" });
+    render(<AssignmentWorkspace presentation="feedback" />);
+    await waitFor(() => expect(screen.getAllByTestId("student-editor")).toHaveLength(2));
+    expect(
+      screen.getAllByTestId("student-editor").map((node) => node.getAttribute("data-assignment")),
+    ).toEqual(["assignment-2", "assignment-2b"]);
+    state.leaveGuard.mockResolvedValueOnce(true).mockResolvedValueOnce(false);
+    fireEvent.click(screen.getByRole("button", { name: "3주차 피드백 보기" }));
+    await waitFor(() => expect(state.leaveGuard).toHaveBeenCalledTimes(2));
+    expect(screen.getByRole("button", { name: "2주차 피드백 보기" })).toHaveAttribute(
+      "aria-pressed",
+      "true",
+    );
+    expect(screen.getAllByTestId("student-editor")).toHaveLength(2);
+    state.leaveGuard.mockResolvedValue(true);
+    fireEvent.click(screen.getByRole("button", { name: "3주차 피드백 보기" }));
+    await waitFor(() =>
+      expect(screen.getByTestId("student-editor")).toHaveAttribute(
+        "data-assignment",
+        "assignment-3",
+      ),
+    );
+    expect(screen.getByTestId("legacy-workspace")).toHaveAttribute("data-week", "3");
+  });
+
+  it("keeps the upload week fixed until a shared upload finishes", async () => {
+    state.auth = { status: "student", user: { id: "student-a" } };
+    render(<AssignmentWorkspace presentation="feedback" />);
+    await screen.findByTestId("student-editor");
+    fireEvent.click(screen.getByRole("button", { name: "자료 업로드" }));
+    fireEvent.click(screen.getByRole("button", { name: "1주차 피드백 보기" }));
+    expect(screen.getByRole("alert")).toHaveTextContent("자료 업로드가 완료된 뒤 이동해 주세요.");
+    expect(screen.getByTestId("legacy-workspace")).toHaveAttribute("data-week", "2");
+    fireEvent.click(screen.getByRole("button", { name: "업로드 완료" }));
+    fireEvent.click(screen.getByRole("button", { name: "1주차 피드백 보기" }));
+    await waitFor(() =>
+      expect(screen.getByTestId("legacy-workspace")).toHaveAttribute("data-week", "1"),
     );
   });
 

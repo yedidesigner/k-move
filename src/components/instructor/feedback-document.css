@@ -186,10 +186,8 @@
 .feedback-workspace .iw-review-queue .iw-queue {
   max-height: 190px;
 }
-.feedback-workspace .feedback-submission-list > summary {
-  cursor: pointer;
+.feedback-workspace .feedback-submission-list > h2 {
   min-height: 44px;
-  display: list-item;
   padding: 12px 0;
   font-size: 13px;
   font-weight: 600;

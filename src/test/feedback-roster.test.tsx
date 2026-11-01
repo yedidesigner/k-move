@@ -130,11 +130,6 @@ beforeEach(() => {
   window.history.replaceState({}, "", "/feedback");
 });
 afterEach(cleanup);
-function openStudentLegacy() {
-  const details = screen.getByText("기존에 등록한 자료와 피드백").closest("details")!;
-  details.open = true;
-  fireEvent(details, new Event("toggle"));
-}
 
 describe("Feedback course roster", () => {
   it("uses active enrollments rather than legacy account rows for the instructor roster", async () => {
@@ -183,8 +178,9 @@ describe("Feedback course roster", () => {
       state.auth = { status: "student", user: { id: `user-${name}` } };
       state.enrollments = [];
       render(<FeedbackPage />);
-      await screen.findByText("현재 과정에 연결된 수강 정보가 없습니다. 강사에게 문의해 주세요.");
-      openStudentLegacy();
+      expect(
+        await screen.findByRole("heading", { name: "과제와 피드백 자료 업로드" }),
+      ).toBeVisible();
       expect(await screen.findByTestId("feedback-workspace")).toHaveAttribute(
         "data-student-id",
         `feedback-${name}`,
@@ -197,10 +193,9 @@ describe("Feedback course roster", () => {
     state.auth = { status: "student", user: { id: "unmapped-user" } };
     state.enrollments = [];
     render(<FeedbackPage />);
-    await screen.findByText("현재 과정에 연결된 수강 정보가 없습니다. 강사에게 문의해 주세요.");
-    openStudentLegacy();
+    expect(await screen.findByRole("heading", { name: "과제와 피드백 자료 업로드" })).toBeVisible();
     await waitFor(() => expect(state.queriedUsers).toEqual(["unmapped-user"]));
     expect(screen.queryByTestId("feedback-workspace")).not.toBeInTheDocument();
-    expect(screen.getByText("연결된 학생이 없습니다.")).toBeVisible();
+    expect(screen.getByText("연결된 학생이 없습니다. 강사에게 문의해 주세요.")).toBeVisible();
   });
 });

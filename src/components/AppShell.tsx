@@ -5,7 +5,6 @@ import {
   CalendarDays,
   BookOpen,
   Library,
-  ClipboardList,
   Briefcase,
   MessageSquareText,
   Wrench,
@@ -26,17 +25,15 @@ const STUDENT_NAV = [
   { to: "/sessions", label: "전체 수업", icon: CalendarDays },
   { to: "/glossary", label: "용어집", icon: BookOpen },
   { to: "/materials", label: "학습자료", icon: Library },
-  { to: "/assignments", label: "과제", icon: ClipboardList },
   { to: "/portfolio", label: "내 포트폴리오", icon: Briefcase },
-  { to: "/feedback", label: "피드백", icon: MessageSquareText },
+  { to: "/feedback", label: "과제&피드백", icon: MessageSquareText },
   { to: "/tools", label: "실습 도구", icon: Wrench },
   { to: "/promises", label: "우리의 약속", icon: Handshake },
 ] as const;
 const INSTRUCTOR_NAV = [
   { to: "/", label: "강사 홈", icon: Home, group: "수업 운영" },
   { to: "/sessions", label: "수업 관리", icon: CalendarDays, group: "수업 운영" },
-  { to: "/assignments", label: "과제 관리", icon: ClipboardList, group: "수업 운영" },
-  { to: "/feedback", label: "피드백", icon: MessageSquareText, group: "수업 운영" },
+  { to: "/feedback", label: "과제&피드백", icon: MessageSquareText, group: "수업 운영" },
   { to: "/admin", label: "학생 관리", icon: Users, group: "수업 운영" },
   { to: "/portfolio", label: "학생 포트폴리오", icon: Briefcase, group: "수업 운영" },
   { to: "/glossary", label: "용어집", icon: BookOpen, group: "학습 콘텐츠" },
@@ -54,8 +51,8 @@ export function AppShell({ children }: { children: ReactNode }) {
   const feedback = location.pathname.replace(/\/+$/, "") === "/feedback";
   const nav = instructor ? INSTRUCTOR_NAV : STUDENT_NAV;
   const mobilePaths = instructor
-    ? ["/", "/assignments", "/admin", "/sessions", "/portfolio"]
-    : ["/", "/sessions", "/glossary", "/materials", "/assignments"];
+    ? ["/", "/feedback", "/admin", "/sessions", "/portfolio"]
+    : ["/", "/sessions", "/glossary", "/materials", "/feedback"];
   const linkCls =
     "flex min-h-11 items-center gap-3 border-l-2 border-transparent px-3 text-sm font-medium transition-colors hover:bg-sidebar-accent data-[nav-active=true]:border-sidebar-primary data-[nav-active=true]:bg-sidebar-primary data-[nav-active=true]:text-sidebar-primary-foreground focus-visible:outline-2 focus-visible:outline-offset-2";
   const activeTab = (location.search as Record<string, unknown>)["tab"] ?? "students";
@@ -286,7 +283,7 @@ export function AppShell({ children }: { children: ReactNode }) {
                   ? (
                       {
                         "/": "홈",
-                        "/assignments": "과제·피드백",
+                        "/feedback": "과제&피드백",
                         "/admin": "학생",
                         "/sessions": "수업",
                         "/portfolio": "포트폴리오",

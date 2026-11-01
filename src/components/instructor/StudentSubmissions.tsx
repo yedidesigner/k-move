@@ -37,6 +37,9 @@ type Props = {
   onChanged: () => void;
   onDraftSaved?: (draft: SubmissionDraft) => void;
   registerLeaveGuard?: (guard: (() => Promise<boolean>) | null) => void;
+  materialsManagedExternally?: boolean;
+  materialsRevision?: number;
+  materialsBusy?: boolean;
 };
 export function StudentSubmissions(props: Props) {
   return <SubmissionEditor key={`${props.student.user_id}:${props.assignment.id}`} {...props} />;
@@ -54,6 +57,9 @@ function SubmissionEditor({
   onChanged,
   onDraftSaved,
   registerLeaveGuard,
+  materialsManagedExternally = false,
+  materialsRevision = 0,
+  materialsBusy = false,
 }: Props) {
   const [assets, setAssets] = useState<WorkspaceAsset[]>([]),
     [assetsLoading, setAssetsLoading] = useState(true),
@@ -77,6 +83,8 @@ function SubmissionEditor({
     [publicationId, setPublicationId] = useState(""),
     [feedbackOpen, setFeedbackOpen] = useState(false),
     [readError, setReadError] = useState("");
+  const uploadBusy = uploading || materialsBusy;
+  const submissionViewerId = `student-submission-viewer-${assignment.id}`;
   const alive = useRef(true),
     draftVersion = useRef(initialDraft?.version ?? 0),
     generation = useRef(0),
@@ -106,11 +114,12 @@ function SubmissionEditor({
     return () => {
       active = false;
     };
-  }, [student.student_id, assignment.session_number, revision]);
+  }, [student.student_id, assignment.session_number, revision, materialsRevision]);
   const assetsRef = useRef(assets);
   assetsRef.current = assets;
   const flush = useCallback(
     async (force = false): Promise<boolean> => {
+      if (uploadBusy) return false;
       if (savingRef.current) return savingRef.current;
       if (!force && generation.current === savedGeneration.current) return true;
       const work = (async () => {
@@ -167,22 +176,28 @@ function SubmissionEditor({
       savingRef.current = work;
       return work;
     },
-    [assignment.id, onDraftSaved],
+    [assignment.id, onDraftSaved, uploadBusy],
   );
   useEffect(() => {
-    registerLeaveGuard?.(() => (uploading || submitting ? Promise.resolve(false) : flush()));
+    registerLeaveGuard?.(() => (uploadBusy || submitting ? Promise.resolve(false) : flush()));
     return () => registerLeaveGuard?.(null);
-  }, [flush, registerLeaveGuard, uploading, submitting]);
+  }, [flush, registerLeaveGuard, uploadBusy, submitting]);
   useEffect(() => {
-    if (assetsLoading || generation.current === savedGeneration.current || failed.current) return;
+    if (
+      uploadBusy ||
+      assetsLoading ||
+      generation.current === savedGeneration.current ||
+      failed.current
+    )
+      return;
     const timer = window.setTimeout(() => void flush(), 1000);
     return () => window.clearTimeout(timer);
-  }, [note, selected, assetsLoading, flush]);
-  useEditorExitGuard(() => (uploading || submitting ? false : flush()));
+  }, [note, selected, assetsLoading, flush, uploadBusy]);
+  useEditorExitGuard(() => (uploadBusy || submitting ? false : flush()));
   useBlocker({
-    shouldBlockFn: async () => uploading || submitting || !(await flush()),
+    shouldBlockFn: async () => uploadBusy || submitting || !(await flush()),
     enableBeforeUnload: () =>
-      uploading ||
+      uploadBusy ||
       submitting ||
       generation.current !== savedGeneration.current ||
       Boolean(savingRef.current),
@@ -206,6 +221,7 @@ function SubmissionEditor({
       .filter((a) => foreignSubmissionIds.has(a.submission_id))
       .map((a) => a.image_id ?? a.attachment_id),
   );
+  const hasForeignSelection = selected.some((id) => foreignAssets.has(id));
   const opened = !assignment.opens_at || new Date(assignment.opens_at).getTime() <= Date.now();
   const canSubmit =
     assignment.status === "published" &&
@@ -213,7 +229,7 @@ function SubmissionEditor({
     opened &&
     (!submissions.length || assignment.allow_resubmit);
   async function submit() {
-    if (submitting || uploading || !canSubmit) return;
+    if (submitting || uploadBusy || !canSubmit || hasForeignSelection) return;
     setSubmitting(true);
     setError("");
     try {
@@ -308,42 +324,46 @@ function SubmissionEditor({
       )}
       {canSubmit && (
         <>
-          <details
-            className="mb-5 border border-neutral-200 p-4"
-            open={assets.length === 0 ? true : undefined}
-          >
-            <summary className="cursor-pointer text-sm font-semibold">1. 자료 업로드·관리</summary>
-            <p className="iw-muted mt-2">
-              업로드한 자료는 아래에서 선택한 뒤 ‘제출하기’를 눌러야 최종 제출됩니다.
-            </p>
-            <div className="mt-3">
-              <FeedbackWorkspace
-                studentId={student.student_id}
-                studentName={student.name}
-                week={assignment.session_number}
-                userId={student.user_id}
-                instructor={false}
-                lockedAssetIds={assetRefs
-                  .map((row) => row.image_id ?? row.attachment_id)
-                  .filter((id): id is string => Boolean(id))}
-                onAssetsChanged={() => setRevision((v) => v + 1)}
-                onUploadBusyChange={setUploading}
-              />
-            </div>
-          </details>
+          {!materialsManagedExternally && (
+            <section className="mb-5 border border-neutral-200 p-4">
+              <h3 className="text-sm font-semibold">1. 자료 업로드·관리</h3>
+              <p className="iw-muted mt-2">
+                업로드한 자료는 아래에서 선택한 뒤 ‘제출하기’를 눌러야 최종 제출됩니다.
+              </p>
+              <div className="mt-3">
+                <FeedbackWorkspace
+                  studentId={student.student_id}
+                  studentName={student.name}
+                  week={assignment.session_number}
+                  userId={student.user_id}
+                  instructor={false}
+                  lockedAssetIds={assetRefs
+                    .map((row) => row.image_id ?? row.attachment_id)
+                    .filter((id): id is string => Boolean(id))}
+                  onAssetsChanged={() => setRevision((v) => v + 1)}
+                  onUploadBusyChange={setUploading}
+                />
+              </div>
+            </section>
+          )}
           <fieldset className="iw-fieldset">
-            <legend>2. 제출할 자료 선택</legend>
+            <legend>{materialsManagedExternally ? "1" : "2"}. 제출할 자료 선택</legend>
             <div className="flex flex-wrap items-center justify-between gap-2">
               <p className="iw-muted">같은 회차의 자료 중 이 과제에 제출할 항목만 선택하세요.</p>
               <button
                 type="button"
                 className="iw-button"
-                disabled={assetsLoading || uploading || submitting}
+                disabled={assetsLoading || uploadBusy || submitting}
                 onClick={() => setRevision((v) => v + 1)}
               >
                 목록 새로고침
               </button>
             </div>
+            {hasForeignSelection && (
+              <p className="iw-notice">
+                선택한 자료 중 다른 과제에 제출된 항목이 있습니다. 해당 항목의 선택을 해제해 주세요.
+              </p>
+            )}
             {assetsLoading ? (
               <p className="iw-muted">자료 확인 중…</p>
             ) : assets.length === 0 ? (
@@ -354,7 +374,9 @@ function SubmissionEditor({
                   <label className="iw-asset-option" key={asset.id}>
                     <input
                       type="checkbox"
-                      disabled={foreignAssets.has(asset.id) || submitting}
+                      disabled={
+                        (foreignAssets.has(asset.id) && !selected.includes(asset.id)) || submitting
+                      }
                       checked={selected.includes(asset.id)}
                       onChange={(e) =>
                         change(
@@ -383,7 +405,7 @@ function SubmissionEditor({
             )}
           </fieldset>
           <label className="iw-label">
-            3. 제출 설명 · 특히 피드백 받고 싶은 점
+            {materialsManagedExternally ? "2" : "3"}. 제출 설명 · 특히 피드백 받고 싶은 점
             <textarea
               className="iw-input"
               rows={4}
@@ -394,21 +416,30 @@ function SubmissionEditor({
               placeholder="작업 의도와 확인받고 싶은 부분을 적어 주세요."
             />
           </label>
-          <div className="iw-sticky-actions mt-4">
+          <div
+            className="iw-sticky-actions mt-4"
+            style={materialsManagedExternally ? { position: "static" } : undefined}
+          >
             <p className="iw-muted" aria-live="polite">
               {saveLabel}
             </p>
             <div className="flex gap-2">
               <button
                 className="iw-button"
-                disabled={assetsLoading || saving || submitting || uploading}
+                disabled={assetsLoading || saving || submitting || uploadBusy}
                 onClick={() => void flush(true)}
               >
                 초안 저장
               </button>
               <button
                 className="iw-button iw-primary"
-                disabled={assetsLoading || submitting || uploading || !selected.length}
+                disabled={
+                  assetsLoading ||
+                  submitting ||
+                  uploadBusy ||
+                  !selected.length ||
+                  hasForeignSelection
+                }
                 onClick={() => void submit()}
               >
                 <Send size={14} />
@@ -461,13 +492,13 @@ function SubmissionEditor({
               </label>
             </div>
             {chosenSubmission?.note && (
-              <details className="mb-4">
-                <summary className="text-sm font-medium cursor-pointer">제출 설명 보기</summary>
+              <section className="mb-4">
+                <h4 className="text-sm font-medium">제출 설명</h4>
                 <p className="iw-prewrap mt-2">{chosenSubmission.note}</p>
-              </details>
+              </section>
             )}
             {chosenAsset && (
-              <div id="student-submission-viewer">
+              <div id={submissionViewerId}>
                 <AssetViewer
                   key={chosenAsset.id}
                   asset={chosenAsset}
@@ -514,7 +545,7 @@ function SubmissionEditor({
                     </p>
                   )}
                   {feedbackOpen && (
-                    <div id="student-published-review" className="mt-4">
+                    <div id={`student-published-review-${assignment.id}`} className="mt-4">
                       <PublishedReview
                         publication={publication}
                         assets={historyAssets}
@@ -524,7 +555,7 @@ function SubmissionEditor({
                           window.setTimeout(
                             () =>
                               document
-                                .getElementById("student-submission-viewer")
+                                .getElementById(submissionViewerId)
                                 ?.scrollIntoView?.({ block: "start" }),
                             0,
                           );

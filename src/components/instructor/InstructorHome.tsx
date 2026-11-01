@@ -231,10 +231,10 @@ export function InstructorHome({ onPreview }: { onPreview: () => void }) {
               과제를 공개하고 학생이 제출하면 이곳에서 확인할 수 있습니다.
             </p>
             <Link
-              to="/assignments"
+              to="/feedback"
               className="mt-4 inline-flex min-h-10 items-center border border-neutral-300 px-4 text-xs"
             >
-              과제 관리 열기
+              과제&피드백 열기
             </Link>
           </div>
         ) : (

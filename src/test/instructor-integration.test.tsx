@@ -265,6 +265,162 @@ describe("published content delivery", () => {
 });
 
 describe("explicit student submission", () => {
+  it("keeps upload management and submitted descriptions visible without disclosure toggles", async () => {
+    render(
+      <StudentSubmissions
+        assignment={assignment}
+        student={student}
+        target={target}
+        submissions={[submission]}
+        allSubmissions={[submission]}
+        assetRefs={[]}
+        publications={[]}
+        onChanged={vi.fn()}
+      />,
+    );
+    await screen.findByRole("checkbox", { name: /작업 이미지/ });
+    expect(screen.getByText("자료 업로드 영역")).toBeVisible();
+    expect(screen.getByText("자료 업로드 영역").closest("details")).toBeNull();
+    expect(screen.getByText(submission.note)).toBeVisible();
+    expect(screen.getByText(submission.note).closest("details")).toBeNull();
+  });
+
+  it("shares uploaded materials without a duplicate uploader and refreshes assets without losing the draft", async () => {
+    const props = {
+      assignment,
+      student,
+      target,
+      submissions: [],
+      allSubmissions: [],
+      assetRefs: [],
+      publications: [],
+      onChanged: vi.fn(),
+      materialsManagedExternally: true,
+    };
+    const view = render(<StudentSubmissions {...props} materialsRevision={0} />);
+    fireEvent.click(await screen.findByRole("checkbox", { name: /작업 이미지/ }));
+    fireEvent.change(screen.getByRole("textbox", { name: /제출 설명/ }), {
+      target: { value: "공유 자료 영역 갱신 후에도 유지할 설명" },
+    });
+    expect(screen.queryByText("자료 업로드 영역")).not.toBeInTheDocument();
+    expect(
+      screen.getByRole("button", { name: "초안 저장" }).closest(".iw-sticky-actions"),
+    ).toHaveStyle({
+      position: "static",
+    });
+    const added = { ...asset, id: "added-file", title: "새로 올린 자료" };
+    state.loadWorkspaceAssets.mockResolvedValue([asset, added]);
+    view.rerender(<StudentSubmissions {...props} materialsRevision={1} />);
+    expect(await screen.findByRole("checkbox", { name: /새로 올린 자료/ })).toBeVisible();
+    expect(state.loadWorkspaceAssets).toHaveBeenCalledTimes(2);
+    expect(screen.getByRole("checkbox", { name: /작업 이미지/ })).toBeChecked();
+    expect(screen.getByRole("textbox", { name: /제출 설명/ })).toHaveValue(
+      "공유 자료 영역 갱신 후에도 유지할 설명",
+    );
+    expect(state.submitAssignment).not.toHaveBeenCalled();
+  });
+
+  it("allows clearing a selected material submitted by another task without losing the draft", async () => {
+    const available = { ...asset, id: "image-b", title: "별도 작업 이미지" };
+    state.loadWorkspaceAssets.mockResolvedValue([asset, available]);
+    const props = {
+      assignment,
+      student,
+      target,
+      submissions: [],
+      allSubmissions: [],
+      assetRefs: [],
+      publications: [],
+      onChanged: vi.fn(),
+      materialsManagedExternally: true,
+    };
+    const view = render(<StudentSubmissions {...props} />);
+    fireEvent.click(await screen.findByRole("checkbox", { name: /^작업 이미지/ }));
+    fireEvent.click(screen.getByRole("checkbox", { name: /^별도 작업 이미지/ }));
+    fireEvent.change(screen.getByRole("textbox", { name: /제출 설명/ }), {
+      target: { value: "다른 과제 제출 뒤에도 유지할 설명" },
+    });
+    view.rerender(
+      <StudentSubmissions
+        {...props}
+        allSubmissions={[{ ...submission, id: "other-submission", assignment_id: "assignment-b" }]}
+        assetRefs={[
+          {
+            id: "other-ref",
+            submission_id: "other-submission",
+            image_id: asset.id,
+            attachment_id: null,
+          },
+        ]}
+      />,
+    );
+    const foreign = screen.getByRole("checkbox", { name: /^작업 이미지/ });
+    expect(foreign).toBeChecked();
+    expect(foreign).toBeEnabled();
+    expect(screen.getByText(/해당 항목의 선택을 해제해 주세요/)).toBeVisible();
+    expect(screen.getByRole("button", { name: "제출하기" })).toBeDisabled();
+    fireEvent.click(screen.getByRole("button", { name: "제출하기" }));
+    expect(state.submitAssignment).not.toHaveBeenCalled();
+    fireEvent.click(foreign);
+    expect(foreign).not.toBeChecked();
+    expect(foreign).toBeDisabled();
+    expect(screen.getByRole("textbox", { name: /제출 설명/ })).toHaveValue(
+      "다른 과제 제출 뒤에도 유지할 설명",
+    );
+    expect(screen.queryByText(/해당 항목의 선택을 해제해 주세요/)).not.toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "제출하기" })).toBeEnabled();
+    fireEvent.click(screen.getByRole("button", { name: "제출하기" }));
+    await waitFor(() => expect(state.submitAssignment).toHaveBeenCalledOnce());
+    expect(state.saveSubmissionDraft).toHaveBeenCalledWith(
+      assignment.id,
+      { note: "다른 과제 제출 뒤에도 유지할 설명", image_ids: [available.id], attachment_ids: [] },
+      0,
+    );
+  });
+
+  it("blocks save, submission, and navigation until the shared uploader finishes", async () => {
+    const registerLeaveGuard = vi.fn();
+    const props = {
+      assignment,
+      student,
+      target,
+      submissions: [],
+      allSubmissions: [],
+      assetRefs: [],
+      publications: [],
+      onChanged: vi.fn(),
+      materialsManagedExternally: true,
+      registerLeaveGuard,
+    };
+    const view = render(<StudentSubmissions {...props} materialsBusy={false} />);
+    fireEvent.click(await screen.findByRole("checkbox", { name: /작업 이미지/ }));
+    fireEvent.change(screen.getByRole("textbox", { name: /제출 설명/ }), {
+      target: { value: "업로드가 끝나면 저장할 설명" },
+    });
+    view.rerender(<StudentSubmissions {...props} materialsBusy />);
+    expect(screen.getByRole("button", { name: "초안 저장" })).toBeDisabled();
+    expect(screen.getByRole("button", { name: "제출하기" })).toBeDisabled();
+    expect(screen.getByRole("button", { name: "목록 새로고침" })).toBeDisabled();
+    const blocker = state.useBlocker.mock.lastCall?.[0];
+    expect(blocker.enableBeforeUnload()).toBe(true);
+    await act(async () => {
+      expect(await blocker.shouldBlockFn()).toBe(true);
+      expect(await requestEditorExit()).toBe(false);
+      expect(await registerLeaveGuard.mock.lastCall?.[0]()).toBe(false);
+    });
+    expect(state.saveSubmissionDraft).not.toHaveBeenCalled();
+    expect(state.submitAssignment).not.toHaveBeenCalled();
+    view.rerender(<StudentSubmissions {...props} materialsBusy={false} />);
+    expect(screen.getByRole("button", { name: "초안 저장" })).toBeEnabled();
+    fireEvent.click(screen.getByRole("button", { name: "초안 저장" }));
+    await waitFor(() => expect(state.saveSubmissionDraft).toHaveBeenCalledOnce());
+    expect(state.saveSubmissionDraft).toHaveBeenCalledWith(
+      assignment.id,
+      { note: "업로드가 끝나면 저장할 설명", image_ids: [asset.id], attachment_ids: [] },
+      0,
+    );
+  });
+
   it("saves selected uploads as a draft and submits only after the submit button", async () => {
     const changed = vi.fn();
     render(

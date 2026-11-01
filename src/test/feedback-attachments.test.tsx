@@ -295,11 +295,11 @@ describe("feedback files and links", () => {
   it("uses one picker for JPEG, PDF, and ZIP while refreshing the existing image preview", async () => {
     render(<FeedbackWorkspace {...props} studentName="테스트 수강생" />);
     await settle();
-    const picker = screen.getByLabelText("과제 파일 선택");
+    const picker = screen.getByLabelText("자료 파일 선택");
     expect(document.querySelectorAll('input[type="file"]')).toHaveLength(1);
     expect(picker).toHaveAttribute("accept", FEEDBACK_UPLOAD_ACCEPT);
     expect(picker).toHaveAttribute("multiple");
-    expect(screen.getByRole("button", { name: "과제 업로드" })).toBeVisible();
+    expect(screen.getByRole("button", { name: "자료 업로드" })).toBeVisible();
     expect(screen.queryByRole("button", { name: "이미지 업로드" })).not.toBeInTheDocument();
     expect(screen.queryByRole("button", { name: "파일 첨부" })).not.toBeInTheDocument();
     expect(screen.getByRole("button", { name: "링크 추가" })).toBeVisible();
@@ -310,7 +310,7 @@ describe("feedback files and links", () => {
       new File(["zip"], "source.zip", { type: "application/zip" }),
     ];
     fireEvent.change(picker, { target: { files } });
-    expect(await screen.findByRole("status")).toHaveTextContent("과제 3개를 업로드했습니다.");
+    expect(await screen.findByRole("status")).toHaveTextContent("자료 3개를 업로드했습니다.");
     expect(
       await screen.findByRole("img", { name: "테스트 수강생 2주차 이미지 1" }),
     ).toHaveAttribute("src", "https://example.com/signed-download");
@@ -345,7 +345,7 @@ describe("feedback files and links", () => {
   it("validates the entire mixed selection before starting any upload", async () => {
     render(<FeedbackAttachments {...props} />);
     await settle();
-    fireEvent.change(screen.getByLabelText("과제 파일 선택"), {
+    fireEvent.change(screen.getByLabelText("자료 파일 선택"), {
       target: {
         files: [
           new File(["image"], "a.png", { type: "image/png" }),
@@ -356,7 +356,7 @@ describe("feedback files and links", () => {
     expect(await screen.findByRole("alert")).toHaveTextContent("형식이 일치하지 않습니다");
     expect(state.upload).not.toHaveBeenCalled();
     expect(state.inserted).toHaveLength(0);
-    expect(screen.getByRole("button", { name: "과제 업로드" })).toBeEnabled();
+    expect(screen.getByRole("button", { name: "자료 업로드" })).toBeEnabled();
   });
 
   it("blocks duplicate uploads and respects a busy image-feedback operation", async () => {
@@ -365,7 +365,7 @@ describe("feedback files and links", () => {
     const onUploadBusyChange = vi.fn();
     const view = render(<FeedbackAttachments {...props} onUploadBusyChange={onUploadBusyChange} />);
     await settle();
-    const picker = screen.getByLabelText("과제 파일 선택");
+    const picker = screen.getByLabelText("자료 파일 선택");
     const files = [new File(["zip"], "a.zip", { type: "application/zip" })];
     fireEvent.change(picker, { target: { files } });
     fireEvent.change(picker, { target: { files } });
@@ -375,12 +375,12 @@ describe("feedback files and links", () => {
     expect(onUploadBusyChange).toHaveBeenCalledWith(true);
     await act(async () => pending.resolve({ error: null }));
     await screen.findByText("a.zip");
-    expect(screen.getByRole("button", { name: "과제 업로드" })).toBeEnabled();
+    expect(screen.getByRole("button", { name: "자료 업로드" })).toBeEnabled();
     expect(onUploadBusyChange.mock.calls.map((call) => call[0])).toEqual([true, false]);
 
     view.rerender(<FeedbackAttachments {...props} uploadDisabled />);
-    expect(screen.getByLabelText("과제 파일 선택")).toBeDisabled();
-    fireEvent.change(screen.getByLabelText("과제 파일 선택"), { target: { files } });
+    expect(screen.getByLabelText("자료 파일 선택")).toBeDisabled();
+    fireEvent.change(screen.getByLabelText("자료 파일 선택"), { target: { files } });
     expect(state.upload).toHaveBeenCalledTimes(1);
   });
 
@@ -391,7 +391,7 @@ describe("feedback files and links", () => {
     const newImagesUploaded = vi.fn();
     const view = render(<FeedbackAttachments {...props} onImagesUploaded={oldImagesUploaded} />);
     await settle();
-    fireEvent.change(screen.getByLabelText("과제 파일 선택"), {
+    fireEvent.change(screen.getByLabelText("자료 파일 선택"), {
       target: {
         files: [
           new File(["image"], "old.png", { type: "image/png" }),
@@ -422,7 +422,7 @@ describe("feedback files and links", () => {
     expect(newImagesUploaded).not.toHaveBeenCalled();
     expect(screen.queryByRole("status")).not.toBeInTheDocument();
     expect(screen.queryByText("queued.pdf")).not.toBeInTheDocument();
-    expect(screen.getByRole("button", { name: "과제 업로드" })).toBeEnabled();
+    expect(screen.getByRole("button", { name: "자료 업로드" })).toBeEnabled();
   });
 
   it("saves a link under the current student/week and opens it safely", async () => {
@@ -457,7 +457,7 @@ describe("feedback files and links", () => {
     render(<FeedbackAttachments {...props} />);
     await settle();
     const file = new File(["fake zip for test"], "portfolio.zip", { type: "application/zip" });
-    fireEvent.change(screen.getByLabelText("과제 파일 선택"), { target: { files: [file] } });
+    fireEvent.change(screen.getByLabelText("자료 파일 선택"), { target: { files: [file] } });
     await screen.findByText("portfolio.zip");
     expect(state.upload).toHaveBeenCalledWith(
       expect.stringMatching(/^student-record\/02\/.+\.zip$/),
@@ -507,10 +507,10 @@ describe("feedback files and links", () => {
       const onImagesUploaded = vi.fn();
       render(<FeedbackAttachments {...props} onImagesUploaded={onImagesUploaded} />);
       await settle();
-      fireEvent.change(screen.getByLabelText("과제 파일 선택"), {
+      fireEvent.change(screen.getByLabelText("자료 파일 선택"), {
         target: { files: [new File(["test"], name!, { type: type! })] },
       });
-      expect(await screen.findByRole("alert")).toHaveTextContent("과제 업로드 실패");
+      expect(await screen.findByRole("alert")).toHaveTextContent("자료 업로드 실패");
       expect(state.removals).toEqual([{ bucket, paths: [state.uploads[0]!.path] }]);
       expect(onImagesUploaded).not.toHaveBeenCalled();
       expect(state.images).toHaveLength(0);
@@ -525,7 +525,7 @@ describe("feedback files and links", () => {
       .mockResolvedValueOnce({ error: new Error("offline") });
     render(<FeedbackWorkspace {...props} studentName="테스트 수강생" />);
     await settle();
-    fireEvent.change(screen.getByLabelText("과제 파일 선택"), {
+    fireEvent.change(screen.getByLabelText("자료 파일 선택"), {
       target: {
         files: [
           new File(["image"], "a.webp", { type: "image/webp" }),
@@ -534,7 +534,7 @@ describe("feedback files and links", () => {
         ],
       },
     });
-    expect(await screen.findByRole("alert")).toHaveTextContent("과제 2개는 업로드되었습니다");
+    expect(await screen.findByRole("alert")).toHaveTextContent("자료 2개는 업로드되었습니다");
     expect(await screen.findByRole("img", { name: "테스트 수강생 2주차 이미지 1" })).toBeVisible();
     expect(await screen.findByText("b.pdf")).toBeVisible();
     expect(screen.queryByText("c.zip")).not.toBeInTheDocument();
@@ -604,7 +604,7 @@ describe("large feedback files", () => {
   ])("shows a Drive dialog for %s before any upload", async (name, type) => {
     render(<FeedbackAttachments {...props} />);
     await settle();
-    fireEvent.change(screen.getByLabelText("과제 파일 선택"), {
+    fireEvent.change(screen.getByLabelText("자료 파일 선택"), {
       target: { files: [uploadFile(name!, FEEDBACK_FILE_LIMIT + 1, type)] },
     });
     expect(await screen.findByRole("dialog")).toHaveTextContent(
@@ -628,13 +628,13 @@ describe("large feedback files", () => {
     await settle();
     const small = uploadFile("exact.zip", FEEDBACK_FILE_LIMIT);
     const large = uploadFile("large.zip", FEEDBACK_FILE_LIMIT + 1);
-    fireEvent.change(screen.getByLabelText("과제 파일 선택"), {
+    fireEvent.change(screen.getByLabelText("자료 파일 선택"), {
       target: { files: [small, large] },
     });
     await screen.findByRole("dialog");
     expect(state.upload).not.toHaveBeenCalled();
     fireEvent.click(screen.getByRole("button", { name: "10MB 이하 파일만 업로드" }));
-    expect(await screen.findByRole("status")).toHaveTextContent("과제 1개를 업로드했습니다");
+    expect(await screen.findByRole("status")).toHaveTextContent("자료 1개를 업로드했습니다");
     expect(state.uploads).toHaveLength(1);
     expect(state.uploads[0]?.file).toBe(small);
     expect(state.inserted).toHaveLength(1);
@@ -644,7 +644,7 @@ describe("large feedback files", () => {
   it("opens and focuses the link form without automatically saving a link", async () => {
     render(<FeedbackAttachments {...props} />);
     await settle();
-    fireEvent.change(screen.getByLabelText("과제 파일 선택"), {
+    fireEvent.change(screen.getByLabelText("자료 파일 선택"), {
       target: { files: [uploadFile("large.zip", FEEDBACK_FILE_LIMIT + 1)] },
     });
     await screen.findByRole("dialog");
@@ -659,7 +659,7 @@ describe("large feedback files", () => {
   it("resolves the instructor's selected student rather than the instructor account", async () => {
     render(<FeedbackAttachments {...props} userId="instructor-user" instructor />);
     await settle();
-    fireEvent.change(screen.getByLabelText("과제 파일 선택"), {
+    fireEvent.change(screen.getByLabelText("자료 파일 선택"), {
       target: { files: [uploadFile("large.zip", FEEDBACK_FILE_LIMIT + 1)] },
     });
     expect(
@@ -691,7 +691,7 @@ describe("large feedback files", () => {
       if (mode === "error") state.folderError = true;
       render(<FeedbackAttachments {...props} />);
       await settle();
-      fireEvent.change(screen.getByLabelText("과제 파일 선택"), {
+      fireEvent.change(screen.getByLabelText("자료 파일 선택"), {
         target: { files: [uploadFile("large.zip", FEEDBACK_FILE_LIMIT + 1)] },
       });
       await screen.findByRole("dialog");
@@ -712,7 +712,7 @@ describe("large feedback files", () => {
   it("clears the large-file dialog on account changes without carrying the old folder link", async () => {
     const view = render(<FeedbackAttachments {...props} />);
     await settle();
-    fireEvent.change(screen.getByLabelText("과제 파일 선택"), {
+    fireEvent.change(screen.getByLabelText("자료 파일 선택"), {
       target: { files: [uploadFile("large.zip", FEEDBACK_FILE_LIMIT + 1)] },
     });
     await screen.findByRole("link", { name: /본인 과제 폴더 열기/ });

@@ -3,7 +3,7 @@ import { AssignmentWorkspace } from "@/components/instructor/AssignmentWorkspace
 
 export const Route = createFileRoute("/_app/feedback")({
   head: () => ({
-    meta: [{ title: "피드백 | K-Move LMS" }, { name: "robots", content: "noindex" }],
+    meta: [{ title: "과제&피드백 | K-Move LMS" }, { name: "robots", content: "noindex" }],
   }),
   component: FeedbackPage,
 });

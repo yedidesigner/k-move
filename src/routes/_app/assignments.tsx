@@ -1,9 +1,7 @@
-import { createFileRoute } from "@tanstack/react-router";
-import { AssignmentWorkspace } from "@/components/instructor/AssignmentWorkspace";
+import { createFileRoute, redirect } from "@tanstack/react-router";
 
 export const Route = createFileRoute("/_app/assignments")({
-  head: () => ({
-    meta: [{ title: "과제·피드백 | K-Move LMS" }, { name: "robots", content: "noindex" }],
-  }),
-  component: AssignmentWorkspace,
+  beforeLoad: ({ location }) => {
+    throw redirect({ to: "/feedback", search: location.search, replace: true });
+  },
 });
