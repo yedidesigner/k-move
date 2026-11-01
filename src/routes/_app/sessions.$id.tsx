@@ -100,7 +100,47 @@ function Detail() {
       <div className="mt-5">
         <PublishedAnnouncements sessionNumber={s.number} />
       </div>
-      <WeekTwoResources sessionId={s.id} />
+      {!!s.materials?.length && (
+        <section className="mt-6" aria-labelledby="session-materials-title">
+          <h2 id="session-materials-title" className="mb-3 text-lg font-semibold">
+            수업 자료
+          </h2>
+          <ul className="divide-y divide-neutral-200 border border-neutral-200 bg-white">
+            {s.materials.map((material) => (
+              <li
+                key={material.id}
+                className="flex flex-wrap items-center justify-between gap-4 px-5 py-4"
+              >
+                <div className="min-w-0 flex-1">
+                  <p className="font-semibold">{material.title}</p>
+                  <p className="mt-1 break-all text-sm text-neutral-500">
+                    {material.fileName}
+                    {material.sizeBytes !== undefined &&
+                      ` · ${(material.sizeBytes / 1_000_000).toFixed(1)} MB`}
+                  </p>
+                </div>
+                <a
+                  href={material.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label={`${material.title} 다운로드 (${material.fileName})`}
+                  className="inline-flex min-h-11 shrink-0 items-center justify-center border border-black bg-black px-5 text-sm font-semibold text-white hover:bg-neutral-800 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-black"
+                >
+                  다운로드
+                </a>
+              </li>
+            ))}
+          </ul>
+        </section>
+      )}
+      {s.detailsPublished && (
+        <WeekTwoResources
+          sessionId={s.id}
+          showPracticeDownload={
+            !s.materials?.some((material) => material.id === "week-02-class-materials")
+          }
+        />
+      )}
       {s.body && (
         <section className="mt-6 border-y border-neutral-200 py-6">
           <h2 className="mb-3 text-lg font-semibold">수업 안내</h2>

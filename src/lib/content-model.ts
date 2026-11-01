@@ -25,6 +25,13 @@ export type ManagedTerm = GlossaryEntry & {
   imageBasis?: string;
   referenceUrl?: string;
 };
+export type SessionMaterial = {
+  id: string;
+  title: string;
+  fileName: string;
+  url: string;
+  sizeBytes?: number;
+};
 export type ManagedSession = Session & {
   startTime: string;
   endTime: string;
@@ -32,6 +39,7 @@ export type ManagedSession = Session & {
   objectives?: string[];
   guideIds?: string[];
   termIds?: string[];
+  materials?: SessionMaterial[];
   progress?: "scheduled" | "completed";
   managed?: boolean;
 };
@@ -59,6 +67,37 @@ export function safeContentUrl(value: unknown): string {
   } catch {
     return "";
   }
+}
+function sessionMaterials(value: unknown): SessionMaterial[] {
+  if (!Array.isArray(value)) return [];
+  const seen = new Set<string>();
+  return value.flatMap((entry) => {
+    if (!isDocument(entry)) return [];
+    const id = textValue(entry["id"]).trim();
+    const title = textValue(entry["title"]).trim();
+    const fileName = textValue(entry["fileName"]).trim();
+    const url = safeContentUrl(entry["url"]);
+    if (!id || !title || !fileName || !url || seen.has(id)) return [];
+    seen.add(id);
+    const rawSize = entry["sizeBytes"];
+    const size =
+      typeof rawSize === "number"
+        ? rawSize
+        : typeof rawSize === "string" && /^\d+$/.test(rawSize.trim())
+          ? Number(rawSize)
+          : undefined;
+    return [
+      {
+        id,
+        title,
+        fileName,
+        url,
+        ...(typeof size === "number" && Number.isSafeInteger(size) && size >= 0
+          ? { sizeBytes: size }
+          : {}),
+      },
+    ];
+  });
 }
 export function contentRowKey(kind: ContentKind, key: string) {
   return `${kind}:${key}`;
@@ -296,6 +335,7 @@ export function mergeSessions(rows: PublishedContentRow[]): ManagedSession[] {
       objectives: linesValue(doc["objectives"]),
       guideIds: linesValue(doc["guideIds"]),
       termIds: linesValue(doc["termIds"]),
+      materials: sessionMaterials(doc["materials"]),
       progress: doc["progress"] === "completed" ? "completed" : "scheduled",
       detailsPublished: true,
     };

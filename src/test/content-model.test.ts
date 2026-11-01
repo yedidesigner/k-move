@@ -120,6 +120,94 @@ describe("published educational content overlays", () => {
 });
 
 describe("published class schedule", () => {
+  it("adds a session download without replacing its published lesson or editable fields", () => {
+    const material = {
+      id: " week-02-class-materials ",
+      title: " 수업 자료 ",
+      fileName: " lesson.zip ",
+      url: " https://example.com/lesson.zip ",
+      sizeBytes: "11249358",
+    };
+    const doc = editableSessionContent("S02", {
+      title: "강사가 수정한 제목",
+      date: "2026-11-03",
+      body: "현재 공개된 안내",
+      materials: [material],
+      curriculum: { topics: ["수정한 교육 내용"] },
+    });
+    const sessions = mergeSessions([publication("session", "S02", doc)]);
+    const session = sessions.find((item) => item.id === "S02")!;
+    expect(session.materials).toEqual([
+      {
+        id: "week-02-class-materials",
+        title: "수업 자료",
+        fileName: "lesson.zip",
+        url: "https://example.com/lesson.zip",
+        sizeBytes: 11249358,
+      },
+    ]);
+    expect(session).toMatchObject({
+      title: "강사가 수정한 제목",
+      date: "2026-11-03",
+      body: "현재 공개된 안내",
+      curriculum: { topics: ["수정한 교육 내용"] },
+    });
+    expect(
+      sessions.filter((item) => item.id !== "S02").every((item) => !item.materials?.length),
+    ).toBe(true);
+    expect(editableSessionContent("S02", doc)["materials"]).toEqual([material]);
+    expect(mergeSessions([]).every((item) => !item.materials?.length)).toBe(true);
+  });
+  it("ignores unsafe or incomplete downloads and never renders malformed file sizes", () => {
+    const material = {
+      id: "valid",
+      title: "수업 자료",
+      fileName: "lesson.zip",
+      url: "https://example.com/lesson.zip",
+      sizeBytes: 11249358,
+    };
+    const invalidSizes = [
+      -1,
+      1.5,
+      Number.NaN,
+      Number.POSITIVE_INFINITY,
+      Number.MAX_SAFE_INTEGER + 1,
+      "",
+      "1 MB",
+      true,
+      null,
+      {},
+    ];
+    const session = mergeSessions([
+      publication("session", "S02", {
+        materials: [
+          material,
+          { ...material, title: "동일 ID의 중복 파일" },
+          null,
+          "invalid",
+          { ...material, id: "javascript", url: "javascript:alert(1)" },
+          { ...material, id: "http", url: "http://example.com/lesson.zip" },
+          { ...material, id: "credentials", url: "https://user:password@example.com/lesson.zip" },
+          { ...material, id: "" },
+          { ...material, id: "missing-title", title: " " },
+          { ...material, id: "missing-file", fileName: "" },
+          ...invalidSizes.map((sizeBytes, index) => ({
+            ...material,
+            id: `size-${index}`,
+            sizeBytes,
+          })),
+        ],
+      }),
+    ]).find((item) => item.id === "S02")!;
+    expect(session.materials).toHaveLength(1 + invalidSizes.length);
+    expect(session.materials?.[0]).toEqual(material);
+    expect(session.materials?.slice(1).every((item) => item.sizeBytes === undefined)).toBe(true);
+    expect(
+      mergeSessions([publication("session", "S02", { materials: {} })]).find(
+        (item) => item.id === "S02",
+      )?.materials,
+    ).toEqual([]);
+  });
   it("preserves legacy lesson details when older documents contain only a title and schedule", () => {
     const original = mergeSessions([]).find((item) => item.id === "S02")!;
     const doc = editableSessionContent("S02", { title: "강사가 수정한 제목", body: "준비물 안내" });
@@ -184,7 +272,20 @@ describe("published class schedule", () => {
       publication(
         "session",
         "S02",
-        { date: "2026-11-03", startTime: "09:30", endTime: "16:30", body: "비공개" },
+        {
+          date: "2026-11-03",
+          startTime: "09:30",
+          endTime: "16:30",
+          body: "비공개",
+          materials: [
+            {
+              id: "private",
+              title: "자료",
+              fileName: "lesson.zip",
+              url: "https://example.com/lesson.zip",
+            },
+          ],
+        },
         true,
       ),
     ]);
@@ -194,6 +295,7 @@ describe("published class schedule", () => {
     expect(session.curriculum).toBeNull();
     expect(session.detailsPublished).toBe(false);
     expect(session.body).toBeUndefined();
+    expect(session.materials).toBeUndefined();
   });
   it("can replace the legacy curriculum while retaining the archived static original", () => {
     const sessions = mergeSessions([
