@@ -1,6 +1,14 @@
 import { useEditorExitGuard } from "@/lib/editor-exit-guard";
 import { useBlocker } from "@tanstack/react-router";
-import { useCallback, useEffect, useMemo, useRef, useState, type FormEvent } from "react";
+import {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+  type FormEvent,
+  type ReactNode,
+} from "react";
 import { Plus, RefreshCw } from "lucide-react";
 import { useAuth } from "@/lib/auth";
 import { getSupabase } from "@/lib/supabase";
@@ -34,6 +42,7 @@ import {
 import { summarizeInstructorWork } from "@/lib/instructor-dashboard";
 import { ReviewWorkspace } from "./ReviewWorkspace";
 import { StudentSubmissions } from "./StudentSubmissions";
+import { FeedbackDocument } from "./FeedbackDocument";
 import {
   errorMessage,
   formatWorkspaceDate,
@@ -80,16 +89,33 @@ function params() {
     : new URLSearchParams(window.location.search);
 }
 
-export function AssignmentWorkspace() {
+export function AssignmentWorkspace({
+  presentation = "assignments",
+}: {
+  presentation?: "assignments" | "feedback";
+}) {
   const { user, status } = useAuth();
   if (!user || (status !== "instructor" && status !== "student"))
     return <p className="p-6 text-sm">로그인 정보를 확인하고 있습니다.</p>;
   return (
-    <Workspace key={`${user.id}:${status}`} userId={user.id} instructor={status === "instructor"} />
+    <Workspace
+      key={`${user.id}:${status}:${presentation}`}
+      userId={user.id}
+      instructor={status === "instructor"}
+      feedback={presentation === "feedback"}
+    />
   );
 }
 
-function Workspace({ userId, instructor }: { userId: string; instructor: boolean }) {
+function Workspace({
+  userId,
+  instructor,
+  feedback,
+}: {
+  userId: string;
+  instructor: boolean;
+  feedback: boolean;
+}) {
   const sessions = usePublishedSessions();
   const { week, setWeek, currentWeek } = useFeedbackWeek();
   const [data, setData] = useState<Data>(EMPTY),
@@ -115,6 +141,7 @@ function Workspace({ userId, instructor }: { userId: string; instructor: boolean
     [assets, setAssets] = useState<WorkspaceAsset[]>([]),
     [assetsLoading, setAssetsLoading] = useState(false),
     [legacyStudent, setLegacyStudent] = useState("");
+  const [studentFilter, setStudentFilter] = useState("all");
   const [legacyOwn, setLegacyOwn] = useState<LegacyStudent | null>(null);
   const leaveGuard = useRef<(() => Promise<boolean>) | null>(null);
   const registerLeaveGuard = useCallback((fn: (() => Promise<boolean>) | null) => {
@@ -252,6 +279,7 @@ function Workspace({ userId, instructor }: { userId: string; instructor: boolean
   const matches = (a: Assignment, e: Enrollment) =>
     (sessionFilter === "all" || String(a.session_number) === sessionFilter) &&
     (assignmentFilter === "all" || a.id === assignmentFilter) &&
+    (!feedback || studentFilter === "all" || e.user_id === studentFilter) &&
     `${e.name} ${a.title}`.toLocaleLowerCase().includes(query.trim().toLocaleLowerCase());
   const historyLatest = new Map<string, Submission>();
   for (const row of data.submissions) {
@@ -280,7 +308,7 @@ function Workspace({ userId, instructor }: { userId: string; instructor: boolean
   const ownAssignment =
     studentAssignments.find((a) => a.id === selectedAssignment) ??
     studentAssignments.find((a) => a.session_number === week) ??
-    studentAssignments[0];
+    (feedback ? undefined : studentAssignments[0]);
   useEffect(() => {
     // Freeze the initial selection once data is ready. A date/schedule refresh is
     // only a new recommendation, never permission to replace an active editor.
@@ -352,19 +380,115 @@ function Workspace({ userId, instructor }: { userId: string; instructor: boolean
         (r) => r.publication_id === selectedPublication.id && r.user_id === submission?.user_id,
       )
     : undefined;
-  return (
-    <div className="instructor-workspace">
-      <header>
-        <p className="mb-2 text-xs font-semibold tracking-[.15em] text-neutral-500">
-          {instructor ? "TEACHING WORKSPACE" : "ASSIGNMENTS & FEEDBACK"}
-        </p>
-        <h1 className="iw-heading">{instructor ? "과제·피드백" : "과제와 피드백"}</h1>
-        <p className="iw-description">
-          {instructor
-            ? "제출물을 확인하고, 피드백을 작성해 학생에게 공개하세요."
-            : "자료를 모아 제출하고, 강사의 피드백과 수정 이력을 확인하세요."}
-        </p>
-      </header>
+  const documentWeek = instructor
+    ? tab === "legacy"
+      ? week
+      : (assignment?.session_number ?? (sessionFilter === "all" ? week : Number(sessionFilter)))
+    : (ownAssignment?.session_number ?? week);
+  function changeFeedbackWeek(next: number) {
+    if (!sessions.some((item) => item.number === next)) return;
+    void changeContext(() => {
+      setWeek(next);
+      setSessionFilter(String(next));
+      setAssignmentFilter("all");
+      setSelectedSubmission("");
+      setSelectedAssignment(
+        studentAssignments.find((item) => item.session_number === next)?.id ?? "",
+      );
+      setEditor(null);
+      if (tab === "manage") setTab("review");
+    });
+  }
+  function changeFeedbackStudent(id: string) {
+    void changeContext(() => {
+      if (tab === "legacy" && id !== "all") {
+        setLegacyStudent(id);
+        return;
+      }
+      setTab("review");
+      setStudentFilter(id);
+      setWeek(documentWeek);
+      setSessionFilter(String(documentWeek));
+      setAssignmentFilter("all");
+      const next = [...data.submissions]
+        .filter(
+          (item) =>
+            item.user_id === id &&
+            data.assignments.some(
+              (a) => a.id === item.assignment_id && a.session_number === documentWeek,
+            ),
+        )
+        .sort((a, b) => b.submitted_at.localeCompare(a.submitted_at))[0];
+      setSelectedSubmission(next?.id ?? "");
+    });
+  }
+  const description = instructor
+    ? "제출물을 확인하고, 피드백을 작성해 학생에게 공개하세요."
+    : "자료를 모아 제출하고, 강사의 피드백과 수정 이력을 확인하세요.";
+  const reviewFilters = (
+    <div className="mb-4 grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
+      <label className="iw-label">
+        회차
+        <select
+          className="iw-input"
+          value={sessionFilter}
+          onChange={(e) =>
+            feedback && e.target.value !== "all"
+              ? changeFeedbackWeek(Number(e.target.value))
+              : setSessionFilter(e.target.value)
+          }
+        >
+          <option value="all">전체 회차</option>
+          {sessions.map((s) => (
+            <option key={s.id} value={s.number}>
+              {String(s.number).padStart(2, "0")}회차 · {s.date}
+            </option>
+          ))}
+        </select>
+      </label>
+      <label className="iw-label">
+        과제
+        <select
+          className="iw-input"
+          value={assignmentFilter}
+          onChange={(e) => setAssignmentFilter(e.target.value)}
+        >
+          <option value="all">전체 과제</option>
+          {data.assignments.map((a) => (
+            <option key={a.id} value={a.id}>
+              {a.title}
+            </option>
+          ))}
+        </select>
+      </label>
+      <label className="iw-label">
+        상태
+        <select
+          className="iw-input"
+          value={filter}
+          onChange={(e) => setFilter(e.target.value as Filter)}
+        >
+          {FILTERS.map(([key, label]) => (
+            <option key={key} value={key}>
+              {label}
+            </option>
+          ))}
+        </select>
+      </label>
+      <label className="iw-label">
+        학생·과제 검색
+        <input
+          className="iw-input"
+          type="search"
+          value={query}
+          onChange={(e) => setQuery(e.target.value)}
+          placeholder="이름 또는 과제명"
+        />
+      </label>
+    </div>
+  );
+  const content = (
+    <>
       {error && (
         <div role="alert" className="iw-error">
           {error}
@@ -516,130 +640,80 @@ function Workspace({ userId, instructor }: { userId: string; instructor: boolean
           )}
           {tab === "review" && (
             <>
-              <div className="mb-4 grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
-                <label className="iw-label">
-                  회차
-                  <select
-                    className="iw-input"
-                    value={sessionFilter}
-                    onChange={(e) => setSessionFilter(e.target.value)}
-                  >
-                    <option value="all">전체 회차</option>
-                    {sessions.map((s) => (
-                      <option key={s.id} value={s.number}>
-                        {String(s.number).padStart(2, "0")}회차 · {s.date}
-                      </option>
-                    ))}
-                  </select>
-                </label>
-                <label className="iw-label">
-                  과제
-                  <select
-                    className="iw-input"
-                    value={assignmentFilter}
-                    onChange={(e) => setAssignmentFilter(e.target.value)}
-                  >
-                    <option value="all">전체 과제</option>
-                    {data.assignments.map((a) => (
-                      <option key={a.id} value={a.id}>
-                        {a.title}
-                      </option>
-                    ))}
-                  </select>
-                </label>
-                <label className="iw-label">
-                  상태
-                  <select
-                    className="iw-input"
-                    value={filter}
-                    onChange={(e) => setFilter(e.target.value as Filter)}
-                  >
-                    {FILTERS.map(([key, label]) => (
-                      <option key={key} value={key}>
-                        {label}
-                      </option>
-                    ))}
-                  </select>
-                </label>
-                <label className="iw-label">
-                  학생·과제 검색
-                  <input
-                    className="iw-input"
-                    type="search"
-                    value={query}
-                    onChange={(e) => setQuery(e.target.value)}
-                    placeholder="이름 또는 과제명"
-                  />
-                </label>
-              </div>
+              {!feedback && reviewFilters}
               <div className="iw-review-workbench">
                 <div className="iw-review-queue">
-                  {!loading && (
-                    <div className="iw-queue" aria-label="제출 검토 목록">
-                      {filter === "missing" ? (
-                        missingRows.length ? (
-                          missingRows.map((row) => (
-                            <div
-                              key={`${row.assignment.id}:${row.enrollment.user_id}`}
+                  <SubmissionList feedback={feedback} selected={!!submission}>
+                    {feedback && reviewFilters}
+                    {!loading && (
+                      <div className="iw-queue" aria-label="제출 검토 목록">
+                        {filter === "missing" ? (
+                          missingRows.length ? (
+                            missingRows.map((row) => (
+                              <div
+                                key={`${row.assignment.id}:${row.enrollment.user_id}`}
+                                className="iw-queue-row"
+                              >
+                                <div>
+                                  <strong>{row.enrollment.name}</strong>
+                                  <small>
+                                    {row.assignment.session_number}회차 · {row.assignment.title}
+                                  </small>
+                                </div>
+                                <div className="text-right">
+                                  <span className="iw-badge" data-tone="attention">
+                                    마감 후 미제출
+                                  </span>
+                                  <small>
+                                    마감{" "}
+                                    {formatWorkspaceDate(
+                                      row.target.due_at ?? row.assignment.due_at,
+                                    )}
+                                  </small>
+                                </div>
+                              </div>
+                            ))
+                          ) : (
+                            <p className="iw-empty border-0">
+                              현재 조건에서 마감 후 미제출 학생이 없습니다.
+                            </p>
+                          )
+                        ) : queueRows.length ? (
+                          queueRows.map((row) => (
+                            <button
+                              key={row.submission.id}
                               className="iw-queue-row"
+                              aria-pressed={selectedSubmission === row.submission.id}
+                              onClick={() => selectSubmission(row.submission.id)}
                             >
                               <div>
-                                <strong>{row.enrollment.name}</strong>
+                                <strong>
+                                  {row.enrollment.name}{" "}
+                                  <span className="ml-2 font-normal text-neutral-500">
+                                    v{row.submission.version}
+                                  </span>
+                                </strong>
                                 <small>
                                   {row.assignment.session_number}회차 · {row.assignment.title}
                                 </small>
                               </div>
                               <div className="text-right">
-                                <span className="iw-badge" data-tone="attention">
-                                  마감 후 미제출
-                                </span>
-                                <small>
-                                  마감{" "}
-                                  {formatWorkspaceDate(row.target.due_at ?? row.assignment.due_at)}
-                                </small>
+                                <span className="iw-badge">{rowState(row.submission)}</span>
+                                {row.submission.late && (
+                                  <span className="iw-badge ml-1" data-tone="attention">
+                                    지각
+                                  </span>
+                                )}
+                                <small>{formatWorkspaceDate(row.submission.submitted_at)}</small>
                               </div>
-                            </div>
+                            </button>
                           ))
                         ) : (
-                          <p className="iw-empty border-0">
-                            현재 조건에서 마감 후 미제출 학생이 없습니다.
-                          </p>
-                        )
-                      ) : queueRows.length ? (
-                        queueRows.map((row) => (
-                          <button
-                            key={row.submission.id}
-                            className="iw-queue-row"
-                            aria-pressed={selectedSubmission === row.submission.id}
-                            onClick={() => selectSubmission(row.submission.id)}
-                          >
-                            <div>
-                              <strong>
-                                {row.enrollment.name}{" "}
-                                <span className="ml-2 font-normal text-neutral-500">
-                                  v{row.submission.version}
-                                </span>
-                              </strong>
-                              <small>
-                                {row.assignment.session_number}회차 · {row.assignment.title}
-                              </small>
-                            </div>
-                            <div className="text-right">
-                              <span className="iw-badge">{rowState(row.submission)}</span>
-                              {row.submission.late && (
-                                <span className="iw-badge ml-1" data-tone="attention">
-                                  지각
-                                </span>
-                              )}
-                              <small>{formatWorkspaceDate(row.submission.submitted_at)}</small>
-                            </div>
-                          </button>
-                        ))
-                      ) : (
-                        <p className="iw-empty border-0">현재 조건에 맞는 제출물이 없습니다.</p>
-                      )}
-                    </div>
-                  )}
+                          <p className="iw-empty border-0">현재 조건에 맞는 제출물이 없습니다.</p>
+                        )}
+                      </div>
+                    )}
+                  </SubmissionList>
                 </div>
                 <div className="iw-review-selection">
                   {submission && assignment && student ? (
@@ -759,7 +833,9 @@ function Workspace({ userId, instructor }: { userId: string; instructor: boolean
             !loading && (
               <p className="iw-empty">
                 {own
-                  ? "배정된 과제가 아직 없습니다. 강사가 과제를 공개하면 이곳에서 제출할 수 있습니다."
+                  ? feedback
+                    ? "이 주차에 배정된 과제가 아직 없습니다. 다른 주차를 선택하거나 기존 등록 자료를 확인해 주세요."
+                    : "배정된 과제가 아직 없습니다. 강사가 과제를 공개하면 이곳에서 제출할 수 있습니다."
                   : "현재 과정에 연결된 수강 정보가 없습니다. 강사에게 문의해 주세요."}
               </p>
             )
@@ -787,8 +863,8 @@ function Workspace({ userId, instructor }: { userId: string; instructor: boolean
                 enrollments={data.enrollments}
                 instructor={false}
                 userId={userId}
-                week={week}
-                setWeek={setWeek}
+                week={feedback ? documentWeek : week}
+                setWeek={feedback ? changeFeedbackWeek : setWeek}
                 selectedStudent={legacyStudent}
                 setStudent={setLegacyStudent}
               />
@@ -813,7 +889,69 @@ function Workspace({ userId, instructor }: { userId: string; instructor: boolean
           setStudent={setLegacyStudent}
         />
       )}
+    </>
+  );
+  if (feedback)
+    return (
+      <FeedbackDocument
+        week={documentWeek}
+        currentWeek={currentWeek}
+        sessions={sessions}
+        onWeekChange={changeFeedbackWeek}
+        name={
+          instructor
+            ? tab === "legacy"
+              ? (currentLegacy?.name ?? "피드백")
+              : tab === "manage"
+                ? "과제 관리"
+                : (student?.name ??
+                  data.enrollments.find((item) => item.user_id === studentFilter)?.name ??
+                  "수강생 피드백")
+            : (own?.name ?? legacyOwn?.name ?? "내 피드백")
+        }
+        description={description}
+        {...(instructor && tab !== "manage"
+          ? {
+              students: data.enrollments,
+              selectedStudent: tab === "legacy" ? (currentLegacy?.user_id ?? "all") : studentFilter,
+              onStudentChange: changeFeedbackStudent,
+            }
+          : {})}
+        loading={loading}
+      >
+        {content}
+      </FeedbackDocument>
+    );
+  return (
+    <div className="instructor-workspace">
+      <header>
+        <p className="mb-2 text-xs font-semibold tracking-[.15em] text-neutral-500">
+          {instructor ? "TEACHING WORKSPACE" : "ASSIGNMENTS & FEEDBACK"}
+        </p>
+        <h1 className="iw-heading">{instructor ? "과제·피드백" : "과제와 피드백"}</h1>
+        <p className="iw-description">{description}</p>
+      </header>
+      {content}
     </div>
+  );
+}
+
+function SubmissionList({
+  children,
+  feedback,
+  selected,
+}: {
+  children: ReactNode;
+  feedback: boolean;
+  selected: boolean;
+}) {
+  return feedback ? (
+    <details className="feedback-submission-list" open={!selected}>
+      <summary>제출 목록 · 필터</summary>
+      {children}
+    </details>
+  ) : (
+    <>{children}</>
   );
 }
 

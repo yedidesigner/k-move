@@ -5,5 +5,9 @@ export const Route = createFileRoute("/_app/feedback")({
   head: () => ({
     meta: [{ title: "피드백 | K-Move LMS" }, { name: "robots", content: "noindex" }],
   }),
-  component: AssignmentWorkspace,
+  component: FeedbackPage,
 });
+
+function FeedbackPage() {
+  return <AssignmentWorkspace presentation="feedback" />;
+}

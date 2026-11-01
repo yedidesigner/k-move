@@ -35,7 +35,8 @@ const STUDENT_NAV = [
 const INSTRUCTOR_NAV = [
   { to: "/", label: "강사 홈", icon: Home, group: "수업 운영" },
   { to: "/sessions", label: "수업 관리", icon: CalendarDays, group: "수업 운영" },
-  { to: "/assignments", label: "과제·피드백", icon: ClipboardList, group: "수업 운영" },
+  { to: "/assignments", label: "과제 관리", icon: ClipboardList, group: "수업 운영" },
+  { to: "/feedback", label: "피드백", icon: MessageSquareText, group: "수업 운영" },
   { to: "/admin", label: "학생 관리", icon: Users, group: "수업 운영" },
   { to: "/portfolio", label: "학생 포트폴리오", icon: Briefcase, group: "수업 운영" },
   { to: "/glossary", label: "용어집", icon: BookOpen, group: "학습 콘텐츠" },
@@ -50,7 +51,7 @@ export function AppShell({ children }: { children: ReactNode }) {
   const location = useLocation();
   const [collapsed, setCollapsed] = useState(false);
   const [logoutError, setLogoutError] = useState(false);
-  const feedback = location.pathname === "/feedback";
+  const feedback = location.pathname.replace(/\/+$/, "") === "/feedback";
   const nav = instructor ? INSTRUCTOR_NAV : STUDENT_NAV;
   const mobilePaths = instructor
     ? ["/", "/assignments", "/admin", "/sessions", "/portfolio"]
@@ -61,11 +62,9 @@ export function AppShell({ children }: { children: ReactNode }) {
   const navActive = (path: string) =>
     path === "/"
       ? location.pathname === "/"
-      : instructor && path === "/assignments"
-        ? ["/assignments", "/feedback"].includes(location.pathname)
-        : instructor && path === "/admin"
-          ? location.pathname === "/admin" && activeTab !== "settings"
-          : location.pathname.startsWith(path);
+      : instructor && path === "/admin"
+        ? location.pathname === "/admin" && activeTab !== "settings"
+        : location.pathname.startsWith(path);
   const accountName = user?.user_metadata?.["username"] ?? user?.email;
   async function logout() {
     setLogoutError(false);
@@ -255,10 +254,10 @@ export function AppShell({ children }: { children: ReactNode }) {
           id="lms-main"
           tabIndex={-1}
           className={
-            instructor
-              ? "mx-auto w-full min-w-0 max-w-[1600px] px-4 pb-24 pt-6 outline-none md:px-7 md:pb-10 lg:px-9"
-              : feedback
-                ? "min-w-0 w-full p-0 outline-none"
+            feedback
+              ? "min-w-0 w-full p-0 outline-none"
+              : instructor
+                ? "mx-auto w-full min-w-0 max-w-[1600px] px-4 pb-24 pt-6 outline-none md:px-7 md:pb-10 lg:px-9"
                 : "mx-auto min-w-0 w-full max-w-5xl px-4 pb-28 pt-6 outline-none md:px-10 md:pb-12 md:pt-10"
           }
         >

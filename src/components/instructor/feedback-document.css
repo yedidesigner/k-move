@@ -1,0 +1,312 @@
+.feedback-document {
+  min-height: 100vh;
+  min-width: 0;
+  background: #101010;
+  color: #fff;
+  padding: 18px 20px 56px;
+}
+.feedback-document-title {
+  display: flex;
+  min-height: 44px;
+  align-items: center;
+  justify-content: center;
+  font-size: clamp(1.75rem, 2.1vw, 2.125rem);
+  font-weight: 400;
+  line-height: 1;
+  letter-spacing: -0.035em;
+}
+.feedback-paper-stack {
+  position: relative;
+  isolation: isolate;
+  min-width: 0;
+  padding-top: 32px;
+  margin: 44px 48px 0 24px;
+}
+.feedback-paper-layer {
+  position: absolute;
+  pointer-events: none;
+  border: 1px solid #d9d9d5;
+}
+.feedback-paper-layer-back {
+  inset: 0 24px 12px 48px;
+  background: #e0e0dc;
+}
+.feedback-paper-layer-front {
+  inset: 12px 12px 4px 24px;
+  background: #efefec;
+}
+.feedback-paper {
+  position: relative;
+  min-height: 1190px;
+  border: 1px solid #dadad7;
+  background: #fff;
+  color: #111;
+  box-shadow: 0 12px 20px rgb(0 0 0 / 13%);
+}
+.feedback-paper-content {
+  padding: 38px clamp(24px, 3.2vw, 56px) 48px;
+}
+.feedback-week-tabs {
+  position: absolute;
+  left: 100%;
+  top: 44px;
+  display: flex;
+  flex-direction: column;
+  z-index: 10;
+}
+.feedback-week-tabs button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 46px;
+  width: 44px;
+  height: 46px;
+  border-bottom: 3px solid #171717;
+  background: #d2d2d0;
+  color: #626262;
+  font-size: 11px;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  cursor: pointer;
+}
+.feedback-week-tabs button:hover {
+  background: #ececea;
+  color: #111;
+}
+.feedback-week-tabs button[aria-pressed="true"] {
+  margin-left: -1px;
+  width: 45px;
+  background: white;
+  color: #111;
+}
+.feedback-week-tabs button:focus-visible {
+  outline: 2px solid #111;
+  outline-offset: -5px;
+}
+.feedback-week-heading {
+  display: flex;
+  justify-content: space-between;
+  align-items: end;
+  flex-wrap: wrap;
+  gap: 8px;
+  border-bottom: 1px solid #737373;
+  padding-bottom: 4px;
+}
+.feedback-week-heading > div {
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 4px 12px;
+}
+.feedback-week-heading h2 {
+  font-size: 20px;
+  line-height: 28px;
+  font-weight: 400;
+  letter-spacing: -0.035em;
+}
+.feedback-week-heading span {
+  color: #737373;
+  font-size: 12px;
+}
+.feedback-week-heading > button {
+  min-height: 36px;
+  font-size: 12px;
+  color: #626262;
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+.feedback-student-heading {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding-top: 14px;
+}
+.feedback-student-heading h3 {
+  font-size: clamp(1.75rem, 2vw, 2rem);
+  font-weight: 700;
+  line-height: 1.25;
+  letter-spacing: -0.055em;
+  overflow-wrap: anywhere;
+}
+.feedback-student-picker {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  flex-shrink: 0;
+}
+.feedback-student-picker-icon {
+  display: grid;
+  place-items: center;
+  width: 18px;
+  height: 18px;
+  border: 1px solid #d4d4d4;
+  border-radius: 2px;
+}
+.feedback-student-picker select {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  font-size: 16px;
+  cursor: pointer;
+}
+.feedback-student-picker:focus-within {
+  outline: 2px solid #111;
+  outline-offset: 2px;
+}
+.feedback-document-header > p {
+  margin-top: 12px;
+  color: #737373;
+  font-size: 13px;
+  line-height: 1.7;
+}
+.feedback-workspace {
+  padding-top: 12px;
+}
+.feedback-workspace .iw-toolbar {
+  margin: 0 0 18px;
+}
+.feedback-workspace .iw-summary {
+  font-size: 11px;
+  color: #737373;
+  gap: 12px;
+}
+.feedback-workspace .iw-tabs {
+  margin-bottom: 20px;
+}
+.feedback-workspace .iw-review-workbench {
+  display: block;
+}
+.feedback-workspace .iw-review-queue {
+  margin-bottom: 24px;
+}
+.feedback-workspace .iw-review-queue .iw-queue {
+  max-height: 190px;
+}
+.feedback-workspace .feedback-submission-list > summary {
+  cursor: pointer;
+  min-height: 44px;
+  display: list-item;
+  padding: 12px 0;
+  font-size: 13px;
+  font-weight: 600;
+  border-bottom: 1px solid #ddd;
+}
+.feedback-workspace .feedback-submission-list .iw-queue {
+  margin-top: 12px;
+}
+.feedback-workspace .feedback-submission-list > div:first-of-type {
+  margin-top: 16px;
+}
+.feedback-workspace .iw-review-selection .iw-version-bar {
+  margin-top: 8px;
+}
+.feedback-workspace .iw-empty {
+  min-height: 200px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.feedback-workspace .iw-queue .iw-empty {
+  min-height: 120px;
+}
+@media (max-width: 1023px) {
+  .feedback-document {
+    padding-inline: 16px;
+  }
+  .feedback-paper-stack {
+    margin-left: 0;
+    margin-right: 44px;
+  }
+  .feedback-paper-content {
+    padding-inline: 24px;
+  }
+}
+@media (max-width: 639px) {
+  .feedback-document {
+    padding: 20px 12px 96px;
+  }
+  .feedback-paper-stack {
+    margin: 24px 0 0;
+    padding-top: 22px;
+  }
+  .feedback-paper-layer-back {
+    inset: 0 20px 12px;
+  }
+  .feedback-paper-layer-front {
+    inset: 10px 10px 4px;
+  }
+  .feedback-paper {
+    min-height: 760px;
+  }
+  .feedback-paper-content {
+    padding: 24px 18px 36px;
+  }
+  .feedback-week-tabs {
+    position: relative;
+    inset: auto;
+    flex-direction: row;
+    max-width: 100%;
+    overflow-x: auto;
+    background: #d2d2d0;
+    border-bottom: 1px solid #171717;
+    overscroll-behavior-x: contain;
+    scrollbar-width: thin;
+  }
+  .feedback-week-tabs button {
+    flex: 0 0 44px;
+    width: 44px;
+    height: 44px;
+    border: 0;
+    border-right: 1px solid #aaa;
+  }
+  .feedback-week-tabs button[aria-pressed="true"] {
+    margin: 0;
+    width: 44px;
+    box-shadow: inset 0 -3px #111;
+  }
+  .feedback-week-heading {
+    align-items: center;
+  }
+  .feedback-week-heading > div {
+    gap: 4px;
+    flex-direction: column;
+  }
+  .feedback-week-heading span {
+    font-size: 11px;
+  }
+  .feedback-student-heading {
+    padding-top: 16px;
+  }
+  .feedback-workspace .iw-toolbar {
+    gap: 10px;
+  }
+  .feedback-workspace .iw-summary {
+    width: 100%;
+    margin: 0;
+    gap: 8px;
+  }
+  .feedback-workspace .iw-button {
+    font-size: 12px;
+  }
+  .feedback-workspace .iw-tabs {
+    overflow-x: auto;
+    flex-wrap: nowrap;
+  }
+  .feedback-workspace .iw-tabs button {
+    white-space: nowrap;
+    padding-inline: 10px;
+  }
+  .feedback-workspace .iw-queue-row {
+    gap: 8px;
+    padding: 12px;
+    flex-wrap: wrap;
+  }
+  .feedback-workspace .iw-empty {
+    min-height: 180px;
+    padding-inline: 16px;
+  }
+}
