@@ -406,7 +406,7 @@ export function WinnerReasonLetters({
                 </button>
               </div>}
             </div>
-          </div>
+          </div>}
           <p className="wrl-privacy"><LockKeyhole size={13} aria-hidden />
             작성자 이름, 투표 시각, 득표수는 편지에 표시되지 않습니다.
           </p>
