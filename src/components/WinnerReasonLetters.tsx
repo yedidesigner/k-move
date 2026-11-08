@@ -1,5 +1,5 @@
 import { useLayoutEffect, useMemo, useRef, useState } from "react";
-import { ArrowLeft, ArrowRight, Download, LockKeyhole, MailOpen, RotateCcw, Type } from "lucide-react";
+import { AlignCenter, ArrowLeft, ArrowRight, Download, LockKeyhole, MailOpen, RotateCcw, Type } from "lucide-react";
 import { WINNER_LETTER_FONTS, randomLetterFontSequence } from "@/lib/winner-letter-fonts";
 import { createStoreZip } from "@/lib/browser-zip";
 import { fitWinnerLetterText } from "@/lib/fit-winner-letter";
@@ -329,6 +329,11 @@ export function WinnerReasonLetters({
             </div>
           </div>
           <div className="wrl-editor-controls" aria-label="편지 글자 설정">
+            <div className="wrl-align-controls" aria-label="가운데 정렬 고정">
+              <span className="wrl-icon-button is-active" role="img" aria-label="가운데 정렬">
+                <AlignCenter size={17} aria-hidden />
+              </span>
+            </div>
             <label className="wrl-size-control">
               <Type size={15} aria-hidden />
               <span className="wrl-sr-only">글자 크기</span>
