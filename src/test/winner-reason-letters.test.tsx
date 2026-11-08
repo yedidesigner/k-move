@@ -54,4 +54,29 @@ describe("Winner-only anonymous envelope", () => {
     expect(screen.getByText("이번 투표에는 전달할 선정 이유가 남아 있지 않아요.")).toBeInTheDocument();
     expect(screen.queryByRole("button", { name: "편지 열기" })).toBeNull();
   });
+
+  it("assigns a different stable handwriting style to each next letter", () => {
+    render(<WinnerReasonLetters recipient="수강생가"
+      letters={["첫 번째 선정 이유입니다.","두 번째 선정 이유입니다."]}
+      instructor={false} />);
+    fireEvent.click(screen.getByRole("button", { name: "편지 열기" }));
+    const first = screen.getByText("첫 번째 선정 이유입니다.");
+    const firstFont = first.closest("[data-letter-font]")?.getAttribute("data-letter-font");
+    expect(firstFont).toBeTruthy();
+
+    fireEvent.click(screen.getByRole("button", { name: "다음 편지" }));
+    const second = screen.getByText("두 번째 선정 이유입니다.");
+    const secondFont = second.closest("[data-letter-font]")?.getAttribute("data-letter-font");
+    expect(secondFont).toBeTruthy();
+    expect(secondFont).not.toBe(firstFont);
+
+    fireEvent.click(screen.getByRole("button", { name: "이전 편지" }));
+    expect(screen.getByText("첫 번째 선정 이유입니다.")
+      .closest("[data-letter-font]")?.getAttribute("data-letter-font")).toBe(firstFont);
+    fireEvent.click(screen.getByRole("button", { name: "다음 편지" }));
+    fireEvent.click(screen.getByRole("button", { name: "처음부터 다시 보기" }));
+    fireEvent.click(screen.getByRole("button", { name: "편지 열기" }));
+    expect(screen.getByText("첫 번째 선정 이유입니다.")
+      .closest("[data-letter-font]")?.getAttribute("data-letter-font")).toBe(firstFont);
+  });
 });

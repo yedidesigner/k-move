@@ -1,5 +1,6 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { ArrowLeft, ArrowRight, LockKeyhole, MailOpen, RotateCcw } from "lucide-react";
+import { WINNER_LETTER_FONTS, randomLetterFontSequence } from "@/lib/winner-letter-fonts";
 import "./winner-reason-letters.css";
 
 const CLOSED_IMAGE = "/images/envelope-yd-closed-hq-v2.avif";
@@ -17,6 +18,10 @@ export function WinnerReasonLetters({
   const readable = letters.filter((reason) => reason.trim().length > 0);
   const [opened, setOpened] = useState(false);
   const [current, setCurrent] = useState(0);
+  // Each note receives a random, stable handwriting font. No changes while reading.
+  const letterContentSignature = recipient + "\u241f" + readable.join("\u241e");
+  const letterFontOrder = useMemo(() => randomLetterFontSequence(readable.length), [letterContentSignature]);
+  const selectedFont = letterFontOrder[current] ?? WINNER_LETTER_FONTS[0];
   const hasPrevious = opened && current > 0;
   const hasNext = opened && current < readable.length - 1;
 
@@ -60,7 +65,13 @@ export function WinnerReasonLetters({
                   decoding="async"
                 />
                 {opened && (
-                  <article className="wrl-letter" key={String(current) + ":" + recipient} aria-live="polite">
+                  <article
+                    className="wrl-letter"
+                    key={String(current) + ":" + recipient}
+                    aria-live="polite"
+                    data-letter-font={selectedFont.name}
+                    style={{ fontFamily: '"' + selectedFont.family + '", "Apple SD Gothic Neo", sans-serif' }}
+                  >
                     <span className="wrl-letter-kicker">A NOTE FROM A CLASSMATE</span>
                     <p className="wrl-letter-message">{readable[current]}</p>
                     <span className="wrl-letter-signature">with warmth, ♡</span>

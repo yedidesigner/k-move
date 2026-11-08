@@ -1,4 +1,13 @@
-@import url("https://fonts.googleapis.com/css2?family=Gaegu:wght@400;700&display=swap");
+/* Korean handwriting fonts provided through Noonnu's published CDN webfont URLs.
+   Diary and Human Beomseok remain disabled until separate web embedding permission. */
+@font-face{font-family:"WrlSongam";src:url("https://cdn.jsdelivr.net/gh/projectnoonnu/2604-1@1.0/SongamIhyeongsik-Regular.woff2") format("woff2");font-style:normal;font-weight:400;font-display:swap}
+@font-face{font-family:"WrlGeuriunFlow";src:url("https://cdn.jsdelivr.net/gh/Project-Noonnu/2607161334@x-3/x/GriunXHangeul_SongleSongeulHeullim-Rg.woff2") format("woff2");font-style:normal;font-weight:400;font-display:swap}
+@font-face{font-family:"WrlSchoolChalk";src:url("https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2307-2@1.0/HakgyoansimBunpilR.woff2") format("woff2");font-style:normal;font-weight:400;font-display:swap}
+@font-face{font-family:"WrlKyobo";src:url("https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2112@1.0/KyoboHandwriting2020A.woff") format("woff");font-style:normal;font-weight:400;font-display:swap}
+@font-face{font-family:"WrlGeuriunCat";src:url("https://cdn.jsdelivr.net/gh/Project-Noonnu/2607161334@x-6/x/GriunXHangeul_Gowoon-Rg.woff2") format("woff2");font-style:normal;font-weight:400;font-display:swap}
+@font-face{font-family:"WrlCafe24Star";src:url("https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_twelve@1.1/Cafe24Shiningstar.woff") format("woff");font-style:normal;font-weight:400;font-display:swap}
+@font-face{font-family:"WrlLeeSeoyun";src:url("https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2202-2@1.0/LeeSeoyun.woff") format("woff");font-style:normal;font-weight:400;font-display:swap}
+@font-face{font-family:"WrlSimGyeongha";src:url("https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2202-2@1.0/SimKyungha.woff") format("woff");font-style:normal;font-weight:400;font-display:swap}
 
 /* Original blue letter imagery, optimized as transparent AVIF for the LMS. */
 .wrl-mailbox{margin:16px 0 0;border:1px solid #e2e2e2;background:#fcfcfc;padding:22px 22px 18px;color:#262626}
@@ -16,8 +25,8 @@
 /* Handwriting sits directly on the white sheet within the user's open-envelope image. */
 .wrl-letter{position:absolute;z-index:2;top:24%;left:15%;width:70%;height:34%;display:flex;flex-direction:column;box-sizing:border-box;margin:0;padding:0;background:transparent;border:0;box-shadow:none;animation:wrl-ink-in .55s .2s both}
 .wrl-letter-kicker{flex-shrink:0;color:#a09f9d;font-size:9px;letter-spacing:.08em;text-align:left;white-space:nowrap;opacity:.78}
-.wrl-letter-message{flex:1;min-height:0;margin:5px 0 0;overflow-y:auto;overscroll-behavior:contain;font-family:"Gaegu","Nanum Pen Script","Apple SD Gothic Neo",cursive;font-size:clamp(22px,3vw,29px);font-weight:400;line-height:1.18;letter-spacing:-.035em;color:#36373a;white-space:pre-wrap;overflow-wrap:anywhere;scrollbar-width:thin}
-.wrl-letter-signature{flex-shrink:0;padding-top:2px;text-align:right;font-family:"Gaegu","Nanum Pen Script",cursive;color:#7f8794;font-size:16px}
+.wrl-letter-message{flex:1;min-height:0;margin:5px 0 0;overflow-y:auto;overscroll-behavior:contain;font-family:inherit;font-size:clamp(22px,3vw,29px);font-weight:400;line-height:1.18;letter-spacing:-.035em;color:#36373a;white-space:pre-wrap;overflow-wrap:anywhere;scrollbar-width:thin}
+.wrl-letter-signature{flex-shrink:0;padding-top:2px;text-align:right;font-family:inherit;color:#7f8794;font-size:16px}
 .wrl-controls{display:flex;justify-content:center;flex-wrap:wrap;gap:8px;margin-top:16px}
 .wrl-main-button,.wrl-sub-button{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:41px;padding:10px 19px;border:1px solid #272727;font-size:12px;font-weight:600;transition:background-color .2s ease,color .2s ease;cursor:pointer}
 .wrl-main-button{background:#272727;color:white}
