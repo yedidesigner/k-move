@@ -28,6 +28,7 @@ describe("Winner-only anonymous envelope", () => {
     expect(screen.queryByText("2표")).toBeNull();
     expect(screen.queryByRole("button", { name: "왼쪽 정렬" })).toBeNull();
     expect(screen.queryByRole("button", { name: "오른쪽 정렬" })).toBeNull();
+    expect(screen.getByRole("img", { name: "가운데 정렬" })).toBeInTheDocument();
     expect(document.querySelector(".wrl-letter")).toHaveAttribute("data-letter-align", "center");
     expect(screen.getByRole("combobox", { name: "글자 크기" })).toHaveValue("16");
     fireEvent.change(screen.getByRole("combobox", { name: "글자 크기" }), { target:{ value:"20" } });
@@ -107,6 +108,7 @@ describe("Winner-only anonymous envelope", () => {
     fireEvent.click(screen.getByRole("button", { name: "편지 열기" }));
     expect(screen.queryByRole("button", { name:"왼쪽 정렬" })).toBeNull();
     expect(screen.queryByRole("button", { name:"오른쪽 정렬" })).toBeNull();
+    expect(screen.getByRole("img", { name:"가운데 정렬" })).toBeInTheDocument();
     expect(document.querySelector(".wrl-letter")).toHaveAttribute("data-letter-align","center");
     const size = screen.getByRole("combobox", { name:"글자 크기" });
     expect(Array.from((size as HTMLSelectElement).options).map(option => option.text)).toEqual(
