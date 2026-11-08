@@ -20,12 +20,18 @@ const ENVELOPE_COLORS = [
 
 type EnvelopeColorId = (typeof ENVELOPE_COLORS)[number]["id"];
 
-function seoulYYMMDD(date = new Date()) {
+function seoulLetterDate(date = new Date()) {
   const parts = new Intl.DateTimeFormat("en-CA", {
     timeZone:"Asia/Seoul", year:"2-digit", month:"2-digit", day:"2-digit",
   }).formatToParts(date);
   const value = (type: Intl.DateTimeFormatPartTypes) => parts.find(part => part.type === type)?.value ?? "";
-  return value("year") + value("month") + value("day");
+  const year = value("year");
+  const month = value("month");
+  const day = value("day");
+  return {
+    label: year + "년 " + month + "월 " + day + "일",
+    compact: year + month + day,
+  };
 }
 
 function wrapCanvasText(ctx: CanvasRenderingContext2D, text: string, maxWidth: number) {
@@ -68,7 +74,7 @@ export function WinnerReasonLetters({
   const hasPrevious = opened && current > 0;
   const hasNext = opened && current < readable.length - 1;
   const displayedReason = (readable[current] ?? "").replace(/\s+/g, " ").trim();
-  const letterDate = useMemo(() => seoulYYMMDD(), []);
+  const letterDate = useMemo(() => seoulLetterDate(), []);
   const selectedEnvelopeColor = ENVELOPE_COLORS.find(color => color.id === envelopeColor) ?? ENVELOPE_COLORS[4];
 
   useLayoutEffect(() => {
@@ -196,7 +202,7 @@ export function WinnerReasonLetters({
       };
 
       drawInBox(".wrl-letter-message", displayedReason, textAlign, "#36373a", selectedFont.family);
-      drawInBox(".wrl-letter-date", letterDate, "center", "#7d838c", "Arial");
+      drawInBox(".wrl-letter-date", letterDate.label, "center", "#7d838c", "Arial");
       drawInBox(".wrl-letter-signature", "- 당신을 응원하는 누군가 -", textAlign, "#686f7c", selectedFont.family);
 
       const blob = await new Promise<Blob | null>(resolve => canvas.toBlob(resolve,"image/png"));
@@ -204,7 +210,7 @@ export function WinnerReasonLetters({
       const url = URL.createObjectURL(blob);
       const link = document.createElement("a");
       link.href = url;
-      link.download = "K-MOVE-letter-" + letterDate + "-" + String(current + 1).padStart(2,"0") + ".png";
+      link.download = "K-MOVE-letter-" + letterDate.compact + "-" + String(current + 1).padStart(2,"0") + ".png";
       document.body.appendChild(link);
       link.click();
       link.remove();
@@ -261,7 +267,7 @@ export function WinnerReasonLetters({
                       <p className="wrl-letter-message" style={{ textAlign }}>{displayedReason}</p>
                     </div>
                     <div className="wrl-letter-date-box" data-text-fit="pending">
-                      <span className="wrl-letter-date">{letterDate}</span>
+                      <span className="wrl-letter-date">{letterDate.label}</span>
                     </div>
                     <div className="wrl-letter-signature-box" data-text-fit="pending">
                       <span className="wrl-letter-signature" style={{ textAlign }}>- 당신을 응원하는 누군가 -</span>
