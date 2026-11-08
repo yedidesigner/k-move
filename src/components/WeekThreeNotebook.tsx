@@ -1,10 +1,9 @@
 import { useState } from "react";
+import { NotebookLectureViewer } from "@/components/NotebookLectureViewer";
 
 const STUDENT_FOLDER = "https://drive.google.com/drive/folders/1RXyFhYBKaCjiC9HCiHHao9Fta2VoG2xM";
 const INSTRUCTOR_FOLDER = "https://drive.google.com/drive/folders/1C_GKLc2eNHEUlNpl9x_zr6UH6yOw4Wi0";
-const SLIDES_ID = "1Ef5coZVzXHCc44Y22Dershoj6mffqzXk";
 const resources = [
-  { title: "강의 슬라이드", detail: "60장 · 홈·작업 화면 해설부터 디자인 실무까지", type: "PDF · 열람", url: `https://drive.google.com/file/d/${SLIDES_ID}/view` },
   { title: "학생용 실습 교재", detail: "50쪽 · 화면 설명, 조작 순서, 실습과 검수", type: "PDF", url: "https://drive.google.com/file/d/1iLQZG9SAXK87I1yuf6JjmuHT2B-FeP3m/view" },
   { title: "학생용 실습 패키지", detail: "기본 소스 6개 · 선택 소스 2개 · 프롬프트 18개 · 제출 템플릿", type: "ZIP · 다운로드", url: "https://drive.google.com/file/d/1kC2W5HVgnP_9UqGBId1qRz-z0irbH2qp/view" },
 ];
@@ -111,7 +110,7 @@ function PromptCard({ item }: { item: (typeof prompts)[number] }) {
   );
 }
 
-/** Student-facing content only. Drive permissions, not conditional rendering, protect instructor files. */
+/** Student-facing content only. Storage RLS protects slides; Drive protects instructor files. */
 export function WeekThreeNotebook({ isInstructor }: { isInstructor: boolean }) {
   const [checked, setChecked] = useState<string[]>([]);
   return (
@@ -131,7 +130,8 @@ export function WeekThreeNotebook({ isInstructor }: { isInstructor: boolean }) {
       <div className="space-y-8 p-5 sm:p-8">
         <section id="notebook-resources" className="scroll-mt-6" aria-labelledby="notebook-resources-title">
           <h3 id="notebook-resources-title" className="text-lg font-bold">01. 수업 자료</h3>
-          <div className="mt-4 grid gap-3 sm:grid-cols-3">
+          <NotebookLectureViewer />
+          <div className="mt-4 grid gap-3 sm:grid-cols-2">
             {resources.map((resource) => (
               <a key={resource.title} href={resource.url} target="_blank" rel="noopener noreferrer" className="flex min-w-0 flex-col border border-neutral-300 p-4 transition-colors hover:border-black hover:bg-neutral-50 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2">
                 <span className="text-xs font-medium text-neutral-500">{resource.type}</span>
@@ -140,18 +140,14 @@ export function WeekThreeNotebook({ isInstructor }: { isInstructor: boolean }) {
               </a>
             ))}
           </div>
-          <details className="mt-3 border border-neutral-200">
-            <summary className="cursor-pointer px-4 py-4 text-sm font-semibold focus-visible:outline focus-visible:outline-2">강의 슬라이드 LMS 안에서 펼쳐보기</summary>
-            <iframe src={`https://drive.google.com/file/d/${SLIDES_ID}/preview`} title="K-MOVE 3회차 Gemini Notebook 강의 슬라이드 60장" className="h-[480px] w-full border-t border-neutral-200 sm:h-[640px]" loading="lazy" allowFullScreen referrerPolicy="strict-origin-when-cross-origin" />
-          </details>
-          <p className="mt-3 text-xs leading-6 text-neutral-600">자료는 Google Drive에서 열립니다. 접근 권한 요청 화면이 나오면 강사에게 알려주세요. LMS 로그인과 Drive 파일 권한은 별개입니다. 강사용 해설·정답과 편집 원본은 학생용 패키지에 포함하지 않았습니다.</p>
-          <a href={STUDENT_FOLDER} target="_blank" rel="noopener noreferrer" className="mt-1 inline-flex min-h-11 items-center text-xs underline underline-offset-4">3회차 학생용 자료 폴더 ↗</a>
+          <p className="mt-3 text-xs leading-6 text-neutral-600">강의 슬라이드는 위의 LMS 전용 뷰어에서만 열람합니다. 학생용 교재와 실습 ZIP은 기존처럼 Google Drive에서 이용합니다. 교재·ZIP에 접근 권한 요청이 표시되면 강사에게 알려주세요.</p>
+          <a href={STUDENT_FOLDER} target="_blank" rel="noopener noreferrer" className="mt-1 inline-flex min-h-11 items-center text-xs underline underline-offset-4">학생용 교재·실습 자료 폴더 ↗</a>
           {isInstructor && (
-            <aside className="mt-4 border border-blue-200 bg-blue-50 p-4" aria-label="강사 전용 자료와 권한 점검">
-              <p className="text-sm font-bold">강사 전용 · 파일 공개 전 점검</p>
-              <p className="mt-2 break-keep text-xs leading-6 text-neutral-700">등록 당시 학생용 Drive 폴더는 비공개였습니다. 위 학생용 폴더에서 대상 학생에게 보기 권한을 부여하고, 슬라이드 파일의 다운로드·인쇄·복사 허용 여부를 직접 확인하세요. LMS 표시만으로 Drive 권한이나 다운로드 제한이 설정되지는 않습니다.</p>
-              <a href={INSTRUCTOR_FOLDER} target="_blank" rel="noopener noreferrer" className="mt-2 inline-flex min-h-11 items-center text-sm font-semibold underline underline-offset-4">강사용 해설·정답·PPTX 전체 패키지 ↗</a>
-              <p className="text-xs leading-6 text-neutral-600">강사용 폴더는 학생용 폴더와 분리된 비공개 자료입니다. 학생에게 공유하지 마세요.</p>
+            <aside className="mt-4 border border-blue-200 bg-blue-50 p-4" aria-label="강사 전용 원본과 자료 관리">
+              <p className="text-sm font-bold">강사 전용 · 원본 및 참고자료</p>
+              <p className="mt-2 break-keep text-xs leading-6 text-neutral-700">슬라이드 원본 PDF와 전체 패키지는 비공개 강사용 폴더에 보관했습니다. 학생에게 원본이나 강사용 폴더를 공유하지 마세요. 학생용 폴더에는 교재와 실습 ZIP만 남겨 두었습니다.</p>
+              <a href={INSTRUCTOR_FOLDER} target="_blank" rel="noopener noreferrer" className="mt-2 inline-flex min-h-11 items-center text-sm font-semibold underline underline-offset-4">강사용 원본·해설·정답 보관함 ↗</a>
+              <p className="text-xs leading-6 text-neutral-600">슬라이드는 LMS 수강 권한으로 열람합니다. 학생용 교재·ZIP의 Drive 공유 권한은 별도로 관리합니다.</p>
             </aside>
           )}
         </section>
@@ -242,7 +238,7 @@ export function WeekThreeNotebook({ isInstructor }: { isInstructor: boolean }) {
               <div><dt className="font-semibold text-black">업로드 실패·인식 누락</dt><dd>현재 지원 형식·용량·암호 여부와 처리 상태를 확인하고 TXT 대체본을 사용합니다. 표의 열 의미가 사라졌다면 데이터 설명을 함께 제공합니다.</dd></div>
               <div><dt className="font-semibold text-black">답변이 자료와 다름</dt><dd>선택 소스와 문서 버전을 확인하고 질문을 좁힙니다. 문제 주장을 인용 원문과 비교해 확인 불가 또는 수정 항목으로 남깁니다.</dd></div>
               <div><dt className="font-semibold text-black">생성 한도·기능 미제공</dt><dd>추가 결제를 전제로 하지 않습니다. 보고서 텍스트·비교표·8장 스토리보드 템플릿으로 동일한 학습 결과를 만듭니다.</dd></div>
-              <div><dt className="font-semibold text-black">공유·파일 접근 오류</dt><dd>로그인한 Google 계정과 대상 파일의 보기 권한을 확인합니다. 학생용 폴더만 공유하고 강사 전체 패키지는 분리합니다.</dd></div>
+              <div><dt className="font-semibold text-black">공유·파일 접근 오류</dt><dd>슬라이드는 LMS 로그인과 수강 권한을 확인합니다. 교재·실습 ZIP은 로그인한 Google 계정과 해당 파일의 보기 권한을 확인합니다. 강사용 원본 폴더는 학생에게 공유하지 않습니다.</dd></div>
             </dl>
           </details>
         </section>
