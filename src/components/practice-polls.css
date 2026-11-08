@@ -157,3 +157,11 @@
 .pr-polls-reason-hint{flex-wrap:wrap}
 .pr-polls-reason-editor>textarea{font-size:16px}
 }
+
+/* Private to this signed-in student and collapsed by default for in-class screens. */
+.pr-polls-my-vote-actions{display:flex;align-items:center;gap:7px;flex-wrap:wrap}
+.pr-polls-private-details{display:flex;flex-direction:column;gap:10px;margin:9px 0 14px;padding:13px;border:1px solid #d4d4d4;background:#fafafa}
+.pr-polls-private-details>p{display:flex;flex-direction:column;gap:5px;margin:0;color:#171717;font-size:11px;line-height:1.75;overflow-wrap:anywhere;white-space:pre-wrap}
+.pr-polls-private-details>p>strong{font-size:10px;color:#737373;font-weight:650}
+.pr-polls-private-details>small{color:#888;font-size:10px;line-height:1.6}
+@media(max-width:700px){.pr-polls-my-vote-actions{width:100%}.pr-polls-my-vote-actions .pr-polls-action{flex:1;min-width:0}}

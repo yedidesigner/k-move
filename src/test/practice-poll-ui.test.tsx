@@ -108,6 +108,8 @@ describe("Practice poll self-vote and completion interface", () => {
     render(<PracticePolls sessionNumber={24} />);
     const edit = await screen.findByRole("button", { name: "투표 변경" });
     fireEvent.click(edit);
+    expect(screen.getByRole("button", { name: "선택한 1명으로 변경" })).toBeDisabled();
+    expect(screen.queryByText("현재 내 선택")).toBeNull();
     const self = screen.getByRole("radio", { name: "수강생가" });
     fireEvent.click(self);
     expect(window.alert).toHaveBeenCalledWith(expect.stringContaining("다른 친구에게 해주세요"));
@@ -129,8 +131,16 @@ describe("Practice poll self-vote and completion interface", () => {
     mocks.myVote.mockResolvedValue(2);
     mocks.myReason.mockResolvedValue("발표의 구성이 명확하고 공감이 갔어요.");
     render(<PracticePolls sessionNumber={24} />);
-    expect(await screen.findByText("발표의 구성이 명확하고 공감이 갔어요.")).toBeInTheDocument();
+    const show = await screen.findByRole("button", { name:"내 투표 보기" });
+    expect(show).toHaveAttribute("aria-expanded", "false");
+    expect(screen.queryByText("발표의 구성이 명확하고 공감이 갔어요.")).toBeNull();
+    expect(screen.queryByText("현재 내 선택")).toBeNull();
+    fireEvent.click(show);
+    expect(screen.getByText("발표의 구성이 명확하고 공감이 갔어요.")).toBeInTheDocument();
     expect(screen.getByText("내 선정 이유")).toBeInTheDocument();
+    expect(screen.getByText("현재 내 선택")).toBeInTheDocument();
+    fireEvent.click(screen.getByRole("button", {name:"내 투표 숨기기"}));
+    expect(screen.queryByText("발표의 구성이 명확하고 공감이 갔어요.")).toBeNull();
     expect(mocks.adminReasons).not.toHaveBeenCalled();
   });
 

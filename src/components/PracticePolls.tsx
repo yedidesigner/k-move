@@ -26,6 +26,8 @@ export function PracticePolls({ sessionNumber }: { sessionNumber: number }) {
   const [polls, setPolls] = useState<PracticePoll[]>([]);
   const [myVotes, setMyVotes] = useState<MapOf<number | null>>({});
   const [myReasons, setMyReasons] = useState<MapOf<string | null>>({});
+  // A shared classroom screen must not reveal a student's choice by default.
+  const [visibleMyVotes, setVisibleMyVotes] = useState<MapOf<boolean>>({});
   const [reasonDrafts, setReasonDrafts] = useState<MapOf<string>>({});
   const [myCandidateIndexes, setMyCandidateIndexes] = useState<MapOf<number | null>>({});
   const [pollCompleted, setPollCompleted] = useState<MapOf<boolean>>({});
@@ -226,7 +228,7 @@ export function PracticePolls({ sessionNumber }: { sessionNumber: number }) {
         <h3>수강생 투표</h3>
         <p className="pr-polls-description">등록된 수강생 한 명을 선택하고, 수업 종료 전까지 변경할 수 있어요.</p>
         <p className="pr-polls-deadline">자동 마감 · {closingLabel} (한국시간)</p>
-        <p className="pr-polls-privacy"><LockKeyhole size={14} aria-hidden /> 수강생에게 투표자·항목별 득표수·개별 선택 내역은 공개되지 않습니다.</p>
+        <p className="pr-polls-privacy"><LockKeyhole size={14} aria-hidden /> 다른 수강생은 누가 참여했는지, 누구에게 투표했는지, 누가 이유를 작성했는지 확인할 수 없습니다.</p>
       </div>
       <div className="pr-polls-header-actions">
         <button type="button" className="pr-polls-action pr-polls-secondary"
@@ -348,24 +350,40 @@ export function PracticePolls({ sessionNumber }: { sessionNumber: number }) {
           {!instructor && isVoted && <div className="pr-polls-my-vote">
             <p className="pr-polls-done">
               <CheckCircle2 size={15} aria-hidden />
-              <span>현재 내 선택: <strong>{myChoice !== null ? poll.options[myChoice - 1] : ""}</strong>
-                <small>본인에게만 표시됩니다.</small>
+              <span><strong>참여 완료</strong>
+                <small>내 선택과 선정 이유는 기본적으로 숨겨집니다.</small>
               </span>
             </p>
-            {!isClosed && !isChanging && <button type="button"
-              className="pr-polls-action pr-polls-secondary"
-              disabled={!!busy}
-              onClick={() => {
-                setChangingPollId(poll.id);
-                setSelected(current => ({ ...current, [poll.id]: myChoice! }));
-                setReasonDrafts(current => ({ ...current, [poll.id]: "" }));
-                setError("");
-              }}>투표 변경</button>}
+            <div className="pr-polls-my-vote-actions">
+              <button type="button" className="pr-polls-action pr-polls-secondary"
+                aria-expanded={visibleMyVotes[poll.id] === true}
+                aria-controls={"pr-polls-private-" + poll.id}
+                onClick={() => setVisibleMyVotes(current => ({
+                  ...current, [poll.id]: !current[poll.id],
+                }))}>
+                {visibleMyVotes[poll.id] ? <EyeOff size={13} aria-hidden /> : <Eye size={13} aria-hidden />}
+                {visibleMyVotes[poll.id] ? "내 투표 숨기기" : "내 투표 보기"}
+              </button>
+              {!isClosed && !isChanging && <button type="button"
+                className="pr-polls-action pr-polls-secondary"
+                disabled={!!busy}
+                onClick={() => {
+                  setChangingPollId(poll.id);
+                  // Do not preselect the prior candidate on a screen others might see.
+                  setSelected(current => { const next = { ...current }; delete next[poll.id]; return next; });
+                  setReasonDrafts(current => ({ ...current, [poll.id]: "" }));
+                  setVisibleMyVotes(current => ({ ...current, [poll.id]: false }));
+                  setError("");
+                }}>투표 변경</button>}
+            </div>
             {isClosed && <span className="pr-polls-closed-note">수업 종료로 마감되어 변경할 수 없습니다.</span>}
           </div>}
-          {!instructor && isVoted && myReasons[poll.id] && <p className="pr-polls-saved-reason">
-            <strong>내 선정 이유</strong><span>{myReasons[poll.id]}</span>
-          </p>}
+          {!instructor && isVoted && visibleMyVotes[poll.id] === true && <div
+            className="pr-polls-private-details" id={"pr-polls-private-" + poll.id}>
+            <p><strong>현재 내 선택</strong><span>{myChoice !== null ? poll.options[myChoice - 1] : ""}</span></p>
+            {myReasons[poll.id] && <p><strong>내 선정 이유</strong><span>{myReasons[poll.id]}</span></p>}
+            <small>본인 확인용입니다. 다른 수강생에게 표시되지 않습니다.</small>
+          </div>}
           {!instructor && isChanging && <div className="pr-polls-change-footer">
             <p>변경할 수강생 한 명을 선택하세요. 확인한 후에만 변경됩니다.</p>
             <div className="pr-polls-change-actions">
