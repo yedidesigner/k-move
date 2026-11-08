@@ -11,6 +11,7 @@ import {
   listPracticeMessages,
   practiceFingerprint,
   preparePracticeInput,
+  practiceDisplayBody,
   savePracticeMessage,
   type PracticeAttachment,
   type PracticeDraft,
@@ -167,22 +168,30 @@ describe("Practice input and safe link extraction", () => {
     expect(db.save).not.toHaveBeenCalled();
   });
 
-  it("keeps explicit links editable in the body without appending the same URL twice", () => {
+  it("stores bookmark-button links separately from the message body", () => {
     const prepared = preparePracticeInput({
       body: "시안 https://example.test/one",
       files: [],
       links: [{ url: "https://example.test/one" }, { url: "https://example.test/two" }],
     });
-    expect(prepared.body).toBe("시안 https://example.test/one\nhttps://example.test/two");
-    expect(prepared.links).toHaveLength(2);
-    expect(practiceFingerprint(prepared)).toBe(
-      practiceFingerprint(preparePracticeInput({ body: prepared.body, files: [] })),
-    );
+    expect(prepared.body).toBe("시안 https://example.test/one");
+    expect(prepared.links).toEqual([
+      { url: "https://example.test/one" },
+      { url: "https://example.test/two" },
+    ]);
+    expect(practiceFingerprint(prepared)).toBe(practiceFingerprint(preparePracticeInput({
+      body: "시안 https://example.test/one",
+      files: [],
+      links: [{ url: "https://example.test/two" }],
+    })));
   });
 
   it("allows file-only posts and rejects empty posts, excessive body text, or more than ten unique links", () => {
     const file = new File(["example"], "결과.txt", { type: "text/plain" });
     expect(preparePracticeInput({ body: "", files: [file] }).files).toEqual([file]);
+    expect(preparePracticeInput({ body: "", files: [], links: [{ url: "https://example.test/alone" }] })).toEqual({
+      body: "", links: [{ url: "https://example.test/alone" }], files: [], parentId: null,
+    });
     expect(() => preparePracticeInput({ body: "  \n  ", files: [] })).toThrow(/내용이나 링크/);
     expect(() => preparePracticeInput({ body: "가".repeat(20_001), files: [] })).toThrow(/20,000/);
     expect(() =>
@@ -191,6 +200,33 @@ describe("Practice input and safe link extraction", () => {
         files: [],
       }),
     ).toThrow(/10개/);
+  });
+
+  it("renders older raw URLs as bookmark cards only, without repeating the address in the body", () => {
+    expect(practiceDisplayBody(
+      "참고 자료\nhttps://figma.com/design/aReallyLongLink?one=1&two=2",
+      [{ url: "https://figma.com/design/aReallyLongLink?one=1&two=2" }],
+    )).toBe("참고 자료");
+    expect(practiceDisplayBody("https://example.test/only", [
+      { url: "https://example.test/only" },
+    ])).toBe("");
+    expect(practiceDisplayBody("링크: https://example.test/one", [
+      { url: "https://example.test/one" },
+    ])).toBe("");
+    expect(practiceDisplayBody("디자인 시안: https://example.test/one", [
+      { url: "https://example.test/one" },
+    ])).toBe("디자인 시안:");
+  });
+
+  it("preserves normal text and emojis when stripping URLs represented as bookmarks", () => {
+    const raw = "좋은 디자인이에요! 🎨✨\n링크: https://example.test/guide.\n다음 시간에 봬요 🙌";
+    const links = extractPracticeLinks(raw);
+    expect(links).toEqual([{ url: "https://example.test/guide" }]);
+    expect(practiceDisplayBody(raw, links)).toBe("좋은 디자인이에요! 🎨✨\n다음 시간에 봬요 🙌");
+    expect(practiceDisplayBody("URL 없이 올린 😀🙌", [])).toBe("URL 없이 올린 😀🙌");
+    const prepared = preparePracticeInput({ body: "좋아요 👍", files: [] });
+    expect(prepared.body).toBe("좋아요 👍");
+    expect(prepared.links).toEqual([]);
   });
 
   it("checks file count, size, and format before any upload starts", () => {
@@ -249,7 +285,20 @@ describe("Stored practice history", () => {
     await expect(listPracticeMessages(3)).rejects.toThrow("history unavailable");
   });
 
+  it("preserves existing link-button bookmarks when editing descriptive text", async () => {
+    db.lookup.mockResolvedValueOnce({ data: message({
+      body: "안녕하세요",
+      links: [{ url: "https://example.test/explicit" }],
+    }), error: null });
+    await editPracticeMessage(message().id, 3, "새 설명 🎨");
+    expect(db.update).toHaveBeenCalledWith({
+      body: "새 설명 🎨",
+      links: [{ url: "https://example.test/explicit" }],
+    }, { id: message().id, session_number: 3, deleted_at: null });
+  });
+
   it("constrains edits to the selected session and treats a rejected update as a failure", async () => {
+    db.lookup.mockResolvedValue({ data: message(), error: null });
     await editPracticeMessage(message().id, 3, "수정 내용 https://example.test/updated");
     expect(db.update).toHaveBeenCalledWith(
       {

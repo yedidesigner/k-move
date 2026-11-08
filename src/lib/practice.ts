@@ -48,45 +48,80 @@ export type PracticeDraft = {
 
 const COLUMNS = "id,session_number,author_id,author_name,author_role,body,parent_id,links,attachments,is_pinned,created_at,updated_at,deleted_at";
 
-/** Links stay plain text. Never render student content as HTML or embed arbitrary URLs. */
+const PRACTICE_URL_PATTERN = /https?:\/\/[^\s<>"\u201c\u201d]+/gi;
+
+function trimPracticeUrlCandidate(candidate: string) {
+  let value = candidate.replace(/[.,;:!?\u3002\uFF0C\uFF01\uFF1F]+$/, "");
+  while (value.endsWith(")") &&
+    (value.match(/\)/g)?.length ?? 0) > (value.match(/\(/g)?.length ?? 0)) {
+    value = value.slice(0, -1);
+  }
+  return value.replace(/[\]}]+$/, "");
+}
+
+/** Extract safe, deduplicated bookmark metadata from pasted URLs. */
 export function extractPracticeLinks(body: string): PracticeLink[] {
-  const urls = body.match(/https?:\/\/[^\s<>"\u201c\u201d]+/gi) ?? [];
+  const matches = body.match(PRACTICE_URL_PATTERN) ?? [];
   const seen = new Set<string>();
   const result: PracticeLink[] = [];
-  for (const candidate of urls) {
-    // Strip sentence punctuation and only unmatched closing parentheses.
-    let value = candidate.replace(/[.,;:!?\u3002\uFF0C\uFF01\uFF1F]+$/, "");
-    while (value.endsWith(")") && (value.match(/\)/g)?.length ?? 0) > (value.match(/\(/g)?.length ?? 0)) value = value.slice(0, -1);
-    value = value.replace(/[\]}]+$/, "");
+  for (const candidate of matches) {
     try {
-      const url = normalizeFeedbackUrl(value);
-      if (!seen.has(url)) { seen.add(url); result.push({ url }); }
+      const url = normalizeFeedbackUrl(trimPracticeUrlCandidate(candidate));
+      if (!seen.has(url)) {
+        seen.add(url);
+        result.push({ url });
+      }
     } catch { /* Invalid or credential-bearing URLs are never linked. */ }
   }
   return result;
 }
 
+/** Hide raw URLs already displayed as bookmark cards, including in older posts. */
+export function practiceDisplayBody(body: string, links: PracticeLink[]) {
+  if (!links.length) return body.trim();
+  const linked = new Set(links.map(link => link.url));
+  const withoutLinks = body.replace(PRACTICE_URL_PATTERN, candidate => {
+    try {
+      if (linked.has(normalizeFeedbackUrl(trimPracticeUrlCandidate(candidate)))) return "";
+    } catch { /* Invalid text must not silently disappear. */ }
+    return candidate;
+  });
+  return withoutLinks
+    .split(/\r?\n/)
+    .map(line => line.replace(/[ \t]{2,}/g, " ").replace(/\(\s*\)/g, "")
+      .replace(/\s+([,.!?])/g, "$1").trim())
+    .filter(line => line.length > 0 &&
+      !/^[,.;:!?)\]]+$/.test(line) &&
+      !/^(?:링크|주소|URL|사이트|참고 링크)\s*[:：]$/i.test(line))
+    .join("\n")
+    .trim();
+}
+
 export function preparePracticeInput(input: PracticeInput) {
-  let body = input.body.trim();
-  const present = new Set(extractPracticeLinks(body).map((link) => link.url));
-  for (const link of input.links ?? []) {
-    const url = normalizeFeedbackUrl(link.url);
-    if (!present.has(url)) {
-      body += `${body ? "\n" : ""}${url}`;
-      present.add(url);
-    }
-  }
+  const body = input.body.trim();
   if (body.length > PRACTICE_BODY_LIMIT) throw new Error("내용은 20,000자 이내로 입력해 주세요.");
   if (input.files.length > PRACTICE_FILE_COUNT) throw new Error("한 번에 파일을 최대 5개까지 공유할 수 있습니다.");
   input.files.forEach(validateFeedbackUpload);
+
   const links = extractPracticeLinks(body);
+  const seen = new Set(links.map(link => link.url));
+  for (const link of input.links ?? []) {
+    const url = normalizeFeedbackUrl(link.url);
+    if (!seen.has(url)) {
+      seen.add(url);
+      links.push(link.title ? { url, title: link.title } : { url });
+    }
+  }
   if (links.length > PRACTICE_LINK_COUNT) throw new Error("한 글에 링크를 최대 10개까지 공유할 수 있습니다.");
-  if (!body && !input.files.length) throw new Error("내용이나 링크를 입력하거나 파일을 첨부해 주세요.");
+  if (!body && !input.files.length && !links.length)
+    throw new Error("내용이나 링크를 입력하거나 파일을 첨부해 주세요.");
   return { body, links, files: input.files, parentId: input.parentId ?? null };
 }
 
 export function practiceFingerprint(input: ReturnType<typeof preparePracticeInput>) {
-  return JSON.stringify([input.body, input.parentId, input.files.map((file) => [file.name, file.size, file.type, file.lastModified])]);
+  return JSON.stringify([input.body, input.parentId,
+    input.links.map(link => [link.url, link.title ?? ""]),
+    input.files.map(file => [file.name, file.size, file.type, file.lastModified])]);
 }
 
 function row(value: unknown): PracticeMessage {
@@ -173,8 +208,23 @@ export async function savePracticeMessage(
 export async function editPracticeMessage(id: string, sessionNumber: number, body: string) {
   const trimmed = body.trim();
   if (trimmed.length > PRACTICE_BODY_LIMIT) throw new Error("내용은 20,000자 이내로 입력해 주세요.");
+  const previous = await existingMessage(id);
+  if (!previous || previous.session_number !== sessionNumber || previous.deleted_at)
+    throw new Error("수정할 글을 찾을 수 없습니다.");
+
+  // Retain bookmarks added via the link button when editing explanatory text.
+  const originalPasted = new Set(extractPracticeLinks(previous.body).map(link => link.url));
   const links = extractPracticeLinks(trimmed);
+  const seen = new Set(links.map(link => link.url));
+  for (const link of previous.links) {
+    if (!originalPasted.has(link.url) && !seen.has(link.url)) {
+      seen.add(link.url);
+      links.push(link);
+    }
+  }
   if (links.length > PRACTICE_LINK_COUNT) throw new Error("한 글에 링크를 최대 10개까지 공유할 수 있습니다.");
+  if (!trimmed && !links.length && !previous.attachments.length)
+    throw new Error("본문이나 북마크가 없는 글로 수정할 수 없습니다.");
   const { data, error } = await getSupabase().from(PRACTICE_TABLE)
     .update({ body: trimmed, links }).eq("id", id).eq("session_number", sessionNumber)
     .is("deleted_at", null).select(COLUMNS).single();

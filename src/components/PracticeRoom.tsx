@@ -1,24 +1,30 @@
 import { Fragment, useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import { Link, useBlocker } from "@tanstack/react-router";
-import { ArrowDown, ArrowUpRight, Check, ChevronDown, Download, ExternalLink, FileText, ImageIcon, Link2, LoaderCircle, MessageCircle, MoreHorizontal, Paperclip, Pencil, Pin, Plus, RefreshCw, Send, Trash2, Users, WifiOff, X } from "lucide-react";
+import { ArrowDown, ArrowUpRight, Check, ChevronDown, Download, ExternalLink, FileText, ImageIcon, Link2, LoaderCircle, MessageCircle, MoreHorizontal, Paperclip, Pencil, Pin, Plus, RefreshCw, Send, Smile, Trash2, Users, WifiOff, X } from "lucide-react";
 import { useAuth } from "@/lib/auth";
 import { usePublishedContent } from "@/lib/published-content";
 import { usePracticeRoom } from "@/hooks/use-practice-room";
 import { useEditorExitGuard } from "@/lib/editor-exit-guard";
 import { FEEDBACK_UPLOAD_ACCEPT, feedbackFileSize, normalizeFeedbackUrl, validateFeedbackUpload } from "@/lib/feedback-attachments";
-import { PRACTICE_BODY_LIMIT, PRACTICE_FILE_COUNT, PRACTICE_LINK_COUNT, extractPracticeLinks, getPracticeFileUrl, type PracticeAttachment, type PracticeInput, type PracticeLink, type PracticeMessage } from "@/lib/practice";
+import { PRACTICE_BODY_LIMIT, PRACTICE_FILE_COUNT, PRACTICE_LINK_COUNT, extractPracticeLinks, getPracticeFileUrl, practiceDisplayBody, type PracticeAttachment, type PracticeInput, type PracticeLink, type PracticeMessage } from "@/lib/practice";
 import "./practice-room.css";
 
 type RoomApi = ReturnType<typeof usePracticeRoom>;
 type Material = { key: string; message: PracticeMessage } & ({ kind: "link"; link: PracticeLink } | { kind: "image" | "file"; attachment: PracticeAttachment });
 type MaterialFilter = "all" | "link" | "image" | "file" | "mine";
 const materialFilters: { value: MaterialFilter; label: string }[] = [{ value: "all", label: "전체" }, { value: "link", label: "링크" }, { value: "image", label: "이미지" }, { value: "file", label: "파일" }, { value: "mine", label: "내 자료" }];
+
+const EMOJI_GROUPS = [
+  { label: "표정", items: ["😀", "😄", "😊", "😍", "🥳", "🤔", "😅", "😂", "😎", "🥹", "😭", "😮"] },
+  { label: "손짓", items: ["👍", "👏", "🙌", "🙏", "👌", "💪", "👀", "👋", "🤝", "✍️"] },
+  { label: "수업·디자인", items: ["🎨", "🖌️", "📝", "💻", "📎", "🔗", "📷", "💡", "✨", "🚀", "✅", "🔥", "⭐", "❤️", "📌", "❓"] },
+] as const;
 const dateFormat = new Intl.DateTimeFormat("ko-KR", { timeZone: "Asia/Seoul", month: "long", day: "numeric", weekday: "short" });
 const timeFormat = new Intl.DateTimeFormat("ko-KR", { timeZone: "Asia/Seoul", hour: "2-digit", minute: "2-digit" });
 const detailFormat = new Intl.DateTimeFormat("ko-KR", { timeZone: "Asia/Seoul", month: "numeric", day: "numeric", hour: "2-digit", minute: "2-digit" });
 const errorText = (error: unknown) => error instanceof Error ? error.message : "저장하지 못했어요. 잠시 후 다시 시도해 주세요.";
 const roomMessageId = (session: number, id: string) => `practice-message-${session}-${id}`;
-const shortBody = (message: PracticeMessage) => message.body.trim() || message.attachments[0]?.name || "공유한 자료";
+const shortBody = (message: PracticeMessage) => practiceDisplayBody(message.body, message.links) || message.links[0]?.title || (message.links.length ? "공유 링크" : message.attachments[0]?.name) || "공유한 자료";
 function linkHost(url: string) { try { return new URL(url).hostname.replace(/^www\./, ""); } catch { return "공유 링크"; } }
 
 export function PracticeRoom({ sessionNumber, embedded = false }: { sessionNumber: number; embedded?: boolean }) {
@@ -171,13 +177,14 @@ function MessageCard({ message, api, own, instructor, highlighted, reply = false
     try { await action(); done?.(); } catch (cause) { setError(errorText(cause)); } finally { setBusy(false); }
   }
   function beginEdit() { setDraft(message.body); setEditing(true); setError(null); requestAnimationFrame(() => editRef.current?.focus()); }
+  const visibleBody = practiceDisplayBody(message.body, message.links);
   return <article id={roomMessageId(message.session_number, message.id)} tabIndex={-1} className={`pr-message${reply ? " pr-message--reply" : ""}${highlighted ? " is-highlighted" : ""}${message.deleted_at ? " is-deleted" : ""}`}>
     <div className={`pr-avatar${message.author_role === "instructor" ? " pr-avatar--instructor" : ""}`} aria-hidden>{message.author_name.slice(0, 1) || "·"}</div>
     <div className="pr-message-main"><div className="pr-message-meta"><strong>{message.author_name}</strong><span className={`pr-role${message.author_role === "instructor" ? " pr-role--instructor" : ""}`}>{message.author_role === "instructor" ? "강사" : "수강생"}</span>{own && <span className="pr-own">나</span>}<time dateTime={message.created_at} title={detailFormat.format(new Date(message.created_at))}>{timeFormat.format(new Date(message.created_at))}</time>{message.is_pinned && !message.deleted_at && <Pin size={12} className="pr-message-pin" aria-label="고정된 글" />}
       {!message.deleted_at && (own || instructor) && <details className="pr-menu"><summary aria-label={`${message.author_name}님의 글 메뉴`}><MoreHorizontal size={18} aria-hidden /></summary><div>{own && <button type="button" disabled={busy} onClick={event => { event.currentTarget.closest("details")?.removeAttribute("open"); beginEdit(); }}><Pencil size={13} aria-hidden /> 내용 수정</button>}{instructor && <button type="button" disabled={busy} onClick={event => { event.currentTarget.closest("details")?.removeAttribute("open"); void act(() => api.togglePin(message.id, !message.is_pinned)); }}><Pin size={13} aria-hidden /> {message.is_pinned ? "고정 해제" : "상단에 고정"}</button>}<button type="button" disabled={busy} onClick={event => { event.currentTarget.closest("details")?.removeAttribute("open"); if (window.confirm("이 글을 삭제할까요? 첨부한 자료도 모아보기에서 사라집니다. 답글은 남아 있어요.")) void act(() => api.remove(message.id), () => setEditing(false)); }}><Trash2 size={13} aria-hidden /> 삭제</button></div></details>}
     </div>
     {message.deleted_at ? <p className="pr-deleted-text">삭제된 글입니다.</p> : editing ? <form className="pr-editor" onSubmit={event => { event.preventDefault(); void act(() => api.edit(message.id, draft), () => setEditing(false)); }}><label className="pr-sr-only" htmlFor={`edit-${message.id}`}>내용 수정</label><textarea id={`edit-${message.id}`} ref={editRef} value={draft} onChange={event => setDraft(event.target.value)} maxLength={PRACTICE_BODY_LIMIT} disabled={busy} rows={3} onKeyDown={event => { if ((event.ctrlKey || event.metaKey) && event.key === "Enter" && !event.nativeEvent.isComposing && event.nativeEvent.keyCode !== 229) { event.preventDefault(); void act(() => api.edit(message.id, draft), () => setEditing(false)); } }} /><div><span>첨부파일은 유지돼요. 링크는 본문에서 수정할 수 있어요.</span><button type="button" className="pr-text-button" disabled={busy} onClick={() => { setEditing(false); setError(null); }}>취소</button><button type="submit" className="pr-solid-button" disabled={busy || (!draft.trim() && !message.attachments.length)}>{busy ? "저장 중…" : "저장"}</button></div></form> : <>
-      {!!message.body && <p className="pr-message-body">{message.body}</p>}
+      {!!visibleBody && <p className="pr-message-body">{visibleBody}</p>}
       {!!message.links.length && <div className="pr-message-links">{message.links.map(link => <a href={link.url} key={link.url} target="_blank" rel="noopener noreferrer"><span className="pr-link-icon"><Link2 size={15} aria-hidden /></span><span><strong>{link.title || linkHost(link.url)}</strong><span>{link.url}</span></span><ArrowUpRight size={15} aria-label="새 탭에서 열기" /></a>)}</div>}
       {!!message.attachments.length && <div className="pr-message-attachments">{message.attachments.map(attachment => <AttachmentCard key={attachment.id} attachment={attachment} />)}</div>}
     </>}
@@ -212,6 +219,7 @@ function Composer({ sessionNumber, send, replyTo, clearReply, hidden, textareaRe
   const [files, setFiles] = useState<File[]>([]);
   const [links, setLinks] = useState<PracticeLink[]>([]);
   const [linkOpen, setLinkOpen] = useState(false);
+  const [emojiOpen, setEmojiOpen] = useState(false);
   const [linkDraft, setLinkDraft] = useState("");
   const [pending, setPending] = useState(false);
   const [progress, setProgress] = useState("");
@@ -219,7 +227,37 @@ function Composer({ sessionNumber, send, replyTo, clearReply, hidden, textareaRe
   const [saved, setSaved] = useState(false);
   const [dragging, setDragging] = useState(false);
   const pickerRef = useRef<HTMLInputElement>(null);
+  const emojiRootRef = useRef<HTMLDivElement>(null);
   const sending = useRef(false);
+  useEffect(() => {
+    if (!emojiOpen) return;
+    const onPointerDown = (event: PointerEvent) => {
+      if (!emojiRootRef.current?.contains(event.target as Node)) setEmojiOpen(false);
+    };
+    document.addEventListener("pointerdown", onPointerDown);
+    return () => document.removeEventListener("pointerdown", onPointerDown);
+  }, [emojiOpen]);
+
+  function insertEmoji(emoji: string) {
+    if (pending) return;
+    const target = textareaRef.current;
+    const start = target?.selectionStart ?? body.length;
+    const end = target?.selectionEnd ?? body.length;
+    const next = body.slice(0, start) + emoji + body.slice(end);
+    if (next.length > PRACTICE_BODY_LIMIT) {
+      setError("내용은 20,000자 이내로 입력해 주세요.");
+      return;
+    }
+    setBody(next);
+    setSaved(false);
+    setError(null);
+    setEmojiOpen(false);
+    requestAnimationFrame(() => {
+      textareaRef.current?.focus();
+      textareaRef.current?.setSelectionRange(start + emoji.length, start + emoji.length);
+    });
+  }
+
   const dirty = !!(body.trim() || files.length || links.length || linkDraft.trim());
   const detectedLinks = extractPracticeLinks(body);
   const linkCount = new Set([...detectedLinks, ...links].map(link => link.url)).size;
@@ -266,7 +304,36 @@ function Composer({ sessionNumber, send, replyTo, clearReply, hidden, textareaRe
       {!!files.length && <ul className="pr-draft-files">{files.map((file, index) => <li key={`${file.name}-${file.lastModified}-${index}`}>{file.type.startsWith("image/") ? <ImageIcon size={14} aria-hidden /> : <FileText size={14} aria-hidden />}<span><strong>{file.name}</strong><small>{feedbackFileSize(file.size)}</small></span><button type="button" className="pr-icon-button" disabled={pending} aria-label={`${file.name} 첨부 취소`} onClick={() => setFiles(current => current.filter((_, i) => i !== index))}><X size={14} aria-hidden /></button></li>)}</ul>}
       {!!links.length && <div className="pr-draft-links">{links.map(link => <div key={link.url}><Link2 size={12} aria-hidden /><span>{link.url}</span><button type="button" className="pr-icon-button" disabled={pending} aria-label={`${link.url} 링크 삭제`} onClick={() => setLinks(current => current.filter(item => item.url !== link.url))}><X size={13} aria-hidden /></button></div>)}</div>}
       {linkOpen && <div className="pr-link-input"><label className="pr-sr-only" htmlFor={`practice-link-${sessionNumber}`}>공유할 링크 주소</label><Link2 size={14} aria-hidden /><input id={`practice-link-${sessionNumber}`} type="url" placeholder="https://example.com" value={linkDraft} disabled={pending} onChange={event => setLinkDraft(event.target.value)} onKeyDown={event => { if (event.key === "Enter" && !event.nativeEvent.isComposing) { event.preventDefault(); addLink(); } }} /><button type="button" className="pr-text-button" disabled={pending || !linkDraft.trim()} onClick={addLink}>추가</button><button type="button" className="pr-icon-button" disabled={pending} aria-label="링크 입력 닫기" onClick={() => { setLinkOpen(false); setLinkDraft(""); }}><X size={14} aria-hidden /></button></div>}
-      <div className="pr-composer-tools"><div><input id={`practice-image-picker-${sessionNumber}`} type="file" multiple accept="image/jpeg,image/png,image/webp" className="pr-sr-only" tabIndex={-1} aria-label="실습 이미지 선택" onChange={event => { addFiles(Array.from(event.target.files ?? [])); event.target.value = ""; }} /><input id={`practice-file-picker-${sessionNumber}`} ref={pickerRef} type="file" multiple accept={FEEDBACK_UPLOAD_ACCEPT} className="pr-sr-only" tabIndex={-1} aria-label="실습 파일 선택" onChange={event => { addFiles(Array.from(event.target.files ?? [])); event.target.value = ""; }} /><button type="button" className="pr-tool-button" disabled={pending || disabled} onClick={() => pickerRef.current?.click()}><Paperclip size={15} aria-hidden /> 파일 첨부</button><button id={`practice-link-toggle-${sessionNumber}`} type="button" className="pr-tool-button" aria-expanded={linkOpen} disabled={pending || disabled} onClick={() => { setLinkOpen(current => !current); if (!linkOpen) requestAnimationFrame(() => document.getElementById(`practice-link-${sessionNumber}`)?.focus()); }}><Link2 size={15} aria-hidden /> 링크</button>{linkCount > 0 && <span className="pr-link-count">링크 {linkCount}개 인식</span>}</div><button type="submit" className="pr-solid-button pr-send" disabled={pending || disabled || !dirty || !!replyTo?.deleted_at}>{pending ? <LoaderCircle size={14} className="pr-spin" aria-hidden /> : <Send size={14} aria-hidden />}{pending ? "공유 중…" : replyTo ? "답글 공유" : "공유하기"}</button></div>
+      <div className="pr-composer-tools"><div><input id={`practice-image-picker-${sessionNumber}`} type="file" multiple accept="image/jpeg,image/png,image/webp" className="pr-sr-only" tabIndex={-1} aria-label="실습 이미지 선택" onChange={event => { addFiles(Array.from(event.target.files ?? [])); event.target.value = ""; }} /><input id={`practice-file-picker-${sessionNumber}`} ref={pickerRef} type="file" multiple accept={FEEDBACK_UPLOAD_ACCEPT} className="pr-sr-only" tabIndex={-1} aria-label="실습 파일 선택" onChange={event => { addFiles(Array.from(event.target.files ?? [])); event.target.value = ""; }} /><div className="pr-emoji-control" ref={emojiRootRef}>
+        <button type="button" className="pr-tool-button"
+          aria-label="이모지 선택" aria-expanded={emojiOpen}
+          aria-controls={"practice-emoji-panel-" + sessionNumber}
+          disabled={pending} onClick={() => setEmojiOpen(open => !open)}>
+          <Smile size={15} aria-hidden /> 이모지
+        </button>
+        {emojiOpen && <div className="pr-emoji-panel"
+          id={"practice-emoji-panel-" + sessionNumber} role="group"
+          aria-label="채팅 이모지 선택"
+          onKeyDown={event => {
+            if (event.key === "Escape") {
+              event.preventDefault();
+              setEmojiOpen(false);
+              textareaRef.current?.focus();
+            }
+          }}>
+          <p className="pr-emoji-heading">이모지 선택</p>
+          {EMOJI_GROUPS.map(group => <div className="pr-emoji-section" key={group.label}>
+            <p>{group.label}</p>
+            <div className="pr-emoji-grid">
+              {group.items.map(emoji => <button
+                key={emoji} type="button" title={emoji}
+                aria-label={emoji + " 입력"} onClick={() => insertEmoji(emoji)}>
+                {emoji}
+              </button>)}
+            </div>
+          </div>)}
+        </div>}
+      </div><button type="button" className="pr-tool-button" disabled={pending || disabled} onClick={() => pickerRef.current?.click()}><Paperclip size={15} aria-hidden /> 파일 첨부</button><button id={`practice-link-toggle-${sessionNumber}`} type="button" className="pr-tool-button" aria-expanded={linkOpen} disabled={pending || disabled} onClick={() => { setLinkOpen(current => !current); if (!linkOpen) requestAnimationFrame(() => document.getElementById(`practice-link-${sessionNumber}`)?.focus()); }}><Link2 size={15} aria-hidden /> 링크</button>{linkCount > 0 && <span className="pr-link-count">링크 {linkCount}개 인식</span>}</div><button type="submit" className="pr-solid-button pr-send" disabled={pending || disabled || !dirty || !!replyTo?.deleted_at}>{pending ? <LoaderCircle size={14} className="pr-spin" aria-hidden /> : <Send size={14} aria-hidden />}{pending ? "공유 중…" : replyTo ? "답글 공유" : "공유하기"}</button></div>
     </div>
     <div className="pr-composer-foot"><p id={`practice-hint-${sessionNumber}`}>파일당 10MB · 최대 5개 <span className="pr-desktop-hint">· 끌어 놓기 / 이미지 붙여넣기</span></p><span className="pr-shortcut">Ctrl / ⌘ + Enter로 공유</span></div>
     {pending && <p className="pr-save-status" role="status"><LoaderCircle className="pr-spin" size={13} aria-hidden />{progress}</p>}{saved && !dirty && <p className="pr-save-status" role="status"><Check size={13} aria-hidden />이 회차에 저장했어요. 수강생 모두 볼 수 있어요.</p>}{error && <p className="pr-inline-error" role="alert">{error}<span> 작성한 내용과 첨부파일은 그대로 있어요.</span></p>}{dragging && <div className="pr-drop-overlay"><Paperclip size={22} aria-hidden /> 여기에 놓아 파일 첨부</div>}
