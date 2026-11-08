@@ -22,6 +22,8 @@ describe("Winner-only anonymous envelope", () => {
     const handwrittenNote = screen.getByText("친구를 응원하는 따뜻한 한마디입니다.");
     expect(signature.closest(".wrl-letter")).toBe(handwrittenNote.closest(".wrl-letter"));
     expect(screen.queryByText("with warmth, ♡")).toBeNull();
+    expect(screen.queryByText("A NOTE FROM A CLASSMATE")).toBeNull();
+    expect(screen.getByText(/^\d{6}$/)).toBeInTheDocument();
     expect(screen.queryByText("투표자")).toBeNull();
     expect(screen.queryByText("2표")).toBeNull();
     expect(screen.getByRole("button", { name: "왼쪽 정렬" })).toHaveAttribute("aria-pressed", "true");
@@ -115,6 +117,25 @@ describe("Winner-only anonymous envelope", () => {
     expect(document.querySelector(".wrl-letter")).toHaveAttribute("data-letter-align","right");
     fireEvent.change(size,{target:{value:"10"}});
     expect(document.querySelector(".wrl-letter")).toHaveAttribute("data-letter-point-size","10");
+  });
+
+
+  it("offers seven pastel envelope colors with the original blue selected by default", () => {
+    render(<WinnerReasonLetters recipient="수강생가" letters={["색상 테스트"]} instructor={false} />);
+    fireEvent.click(screen.getByRole("button", { name:"편지 열기" }));
+    for (const label of ["연한 핑크","파스텔 주황","파스텔 노랑","파스텔 초록","파스텔 파랑","파스텔 남색","파스텔 보라"]) {
+      expect(screen.getByRole("button", { name:label })).toBeInTheDocument();
+    }
+    expect(screen.getByRole("button", { name:"파스텔 파랑" })).toHaveAttribute("aria-pressed","true");
+    fireEvent.click(screen.getByRole("button", { name:"파스텔 보라" }));
+    expect(screen.getByRole("button", { name:"파스텔 보라" })).toHaveAttribute("aria-pressed","true");
+  });
+
+  it("shows a one-click image save action only after the letter is opened", () => {
+    render(<WinnerReasonLetters recipient="수강생가" letters={["저장 테스트"]} instructor={false} />);
+    expect(screen.queryByRole("button", { name:"영원히 기억하기" })).toBeNull();
+    fireEvent.click(screen.getByRole("button", { name:"편지 열기" }));
+    expect(screen.getByRole("button", { name:"영원히 기억하기" })).toBeInTheDocument();
   });
 
 

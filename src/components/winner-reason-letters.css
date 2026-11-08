@@ -85,3 +85,16 @@
 .wrl-icon-button{width:34px;height:34px}
 .wrl-size-control{height:34px}
 }
+
+
+/* Pastel envelope palette and image-save action. */
+.wrl-color-controls{display:flex;align-items:center;gap:6px;margin-left:2px;padding-left:10px;border-left:1px solid #e3e3e3}
+.wrl-color-label{margin-right:2px;color:#666;font-size:10px;white-space:nowrap}
+.wrl-color-swatch{width:27px;height:27px;padding:0;border:1px solid transparent;border-radius:7px;cursor:pointer;box-shadow:inset 0 0 0 1px #ffffffaa}
+.wrl-color-swatch:hover{transform:translateY(-1px)}
+.wrl-color-swatch.is-active{border-color:#202020;outline:2px solid #fff;box-shadow:0 0 0 2px #333,inset 0 0 0 1px #ffffffaa}
+.wrl-save-button:disabled{cursor:wait;opacity:.55}
+@media(max-width:700px){
+.wrl-color-controls{width:100%;justify-content:center;margin-left:0;padding-left:0;padding-top:8px;border-left:0;border-top:1px solid #eee}
+.wrl-color-swatch{width:25px;height:25px}
+}
