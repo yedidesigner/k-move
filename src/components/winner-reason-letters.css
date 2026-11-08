@@ -1,13 +1,17 @@
 /* Korean handwriting fonts provided through Noonnu's published CDN webfont URLs.
    Diary and Human Beomseok remain disabled until separate web embedding permission. */
 @font-face{font-family:"WrlSongam";src:url("https://cdn.jsdelivr.net/gh/projectnoonnu/2604-1@1.0/SongamIhyeongsik-Regular.woff2") format("woff2");font-style:normal;font-weight:400;font-display:swap}
-@font-face{font-family:"WrlGeuriunFlow";src:url("https://cdn.jsdelivr.net/gh/Project-Noonnu/2607161334@x-3/x/GriunXHangeul_SongleSongeulHeullim-Rg.woff2") format("woff2");font-style:normal;font-weight:400;font-display:swap}
 @font-face{font-family:"WrlSchoolChalk";src:url("https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2307-2@1.0/HakgyoansimBunpilR.woff2") format("woff2");font-style:normal;font-weight:400;font-display:swap}
 @font-face{font-family:"WrlKyobo";src:url("https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2112@1.0/KyoboHandwriting2020A.woff") format("woff");font-style:normal;font-weight:400;font-display:swap}
 @font-face{font-family:"WrlGeuriunCat";src:url("https://cdn.jsdelivr.net/gh/Project-Noonnu/2607161334@x-6/x/GriunXHangeul_Gowoon-Rg.woff2") format("woff2");font-style:normal;font-weight:400;font-display:swap}
 @font-face{font-family:"WrlCafe24Star";src:url("https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_twelve@1.1/Cafe24Shiningstar.woff") format("woff");font-style:normal;font-weight:400;font-display:swap}
 @font-face{font-family:"WrlLeeSeoyun";src:url("https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2202-2@1.0/LeeSeoyun.woff") format("woff");font-style:normal;font-weight:400;font-display:swap}
 @font-face{font-family:"WrlSimGyeongha";src:url("https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2202-2@1.0/SimKyungha.woff") format("woff");font-style:normal;font-weight:400;font-display:swap}
+@font-face{font-family:"WrlMiSaeng";src:url("https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_two@1.0/SDMiSaeng.woff") format("woff");font-style:normal;font-weight:400;font-display:swap}
+@font-face{font-family:"WrlGangwonSaeum";src:url("https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2201-2@1.0/GangwonEduSaeeum_OTFMediumA.woff") format("woff");font-style:normal;font-weight:400;font-display:swap}
+@font-face{font-family:"WrlOmuDaye";src:url("https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2304-01@1.0/omyu_pretty.woff2") format("woff2");font-style:normal;font-weight:400;font-display:swap}
+@font-face{font-family:"WrlOngleipUiyeon";src:url("https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2105@1.1/Uiyeun.woff") format("woff");font-style:normal;font-weight:400;font-display:swap}
+@font-face{font-family:"WrlOngleipParkDahyeon";src:url("https://cdn.jsdelivr.net/gh/projectnoonnu/2411-3@1.0/Ownglyph_ParkDaHyun.woff2") format("woff2");font-style:normal;font-weight:400;font-display:swap}
 
 /* Original blue letter imagery, optimized as transparent AVIF for the LMS. */
 .wrl-mailbox{margin:16px 0 0;border:1px solid #e2e2e2;background:#fcfcfc;padding:22px 22px 18px;color:#262626}

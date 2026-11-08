@@ -1,21 +1,29 @@
 /**
- * Eight Korean handwriting styles with verified website/webfont permission on
- * their official Noonnu listing. We deliberately avoid bundling font binaries:
- * the licensed fonts are fetched directly from the Noonnu-published CDN URLs.
+ * Korean handwriting styles with verified website/webfont permission on their
+ * Noonnu listing. We deliberately avoid bundling font binaries: permitted web
+ * fonts are fetched from the published CDN URLs instead.
  *
- * Requested but NOT enabled without separate permission:
- * - 다이어리체 (얼리폰트): embedding/webfont requires individual permission.
- * - 휴먼범석체 (이범석): software/web embedding is conditional, no public webfont snippet.
+ * User-requested removal:
+ * - 그리운X국한박 송글손글 감성 흘림체
+ *
+ * Requested but NOT enabled without separate permission / a verified webfont URL:
+ * - 다이어리체 (얼리폰트)
+ * - 휴먼범석체 (이범석)
+ * - 온글잎 루루체 (verified public webfont URL not found in current Noonnu index)
  */
 export const WINNER_LETTER_FONTS = [
   { family: "WrlSongam", name: "송암 이형식체" },
-  { family: "WrlGeuriunFlow", name: "그리운X국한박 송글손글 감성 흘림체" },
   { family: "WrlSchoolChalk", name: "학교안심 분필" },
   { family: "WrlKyobo", name: "교보손글씨 2020 박도연" },
   { family: "WrlGeuriunCat", name: "그리운X국한박 신고양이" },
   { family: "WrlCafe24Star", name: "카페24 빛나는별" },
   { family: "WrlLeeSeoyun", name: "이서윤체" },
   { family: "WrlSimGyeongha", name: "심경하체" },
+  { family: "WrlMiSaeng", name: "미생체" },
+  { family: "WrlGangwonSaeum", name: "강원교육새음체" },
+  { family: "WrlOmuDaye", name: "오뮤 다예쁨체" },
+  { family: "WrlOngleipUiyeon", name: "온글잎 의연체" },
+  { family: "WrlOngleipParkDahyeon", name: "온글잎 박다현체" },
 ] as const;
 
 export type WinnerLetterFont = (typeof WINNER_LETTER_FONTS)[number];
