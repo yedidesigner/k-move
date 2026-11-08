@@ -7,6 +7,7 @@ import {
   Library,
   Briefcase,
   MessageSquareText,
+  MessagesSquare,
   Wrench,
   LogOut,
   KeyRound,
@@ -23,6 +24,7 @@ import { requestEditorExit } from "@/lib/editor-exit-guard";
 const STUDENT_NAV = [
   { to: "/", label: "홈", icon: Home },
   { to: "/sessions", label: "전체 수업", icon: CalendarDays },
+  { to: "/practice", label: "실습 공유", icon: MessagesSquare },
   { to: "/glossary", label: "용어집", icon: BookOpen },
   { to: "/materials", label: "학습자료", icon: Library },
   { to: "/portfolio", label: "내 포트폴리오", icon: Briefcase },
@@ -33,6 +35,7 @@ const STUDENT_NAV = [
 const INSTRUCTOR_NAV = [
   { to: "/", label: "강사 홈", icon: Home, group: "수업 운영" },
   { to: "/sessions", label: "수업 관리", icon: CalendarDays, group: "수업 운영" },
+  { to: "/practice", label: "실습 공유", icon: MessagesSquare, group: "수업 운영" },
   { to: "/feedback", label: "과제&피드백", icon: MessageSquareText, group: "수업 운영" },
   { to: "/admin", label: "학생 관리", icon: Users, group: "수업 운영" },
   { to: "/portfolio", label: "학생 포트폴리오", icon: Briefcase, group: "수업 운영" },
@@ -49,10 +52,11 @@ export function AppShell({ children }: { children: ReactNode }) {
   const [collapsed, setCollapsed] = useState(false);
   const [logoutError, setLogoutError] = useState(false);
   const feedback = location.pathname.replace(/\/+$/, "") === "/feedback";
+  const practice = location.pathname.replace(/\/+$/, "") === "/practice";
   const nav = instructor ? INSTRUCTOR_NAV : STUDENT_NAV;
   const mobilePaths = instructor
-    ? ["/", "/feedback", "/admin", "/sessions", "/portfolio"]
-    : ["/", "/sessions", "/glossary", "/materials", "/feedback"];
+    ? ["/", "/practice", "/feedback", "/sessions", "/admin"]
+    : ["/", "/sessions", "/practice", "/materials", "/feedback"];
   const linkCls =
     "flex min-h-11 items-center gap-3 border-l-2 border-transparent px-3 text-sm font-medium transition-colors hover:bg-sidebar-accent data-[nav-active=true]:border-sidebar-primary data-[nav-active=true]:bg-sidebar-primary data-[nav-active=true]:text-sidebar-primary-foreground focus-visible:outline-2 focus-visible:outline-offset-2";
   const activeTab = (location.search as Record<string, unknown>)["tab"] ?? "students";
@@ -251,7 +255,9 @@ export function AppShell({ children }: { children: ReactNode }) {
           id="lms-main"
           tabIndex={-1}
           className={
-            feedback
+            practice
+              ? "mx-auto w-full min-w-0 max-w-[1440px] px-4 pb-24 pt-6 outline-none md:px-7 md:pb-10 lg:px-9"
+              : feedback
               ? "min-w-0 w-full p-0 outline-none"
               : instructor
                 ? "mx-auto w-full min-w-0 max-w-[1600px] px-4 pb-24 pt-6 outline-none md:px-7 md:pb-10 lg:px-9"
@@ -284,6 +290,7 @@ export function AppShell({ children }: { children: ReactNode }) {
                       {
                         "/": "홈",
                         "/feedback": "과제&피드백",
+                        "/practice": "실습 공유",
                         "/admin": "학생",
                         "/sessions": "수업",
                         "/portfolio": "포트폴리오",

@@ -21,6 +21,7 @@ import { Route as AppGlossaryRouteImport } from './routes/_app/glossary'
 import { Route as AppMaterialsRouteImport } from './routes/_app/materials'
 import { Route as AppPasswordRouteImport } from './routes/_app/password'
 import { Route as AppPortfolioRouteImport } from './routes/_app/portfolio'
+import { Route as AppPracticeRouteImport } from './routes/_app/practice'
 import { Route as AppPromisesRouteImport } from './routes/_app/promises'
 import { Route as AppToolsRouteImport } from './routes/_app/tools'
 import { Route as AppSessionsIndexRouteImport } from './routes/_app/sessions.index'
@@ -85,6 +86,11 @@ const AppPortfolioRoute = AppPortfolioRouteImport.update({
   path: '/portfolio',
   getParentRoute: () => AppRoute,
 } as any)
+const AppPracticeRoute = AppPracticeRouteImport.update({
+  id: '/practice',
+  path: '/practice',
+  getParentRoute: () => AppRoute,
+} as any)
 const AppPromisesRoute = AppPromisesRouteImport.update({
   id: '/promises',
   path: '/promises',
@@ -118,6 +124,7 @@ export interface FileRoutesByFullPath {
   '/materials': typeof AppMaterialsRoute
   '/password': typeof AppPasswordRoute
   '/portfolio': typeof AppPortfolioRoute
+  '/practice': typeof AppPracticeRoute
   '/promises': typeof AppPromisesRoute
   '/tools': typeof AppToolsRoute
   '/sessions/$id': typeof AppSessionsIdRoute
@@ -134,6 +141,7 @@ export interface FileRoutesByTo {
   '/materials': typeof AppMaterialsRoute
   '/password': typeof AppPasswordRoute
   '/portfolio': typeof AppPortfolioRoute
+  '/practice': typeof AppPracticeRoute
   '/promises': typeof AppPromisesRoute
   '/tools': typeof AppToolsRoute
   '/': typeof AppIndexRoute
@@ -153,6 +161,7 @@ export interface FileRoutesById {
   '/_app/materials': typeof AppMaterialsRoute
   '/_app/password': typeof AppPasswordRoute
   '/_app/portfolio': typeof AppPortfolioRoute
+  '/_app/practice': typeof AppPracticeRoute
   '/_app/promises': typeof AppPromisesRoute
   '/_app/tools': typeof AppToolsRoute
   '/_app/': typeof AppIndexRoute
@@ -173,6 +182,7 @@ export interface FileRouteTypes {
     | '/materials'
     | '/password'
     | '/portfolio'
+    | '/practice'
     | '/promises'
     | '/tools'
     | '/sessions/$id'
@@ -189,6 +199,7 @@ export interface FileRouteTypes {
     | '/materials'
     | '/password'
     | '/portfolio'
+    | '/practice'
     | '/promises'
     | '/tools'
     | '/'
@@ -207,6 +218,7 @@ export interface FileRouteTypes {
     | '/_app/materials'
     | '/_app/password'
     | '/_app/portfolio'
+    | '/_app/practice'
     | '/_app/promises'
     | '/_app/tools'
     | '/_app/'
@@ -307,6 +319,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppPortfolioRouteImport
       parentRoute: typeof AppRoute
     }
+    '/_app/practice': {
+      id: '/_app/practice'
+      path: '/practice'
+      fullPath: '/practice'
+      preLoaderRoute: typeof AppPracticeRouteImport
+      parentRoute: typeof AppRoute
+    }
     '/_app/promises': {
       id: '/_app/promises'
       path: '/promises'
@@ -346,6 +365,7 @@ interface AppRouteChildren {
   AppMaterialsRoute: typeof AppMaterialsRoute
   AppPasswordRoute: typeof AppPasswordRoute
   AppPortfolioRoute: typeof AppPortfolioRoute
+  AppPracticeRoute: typeof AppPracticeRoute
   AppPromisesRoute: typeof AppPromisesRoute
   AppToolsRoute: typeof AppToolsRoute
   AppIndexRoute: typeof AppIndexRoute
@@ -361,6 +381,7 @@ const AppRouteChildren: AppRouteChildren = {
   AppMaterialsRoute: AppMaterialsRoute,
   AppPasswordRoute: AppPasswordRoute,
   AppPortfolioRoute: AppPortfolioRoute,
+  AppPracticeRoute: AppPracticeRoute,
   AppPromisesRoute: AppPromisesRoute,
   AppToolsRoute: AppToolsRoute,
   AppIndexRoute: AppIndexRoute,

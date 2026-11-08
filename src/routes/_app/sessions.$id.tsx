@@ -6,6 +6,7 @@ import { usePublishedContent, PublishedAnnouncements } from "@/lib/published-con
 import { useAuth } from "@/lib/auth";
 import { WeekTwoResources } from "@/components/WeekTwoResources";
 import { WeekThreeResources } from "@/components/WeekThreeResources";
+import { PracticeRoom } from "@/components/PracticeRoom";
 
 export const Route = createFileRoute("/_app/sessions/$id")({
   loader: ({ params }) => {
@@ -101,6 +102,9 @@ function Detail() {
       <div className="mt-5">
         <PublishedAnnouncements sessionNumber={s.number} />
       </div>
+      <section className="mt-6 mb-8" aria-label={`${s.number}회차 실습 공유`}>
+        <PracticeRoom key={s.id} sessionNumber={s.number} embedded />
+      </section>
       {!!s.materials?.length && (
         <section className="mt-6" aria-labelledby="session-materials-title">
           <h2 id="session-materials-title" className="mb-3 text-lg font-semibold">

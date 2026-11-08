@@ -45,7 +45,7 @@ function BrandSlideViewer({ lesson }: { lesson: Lesson }) {
   const [error, setError] = useState("");
   const [notice, setNotice] = useState("");
   const [retry, setRetry] = useState(0);
-  const chapter = [...lesson.chapters].reverse().find(c => c.page <= page) ?? lesson.chapters[0];
+  const chapter = [...lesson.chapters].reverse().find(c => c.page <= page) ?? lesson.chapters[0] ?? { page: 1, title: "강의 슬라이드" };
   useEffect(() => {
     setCanFull(!!document.fullscreenEnabled && typeof root.current?.requestFullscreen === "function");
     const onChange = () => setFull(document.fullscreenElement === root.current);
