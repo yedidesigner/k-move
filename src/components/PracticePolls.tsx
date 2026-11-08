@@ -54,7 +54,10 @@ export function PracticePolls({ sessionNumber }: { sessionNumber: number }) {
     try {
       const nextPolls = await getPracticePolls(sessionNumber);
       const visible = await getPracticePollWinnerList(sessionNumber);
-      const completed = await Promise.all(nextPolls.map(p => isPracticePollComplete(p.id)));
+      // Course-wide turnout is instructor-only. Never request it on a student's session.
+      const completed = instructor
+        ? await Promise.all(nextPolls.map(p => isPracticePollComplete(p.id)))
+        : [];
       let nextMyVotes: MapOf<number | null> = {};
       let nextMyReasons: MapOf<string | null> = {};
       let nextMyIndexes: MapOf<number | null> = {};
@@ -333,10 +336,10 @@ export function PracticePolls({ sessionNumber }: { sessionNumber: number }) {
               <span>{selectedReason.length}/{PRACTICE_REASON_MAX_LENGTH}</span>
             </div>
           </div>}
-          {completed && <p className="pr-polls-all-done" role="status">
+          {instructor && completed && <p className="pr-polls-all-done" role="status">
             <CheckCircle2 size={17} aria-hidden />
             <strong>투표 완료</strong>
-            <span>수강생 전원이 참여했습니다. {isClosed ? "마감된 투표입니다." : "수업 종료 전까지 선택을 변경할 수 있습니다."}</span>
+            <span>수강생 전원이 참여했습니다. {isClosed ? "마감된 투표입니다." : "수업 종료 전까지 선택을 변경할 수 있습니다."} 이 정보는 강사에게만 표시됩니다.</span>
           </p>}
           {!instructor && !canParticipate && <p className="pr-polls-hold">
             <LockKeyhole size={13} aria-hidden /> 투표 후보 명단에 포함된 실제 수강생만 참여할 수 있습니다.

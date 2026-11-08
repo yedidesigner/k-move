@@ -161,13 +161,28 @@ describe("Practice poll self-vote and completion interface", () => {
     expect(mocks.myReason).not.toHaveBeenCalled();
   });
 
-  it("shows only '투표 완료' when all eligible students have voted", async () => {
+  it("does not reveal full-class completion or count to students, even if complete", async () => {
     mocks.complete.mockResolvedValue(true);
+    render(<PracticePolls sessionNumber={24} />);
+    await screen.findByRole("button", { name: "선택한 1명에게 투표" });
+    expect(mocks.complete).not.toHaveBeenCalled();
+    expect(screen.queryByText("투표 완료")).toBeNull();
+    expect(screen.queryByText(/수강생 전원이 참여했습니다/)).toBeNull();
+    expect(screen.queryByText("15표")).toBeNull();
+    expect(screen.queryByText(/참여자 목록/)).toBeNull();
+    expect(mocks.adminReasons).not.toHaveBeenCalled();
+    expect(mocks.admin).not.toHaveBeenCalled();
+  });
+
+  it("shows only the instructor when everyone has participated", async () => {
+    mocks.auth.status = "instructor";
+    mocks.complete.mockResolvedValue(true);
+    mocks.candidates.mockResolvedValue(["수강생가","수강생나"]);
+    mocks.admin.mockResolvedValue({ totalVotes: 3, options: [], participants: [] });
     render(<PracticePolls sessionNumber={24} />);
     expect(await screen.findByText("투표 완료")).toBeInTheDocument();
     expect(screen.getByText(/수강생 전원이 참여했습니다/)).toBeInTheDocument();
-    expect(screen.queryByText("15표")).toBeNull();
-    expect(screen.queryByText(/참여자 목록/)).toBeNull();
+    expect(mocks.complete).toHaveBeenCalledWith("poll-a");
   });
 
   it("does not expose voting controls to a noncandidate sample account", async () => {
