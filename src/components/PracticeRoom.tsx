@@ -1,12 +1,13 @@
 import { Fragment, useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import { Link, useBlocker } from "@tanstack/react-router";
-import { ArrowDown, ArrowUpRight, Check, ChevronDown, Download, ExternalLink, FileText, ImageIcon, Link2, LoaderCircle, MessageCircle, MoreHorizontal, Paperclip, Pencil, Pin, Plus, RefreshCw, Send, Smile, Trash2, Users, WifiOff, X } from "lucide-react";
+import { ArrowDown, ArrowUpRight, Check, ChevronDown, Download, ExternalLink, FileText, ImageIcon, Link2, LoaderCircle, MessageCircle, MoreHorizontal, Paperclip, Pencil, Pin, Plus, RefreshCw, Send, Smile, Trash2, Users, Vote, WifiOff, X } from "lucide-react";
 import { useAuth } from "@/lib/auth";
 import { usePublishedContent } from "@/lib/published-content";
 import { usePracticeRoom } from "@/hooks/use-practice-room";
 import { useEditorExitGuard } from "@/lib/editor-exit-guard";
 import { FEEDBACK_UPLOAD_ACCEPT, feedbackFileSize, normalizeFeedbackUrl, validateFeedbackUpload } from "@/lib/feedback-attachments";
 import { PRACTICE_BODY_LIMIT, PRACTICE_FILE_COUNT, PRACTICE_LINK_COUNT, extractPracticeLinks, getPracticeFileUrl, practiceDisplayBody, type PracticeAttachment, type PracticeInput, type PracticeLink, type PracticeMessage } from "@/lib/practice";
+import { PracticePolls } from "@/components/PracticePolls";
 import "./practice-room.css";
 
 type RoomApi = ReturnType<typeof usePracticeRoom>;
@@ -32,7 +33,7 @@ export function PracticeRoom({ sessionNumber, embedded = false }: { sessionNumbe
   const { user, status } = useAuth();
   const { sessions } = usePublishedContent();
   const session = sessions.find(item => item.number === sessionNumber);
-  const [tab, setTab] = useState<"chat" | "materials">("chat");
+  const [tab, setTab] = useState<"chat" | "materials" | "polls">("chat");
   const [filter, setFilter] = useState<MaterialFilter>("all");
   const [openThreads, setOpenThreads] = useState<Set<string>>(new Set());
   const [replyTo, setReplyTo] = useState<PracticeMessage | null>(null);
@@ -124,7 +125,7 @@ export function PracticeRoom({ sessionNumber, embedded = false }: { sessionNumbe
       <div className="pr-header-side"><span className={`pr-connection${api.connected && online ? " is-connected" : ""}`}><span />{!online ? "오프라인" : api.connected ? "실시간 연결" : "연결 확인 중"}</span>{embedded && <Link className="pr-expand" to="/practice" search={{ session: sessionNumber }}>크게 보기 <ArrowUpRight size={14} aria-hidden /></Link>}</div>
     </header>
     <div className="pr-tabs" role="tablist" aria-label="실습 공유 보기 방식">
-      {([{ value: "chat", label: "대화", count }, { value: "materials", label: "자료 모아보기", count: materials.length }] as const).map(item => <button key={item.value} type="button" role="tab" id={`${tabId}-${item.value}-tab`} aria-controls={`${tabId}-${item.value}`} aria-selected={tab === item.value} tabIndex={tab === item.value ? 0 : -1} className={`pr-tab${tab === item.value ? " is-active" : ""}`} onClick={() => setTab(item.value)} onKeyDown={event => { if (["ArrowLeft", "ArrowRight", "Home", "End"].includes(event.key)) { event.preventDefault(); const next = event.key === "Home" ? "chat" : event.key === "End" ? "materials" : tab === "chat" ? "materials" : "chat"; setTab(next); document.getElementById(`${tabId}-${next}-tab`)?.focus(); } }}>{item.value === "chat" ? <MessageCircle size={15} aria-hidden /> : <Paperclip size={15} aria-hidden />}{item.label}<span className="pr-count">{item.count}</span></button>)}
+      {([{ value: "chat", label: "대화", count }, { value: "materials", label: "자료 모아보기", count: materials.length }, { value: "polls", label: "투표", count: null }] as const).map(item => <button key={item.value} type="button" role="tab" id={`${tabId}-${item.value}-tab`} aria-controls={`${tabId}-${item.value}`} aria-selected={tab === item.value} tabIndex={tab === item.value ? 0 : -1} className={`pr-tab${tab === item.value ? " is-active" : ""}`} onClick={() => setTab(item.value)} onKeyDown={event => { if (["ArrowLeft", "ArrowRight", "Home", "End"].includes(event.key)) { event.preventDefault(); const order = ["chat", "materials", "polls"] as const; const index = order.indexOf(tab); const next = event.key === "Home" ? order[0] : event.key === "End" ? order[2] : event.key === "ArrowRight" ? order[(index+1)%3]! : order[(index+2)%3]!; setTab(next); document.getElementById(`${tabId}-${next}-tab`)?.focus(); } }}>{item.value === "chat" ? <MessageCircle size={15} aria-hidden /> : item.value === "materials" ? <Paperclip size={15} aria-hidden /> : <Vote size={15} aria-hidden />}{item.label}{item.count !== null && <span className="pr-count">{item.count}</span>}</button>)}
       <span className="pr-save-note"><Check size={12} aria-hidden /> 공유한 내용은 자동 저장</span>
     </div>
     {!online && <div className="pr-notice" role="status"><WifiOff size={16} aria-hidden /><span>인터넷 연결이 끊겼어요. 작성 중인 내용은 유지되며, 연결 후 공유할 수 있어요.</span></div>}
@@ -153,6 +154,9 @@ export function PracticeRoom({ sessionNumber, embedded = false }: { sessionNumbe
         {material.kind === "link" ? <a className="pr-material-link" href={material.link.url} target="_blank" rel="noopener noreferrer"><span>{linkHost(material.link.url)}</span><strong>{material.link.title || material.link.url}</strong><ExternalLink size={15} aria-label="새 탭에서 열기" /></a> : <AttachmentCard attachment={material.attachment} large />}
         <footer><div><strong>{material.message.author_name}</strong>{material.message.author_role === "instructor" && <span className="pr-role">강사</span>}<time dateTime={material.message.created_at}>{detailFormat.format(new Date(material.message.created_at))}</time></div><button type="button" className="pr-text-button" onClick={() => showOriginal(material.message)}>원문 보기 <ArrowUpRight size={13} aria-hidden /></button></footer>
       </article>)}</div>)}</div>
+    </div>
+    <div id={`${tabId}-polls`} role="tabpanel" aria-labelledby={`${tabId}-polls-tab`} hidden={tab !== "polls"}>
+      {tab === "polls" && <PracticePolls key={`${sessionNumber}:${user?.id}`} sessionNumber={sessionNumber} />}
     </div>
     <Composer sessionNumber={sessionNumber} send={api.send} replyTo={replyTo ? api.messages.find(message => message.id === replyTo.id) ?? replyTo : null} clearReply={() => setReplyTo(null)} hidden={tab !== "chat"} textareaRef={textareaRef} disabled={!user || !online} onSent={() => { setReplyTo(null); requestAnimationFrame(scrollToLatest); }} />
   </section>;
