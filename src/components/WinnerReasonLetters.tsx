@@ -1,7 +1,9 @@
 import { useLayoutEffect, useMemo, useRef, useState } from "react";
 import { ArrowLeft, ArrowRight, LockKeyhole, MailOpen, RotateCcw } from "lucide-react";
-import { WINNER_LETTER_FONTS, randomLetterFontSequence, findLargestFittingLetterSize } from "@/lib/winner-letter-fonts";
+import { WINNER_LETTER_FONTS, randomLetterFontSequence } from "@/lib/winner-letter-fonts";
+import { fitWinnerLetterText } from "@/lib/fit-winner-letter";
 import "./winner-reason-letters.css";
+import "./winner-letter-fit.css";
 
 const CLOSED_IMAGE = "/images/envelope-yd-closed-hq-v2.avif";
 const OPEN_IMAGE = "/images/envelope-yd-open-hq-v2.avif";
@@ -18,38 +20,35 @@ export function WinnerReasonLetters({
   const readable = letters.filter((reason) => reason.trim().length > 0);
   const [opened, setOpened] = useState(false);
   const [current, setCurrent] = useState(0);
-  const [fontSize, setFontSize] = useState(30);
   const letterRef = useRef<HTMLElement | null>(null);
-  // Each note receives a random, stable handwriting font. No changes while reading.
   const letterContentSignature = recipient + "\u241f" + readable.join("\u241e");
   const letterFontOrder = useMemo(() => randomLetterFontSequence(readable.length), [letterContentSignature]);
   const selectedFont = letterFontOrder[current] ?? WINNER_LETTER_FONTS[0];
   const hasPrevious = opened && current > 0;
   const hasNext = opened && current < readable.length - 1;
-  // Keep all characters, but collapse excess line breaks to avoid wasting paper space.
   const displayedReason = (readable[current] ?? "").replace(/\s+/g, " ").trim();
 
   useLayoutEffect(() => {
     if (!opened) return;
     const sheet = letterRef.current;
-    const message = sheet?.querySelector<HTMLElement>(".wrl-letter-message");
-    const signature = sheet?.querySelector<HTMLElement>(".wrl-letter-signature");
-    if (!sheet || !message || !signature) return;
-
+    if (!sheet) return;
+    const scene = sheet.closest<HTMLElement>(".wrl-open-scene");
+    const image = scene?.querySelector<HTMLImageElement>(".wrl-envelope-open");
+    const regions = [
+      ["kicker", 9],
+      ["message", 30],
+      ["signature", 14],
+    ] as const;
+    const targets = regions.flatMap(([name, maximum]) => {
+      const box = sheet.querySelector<HTMLElement>(`.wrl-letter-${name}-box`);
+      const text = sheet.querySelector<HTMLElement>(`.wrl-letter-${name}`);
+      return box && text ? [{ box, text, maximum }] : [];
+    });
     let active = true;
     let frame = 0;
     const fit = () => {
-      if (!active || !sheet.isConnected || !message.clientHeight || !message.clientWidth) return;
-      const fits = (size: number) => {
-        sheet.style.fontSize = size + "px";
-        return message.scrollHeight <= message.clientHeight + 1 &&
-          message.scrollWidth <= message.clientWidth + 1 &&
-          signature.scrollWidth <= signature.clientWidth + 1 &&
-          sheet.scrollHeight <= sheet.clientHeight + 1;
-      };
-      const largest = findLargestFittingLetterSize(fits, 8, 30);
-      sheet.style.fontSize = largest + "px";
-      setFontSize(largest);
+      if (!active || !sheet.isConnected) return;
+      targets.forEach(({ box, text, maximum }) => fitWinnerLetterText(box, text, maximum));
     };
     const schedule = () => {
       if (!active) return;
@@ -58,15 +57,16 @@ export function WinnerReasonLetters({
         frame = window.requestAnimationFrame(fit);
       } else fit();
     };
-    // Layout is known before paint, so initial open is not visibly clipped.
+    // Fit full natural text before first paint. Never measure a clipped flex child.
     fit();
     const observer = typeof ResizeObserver !== "undefined" ? new ResizeObserver(schedule) : null;
-    observer?.observe(sheet);
+    targets.forEach(({ box }) => observer?.observe(box));
+    if (scene) observer?.observe(scene);
+    image?.addEventListener("load", schedule);
     window.addEventListener("resize", schedule);
     const fonts = document.fonts;
     if (fonts) {
-      // Refit after external handwritten webfont finishes loading.
-      void fonts.load('30px "' + selectedFont.family + '"').then(schedule, schedule);
+      void fonts.load('30px "' + selectedFont.family + '"', displayedReason).then(schedule, schedule);
       void fonts.ready.then(schedule, schedule);
       fonts.addEventListener("loadingdone", schedule);
     }
@@ -74,11 +74,11 @@ export function WinnerReasonLetters({
       active = false;
       if (frame && typeof window.cancelAnimationFrame === "function") window.cancelAnimationFrame(frame);
       observer?.disconnect();
+      image?.removeEventListener("load", schedule);
       window.removeEventListener("resize", schedule);
       fonts?.removeEventListener("loadingdone", schedule);
     };
   }, [opened, current, displayedReason, selectedFont.family]);
-
 
   function restart() {
     setCurrent(0);
@@ -103,43 +103,31 @@ export function WinnerReasonLetters({
         <>
           <div className={"wrl-stage" + (opened ? " is-open" : "")}>
             <div className="wrl-envelope-art">
-              <img
-                className="wrl-envelope-closed"
-                src={CLOSED_IMAGE}
+              <img className="wrl-envelope-closed" src={CLOSED_IMAGE}
                 alt="YEDI'S DESIGN CLASS가 새겨진 파란색 닫힌 봉투"
-                aria-hidden={opened}
-                loading="eager"
-                decoding="async"
-              />
+                aria-hidden={opened} loading="eager" decoding="async" />
               <div className="wrl-open-scene" aria-hidden={!opened}>
-                <img
-                  className="wrl-envelope-open"
-                  src={OPEN_IMAGE}
-                  alt=""
-                  loading="eager"
-                  decoding="async"
-                />
+                <img className="wrl-envelope-open" src={OPEN_IMAGE} alt=""
+                  loading="eager" decoding="async" />
                 {opened && (
-                  <article
-                    ref={letterRef}
-                    className="wrl-letter"
-                    key={String(current) + ":" + recipient}
-                    aria-live="polite"
+                  <article ref={letterRef} className="wrl-letter"
+                    key={String(current) + ":" + recipient} aria-live="polite"
                     data-letter-font={selectedFont.name}
-                    style={{
-                      fontFamily: '"' + selectedFont.family + '", "Apple SD Gothic Neo", sans-serif',
-                      fontSize: fontSize + "px",
-                    }}
-                  >
-                    <span className="wrl-letter-kicker">A NOTE FROM A CLASSMATE</span>
-                    <p className="wrl-letter-message">{displayedReason}</p>
-                    <span className="wrl-letter-signature">- 당신을 응원하는 누군가 -</span>
+                    style={{ fontFamily: '"' + selectedFont.family + '", "Apple SD Gothic Neo", sans-serif' }}>
+                    <div className="wrl-letter-kicker-box" data-text-fit="pending">
+                      <span className="wrl-letter-kicker">A NOTE FROM A CLASSMATE</span>
+                    </div>
+                    <div className="wrl-letter-message-box" data-text-fit="pending">
+                      <p className="wrl-letter-message">{displayedReason}</p>
+                    </div>
+                    <div className="wrl-letter-signature-box" data-text-fit="pending">
+                      <span className="wrl-letter-signature">- 당신을 응원하는 누군가 -</span>
+                    </div>
                   </article>
                 )}
               </div>
             </div>
           </div>
-
           <div className="wrl-controls">
             {!opened ? (
               <button type="button" className="wrl-main-button" onClick={() => setOpened(true)}>

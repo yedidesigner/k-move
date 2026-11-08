@@ -1,0 +1,46 @@
+/* Coordinates are percentages of the OPEN envelope image, not the outer page.
+   The visible white paper narrows below the two diagonal blue folds.
+   Three disjoint safe boxes keep every line above those folds. */
+.wrl-open-scene .wrl-letter {
+  position:absolute; inset:0; width:100%; height:100%; margin:0; padding:0;
+  display:block; box-sizing:border-box; border:0; background:transparent;
+  box-shadow:none; animation:none; overflow:hidden; pointer-events:none;
+}
+.wrl-letter .wrl-letter-kicker-box,
+.wrl-letter .wrl-letter-message-box,
+.wrl-letter .wrl-letter-signature-box {
+  position:absolute; box-sizing:border-box; margin:0; min-width:0; min-height:0;
+  padding:2px; overflow:hidden; overflow:clip; clip-path:inset(0); contain:paint;
+}
+.wrl-letter .wrl-letter-kicker-box {
+  left:19%; top:20.7%; width:62%; height:3.7%;
+}
+.wrl-letter .wrl-letter-message-box {
+  left:19%; top:25%; width:62%; height:22%;
+}
+.wrl-letter .wrl-letter-signature-box {
+  left:32%; top:52.5%; width:36%; height:5.5%;
+  display:flex; flex-direction:column; justify-content:center;
+}
+/* Natural-height children are measured in full. Never flex-shrink, ellipsize,
+   line-clamp, or put a scrollbar on the writing. */
+.wrl-letter .wrl-letter-kicker,
+.wrl-letter .wrl-letter-message,
+.wrl-letter .wrl-letter-signature {
+  display:block; box-sizing:border-box; flex:none; width:calc(100% - 1px);
+  height:auto; min-height:0; max-height:none; margin:0; padding:0; border:0;
+  overflow:visible; text-overflow:clip; white-space:normal;
+  word-break:normal; overflow-wrap:anywhere; line-height:1.28;
+  font-family:inherit; font-weight:400; font-style:normal;
+  font-synthesis:none; letter-spacing:0; transform:none;
+}
+.wrl-letter .wrl-letter-message { font-size:12px; text-align:left; color:#36373a; }
+.wrl-letter .wrl-letter-kicker {
+  font-family:Arial,sans-serif; font-size:8px; line-height:1.2;
+  color:#929292; text-align:left; opacity:1;
+}
+.wrl-letter .wrl-letter-signature {
+  font-size:10px; text-align:center; color:#686f7c;
+}
+/* Hide only the unmeasured first frame; the fitter reveals ALL of the text. */
+.wrl-letter [data-text-fit="pending"] > * { visibility:hidden; }
