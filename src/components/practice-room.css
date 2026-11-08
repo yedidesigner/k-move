@@ -49,7 +49,8 @@
 .pr-empty h3{margin:10px 0 8px;font-size:17px;font-weight:600;letter-spacing:-.035em;line-height:1.5}
 .pr-empty>p:not(.pr-eyebrow){margin:0;color:var(--pr-muted);font-size:12px;line-height:1.9;word-break:keep-all}
 .pr-empty-tags{display:flex;gap:7px;margin-top:21px}
-.pr-empty-tags span{display:flex;align-items:center;gap:5px;padding:5px 8px;border:1px solid #ededed;font-size:10px;color:#737373}
+.pr-empty-tags button{display:flex;align-items:center;gap:5px;min-height:32px;padding:5px 8px;border:1px solid #ededed;background:#fff;font-size:10px;color:#737373}
+.pr-empty-tags button:hover:not(:disabled){border-color:#a3a3a3;background:#fafafa;color:#171717}
 .pr-date-divider{display:flex;align-items:center;gap:13px;margin:15px 0 20px;color:#8c8c8c;font-size:10px;text-align:center}
 .pr-date-divider:before,.pr-date-divider:after{content:"";flex:1;height:1px;background:#ededed}
 .pr-date-divider span{flex-shrink:0}
