@@ -2,8 +2,8 @@ import { useState } from "react";
 import { ArrowLeft, ArrowRight, LockKeyhole, MailOpen, RotateCcw } from "lucide-react";
 import "./winner-reason-letters.css";
 
-const CLOSED_IMAGE = "/images/envelope-yd-closed.avif";
-const OPEN_IMAGE = "/images/envelope-yd-open.avif";
+const CLOSED_IMAGE = "/images/envelope-yd-closed-hq-v2.avif";
+const OPEN_IMAGE = "/images/envelope-yd-open-hq-v2.avif";
 
 export function WinnerReasonLetters({
   recipient,
