@@ -98,3 +98,19 @@
 .wrl-color-controls{width:100%;justify-content:center;margin-left:0;padding-left:0;padding-top:8px;border-left:0;border-top:1px solid #eee}
 .wrl-color-swatch{width:25px;height:25px}
 }
+
+
+/* Save actions live on their own row below previous/next navigation. */
+.wrl-save-row{display:flex;justify-content:center;margin-top:10px}
+.wrl-save-menu-wrap{position:relative;display:inline-flex;justify-content:center}
+.wrl-save-menu{position:absolute;z-index:20;bottom:calc(100% + 8px);left:50%;width:min(340px,86vw);transform:translateX(-50%);overflow:hidden;border:1px solid #d9d9d9;background:#fff;box-shadow:0 12px 28px #00000018}
+.wrl-save-menu>button{display:flex;width:100%;flex-direction:column;align-items:flex-start;gap:3px;padding:12px 14px;border:0;border-bottom:1px solid #ededed;background:#fff;text-align:left;cursor:pointer}
+.wrl-save-menu>button:last-child{border-bottom:0}
+.wrl-save-menu>button:hover{background:#f7f7f7}
+.wrl-save-menu-title{font-size:11px;font-weight:700;color:#222}
+.wrl-save-menu>button>span:last-child{font-size:10px;line-height:1.5;color:#777}
+@media(max-width:520px){
+.wrl-save-row{margin-top:8px}
+.wrl-save-menu-wrap,.wrl-save-button{width:100%}
+.wrl-save-menu{bottom:calc(100% + 6px)}
+}

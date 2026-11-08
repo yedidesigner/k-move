@@ -23,7 +23,7 @@ describe("Winner-only anonymous envelope", () => {
     expect(signature.closest(".wrl-letter")).toBe(handwrittenNote.closest(".wrl-letter"));
     expect(screen.queryByText("with warmth, ♡")).toBeNull();
     expect(screen.queryByText("A NOTE FROM A CLASSMATE")).toBeNull();
-    expect(screen.getByText(/^\d{6}$/)).toBeInTheDocument();
+    expect(screen.getByText(/^\d{2}년 \d{2}월 \d{2}일$/)).toBeInTheDocument();
     expect(screen.queryByText("투표자")).toBeNull();
     expect(screen.queryByText("2표")).toBeNull();
     expect(screen.getByRole("button", { name: "왼쪽 정렬" })).toHaveAttribute("aria-pressed", "true");
@@ -131,11 +131,16 @@ describe("Winner-only anonymous envelope", () => {
     expect(screen.getByRole("button", { name:"파스텔 보라" })).toHaveAttribute("aria-pressed","true");
   });
 
-  it("shows a one-click image save action only after the letter is opened", () => {
-    render(<WinnerReasonLetters recipient="수강생가" letters={["저장 테스트"]} instructor={false} />);
+  it("opens save choices for one PNG or all letters ZIP on a separate row", () => {
+    render(<WinnerReasonLetters recipient="수강생가" letters={["저장 테스트","두 번째 편지"]} instructor={false} />);
     expect(screen.queryByRole("button", { name:"영원히 기억하기" })).toBeNull();
     fireEvent.click(screen.getByRole("button", { name:"편지 열기" }));
-    expect(screen.getByRole("button", { name:"영원히 기억하기" })).toBeInTheDocument();
+    const memory = screen.getByRole("button", { name:"영원히 기억하기" });
+    expect(memory).toHaveAttribute("aria-expanded","false");
+    fireEvent.click(memory);
+    expect(memory).toHaveAttribute("aria-expanded","true");
+    expect(screen.getByRole("menuitem", { name:/현재 편지 1장 저장/ })).toBeInTheDocument();
+    expect(screen.getByRole("menuitem", { name:/전체 편지 ZIP 다운로드/ })).toBeInTheDocument();
   });
 
 

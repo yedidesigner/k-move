@@ -1,6 +1,7 @@
 import { useLayoutEffect, useMemo, useRef, useState } from "react";
 import { AlignCenter, AlignLeft, AlignRight, ArrowLeft, ArrowRight, Download, LockKeyhole, MailOpen, RotateCcw, Type } from "lucide-react";
 import { WINNER_LETTER_FONTS, randomLetterFontSequence } from "@/lib/winner-letter-fonts";
+import { createStoreZip } from "@/lib/browser-zip";
 import { fitWinnerLetterText } from "@/lib/fit-winner-letter";
 import "./winner-reason-letters.css";
 import "./winner-letter-fit.css";
@@ -67,6 +68,7 @@ export function WinnerReasonLetters({
   const [pointSize, setPointSize] = useState(16);
   const [envelopeColor, setEnvelopeColor] = useState<EnvelopeColorId>("blue");
   const [savingImage, setSavingImage] = useState(false);
+  const [saveMenuOpen, setSaveMenuOpen] = useState(false);
   const letterRef = useRef<HTMLElement | null>(null);
   const letterContentSignature = recipient + "\u241f" + readable.join("\u241e");
   const letterFontOrder = useMemo(() => randomLetterFontSequence(readable.length), [letterContentSignature]);
@@ -130,93 +132,143 @@ export function WinnerReasonLetters({
     };
   }, [opened, current, displayedReason, selectedFont.family, pointSize, textAlign]);
 
-  async function saveForever() {
-    if (!opened || savingImage) return;
+  async function getOpenEnvelopeImage() {
     const scene = letterRef.current?.closest<HTMLElement>(".wrl-open-scene");
     const image = scene?.querySelector<HTMLImageElement>(".wrl-envelope-open");
-    const messageElement = letterRef.current?.querySelector<HTMLElement>(".wrl-letter-message");
-    if (!image || !messageElement || !scene) return;
+    if (!image || !scene) throw new Error("편지 이미지를 불러오지 못했습니다.");
+    if (!image.complete) await new Promise<void>((resolve,reject) => {
+      image.addEventListener("load", () => resolve(), { once:true });
+      image.addEventListener("error", () => reject(new Error("편지 이미지를 불러오지 못했습니다.")), { once:true });
+    });
+    return { image, scene };
+  }
+
+  function downloadBlob(blob: Blob, fileName: string) {
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = fileName;
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+    window.setTimeout(() => URL.revokeObjectURL(url), 1200);
+  }
+
+  async function renderLetterBlob(index: number) {
+    const { image } = await getOpenEnvelopeImage();
+    const reason = (readable[index] ?? "").replace(/\s+/g," ").trim();
+    const font = letterFontOrder[index] ?? WINNER_LETTER_FONTS[0];
+    const displayScale = (image.naturalWidth || 1100) /
+      Math.max(1,image.getBoundingClientRect().width || image.clientWidth || 440);
+    const maxFontPx = pointSize * (96/72) * displayScale;
+    await document.fonts?.ready;
+    await document.fonts?.load(Math.max(10,maxFontPx) + 'px "' + font.family + '"', reason);
+
+    const width = image.naturalWidth || 1100;
+    const height = image.naturalHeight || Math.round(width * 1143 / 985);
+    const canvas = document.createElement("canvas");
+    canvas.width = width;
+    canvas.height = height;
+    const ctx = canvas.getContext("2d");
+    if (!ctx) throw new Error("이미지 저장 기능을 사용할 수 없습니다.");
+
+    ctx.fillStyle="#fff";
+    ctx.fillRect(0,0,width,height);
+    ctx.save();
+    ctx.filter = selectedEnvelopeColor.filter === "none" ? "none" : selectedEnvelopeColor.filter;
+    ctx.drawImage(image,0,0,width,height);
+    ctx.restore();
+
+    const box = (left:number,top:number,boxWidth:number,boxHeight:number) => ({
+      x:left*width,y:top*height,w:boxWidth*width,h:boxHeight*height,
+    });
+    const messageBox=box(.19,.18,.62,.29);
+    const dateBox=box(.37,.492,.26,.034);
+    const signatureBox=box(.30,.532,.40,.045);
+
+    const anchor = (rect:{x:number;w:number},align:"left"|"center"|"right") =>
+      align==="left" ? rect.x : align==="center" ? rect.x+rect.w/2 : rect.x+rect.w;
+
+    const fitted = (text:string,rect:{x:number;y:number;w:number;h:number},family:string,max:number,lineRatio=1.28) => {
+      let low=1,high=max,best=1,lines:string[]=[];
+      for(let i=0;i<14;i++){
+        const size=(low+high)/2;
+        ctx.font=size+'px "'+family+'", sans-serif';
+        const wrapped=wrapCanvasText(ctx,text,rect.w-4);
+        if(wrapped.length*size*lineRatio<=rect.h){
+          best=size;lines=wrapped;low=size;
+        } else high=size;
+      }
+      ctx.font=best+'px "'+family+'", sans-serif';
+      lines=wrapCanvasText(ctx,text,rect.w-4);
+      return {size:best,lines,lineHeight:best*lineRatio};
+    };
+
+    const message=fitted(reason,messageBox,font.family,maxFontPx);
+    ctx.save();
+    ctx.fillStyle="#36373a";
+    ctx.textBaseline="top";
+    ctx.textAlign=textAlign;
+    ctx.font=message.size+'px "'+font.family+'", sans-serif';
+    message.lines.forEach((line,lineIndex)=>{
+      ctx.fillText(line,anchor(messageBox,textAlign),messageBox.y+lineIndex*message.lineHeight,messageBox.w);
+    });
+    ctx.restore();
+
+    ctx.save();
+    ctx.fillStyle="#7d838c";
+    ctx.textBaseline="middle";
+    ctx.textAlign=textAlign;
+    const dateSize=Math.min(maxFontPx*.48,10*displayScale);
+    ctx.font=dateSize+'px "'+font.family+'", sans-serif';
+    ctx.fillText(letterDate.label,anchor(dateBox,textAlign),dateBox.y+dateBox.h/2,dateBox.w);
+    ctx.restore();
+
+    ctx.save();
+    ctx.fillStyle="#686f7c";
+    ctx.textBaseline="middle";
+    ctx.textAlign=textAlign;
+    const signSize=Math.min(maxFontPx*.58,14*displayScale);
+    ctx.font=signSize+'px "'+font.family+'", sans-serif';
+    ctx.fillText("- 당신을 응원하는 누군가 -",anchor(signatureBox,textAlign),signatureBox.y+signatureBox.h/2,signatureBox.w);
+    ctx.restore();
+
+    const blob=await new Promise<Blob|null>(resolve=>canvas.toBlob(resolve,"image/png"));
+    if(!blob) throw new Error("이미지를 만들지 못했습니다.");
+    return blob;
+  }
+
+  async function saveCurrentLetter() {
+    if (!opened || savingImage) return;
     setSavingImage(true);
+    setSaveMenuOpen(false);
     try {
-      if (!image.complete) await new Promise<void>((resolve,reject) => {
-        image.addEventListener("load", () => resolve(), { once:true });
-        image.addEventListener("error", () => reject(new Error("편지 이미지를 불러오지 못했습니다.")), { once:true });
-      });
-      await document.fonts?.ready;
-      await document.fonts?.load(
-        getComputedStyle(messageElement).fontSize + ' "' + selectedFont.family + '"',
-        displayedReason,
-      );
-
-      const width = image.naturalWidth || 1100;
-      const height = image.naturalHeight || Math.round(width * 1143 / 985);
-      const canvas = document.createElement("canvas");
-      canvas.width = width;
-      canvas.height = height;
-      const context = canvas.getContext("2d");
-      if (!context) throw new Error("이미지 저장 기능을 사용할 수 없습니다.");
-      context.fillStyle = "#ffffff";
-      context.fillRect(0,0,width,height);
-      context.save();
-      context.filter = selectedEnvelopeColor.filter === "none" ? "none" : selectedEnvelopeColor.filter;
-      context.drawImage(image,0,0,width,height);
-      context.restore();
-
-      const sceneRect = scene.getBoundingClientRect();
-      const imageRect = image.getBoundingClientRect();
-      const scaleX = width / Math.max(1,imageRect.width);
-      const scaleY = height / Math.max(1,imageRect.height);
-
-      const drawInBox = (
-        selector: string,
-        text: string,
-        align: "left" | "center" | "right",
-        color: string,
-        family: string,
-      ) => {
-        const box = letterRef.current?.querySelector<HTMLElement>(selector + "-box");
-        const source = letterRef.current?.querySelector<HTMLElement>(selector);
-        if (!box || !source) return;
-        const boxRect = box.getBoundingClientRect();
-        const sourceStyle = getComputedStyle(source);
-        const fontSizePx = Number.parseFloat(sourceStyle.fontSize) * scaleY;
-        const lineHeightRatio = Number.parseFloat(sourceStyle.lineHeight) /
-          Math.max(1,Number.parseFloat(sourceStyle.fontSize));
-        const lineHeight = fontSizePx * (Number.isFinite(lineHeightRatio) ? lineHeightRatio : 1.2);
-        const x = (boxRect.left - imageRect.left) * scaleX;
-        const y = (boxRect.top - imageRect.top) * scaleY;
-        const boxWidth = boxRect.width * scaleX;
-        const boxHeight = boxRect.height * scaleY;
-        context.save();
-        context.fillStyle = color;
-        context.font = fontSizePx + 'px "' + family + '", sans-serif';
-        context.textBaseline = "top";
-        context.textAlign = align;
-        const anchorX = align === "left" ? x : align === "center" ? x + boxWidth/2 : x + boxWidth;
-        const lines = wrapCanvasText(context,text,boxWidth - 2*scaleX);
-        const maxLines = Math.max(1,Math.floor(boxHeight/lineHeight));
-        lines.slice(0,maxLines).forEach((line,index) => {
-          context.fillText(line,anchorX,y + index*lineHeight,boxWidth);
-        });
-        context.restore();
-      };
-
-      drawInBox(".wrl-letter-message", displayedReason, textAlign, "#36373a", selectedFont.family);
-      drawInBox(".wrl-letter-date", letterDate.label, "center", "#7d838c", "Arial");
-      drawInBox(".wrl-letter-signature", "- 당신을 응원하는 누군가 -", textAlign, "#686f7c", selectedFont.family);
-
-      const blob = await new Promise<Blob | null>(resolve => canvas.toBlob(resolve,"image/png"));
-      if (!blob) throw new Error("이미지를 만들지 못했습니다.");
-      const url = URL.createObjectURL(blob);
-      const link = document.createElement("a");
-      link.href = url;
-      link.download = "K-MOVE-letter-" + letterDate.compact + "-" + String(current + 1).padStart(2,"0") + ".png";
-      document.body.appendChild(link);
-      link.click();
-      link.remove();
-      window.setTimeout(() => URL.revokeObjectURL(url), 1000);
-    } catch (cause) {
+      const blob=await renderLetterBlob(current);
+      downloadBlob(blob,"K-MOVE-letter-"+letterDate.compact+"-"+String(current+1).padStart(2,"0")+".png");
+    } catch(cause) {
       window.alert(cause instanceof Error ? cause.message : "이미지를 저장하지 못했습니다.");
+    } finally {
+      setSavingImage(false);
+    }
+  }
+
+  async function saveAllLettersZip() {
+    if (!opened || savingImage) return;
+    setSavingImage(true);
+    setSaveMenuOpen(false);
+    try {
+      const files=[];
+      for(let index=0;index<readable.length;index++){
+        const blob=await renderLetterBlob(index);
+        files.push({
+          name:"K-MOVE-letter-"+letterDate.compact+"-"+String(index+1).padStart(2,"0")+".png",
+          data:new Uint8Array(await blob.arrayBuffer()),
+        });
+      }
+      const zip=createStoreZip(files);
+      downloadBlob(new Blob([zip],{type:"application/zip"}),"K-MOVE-letters-"+letterDate.compact+".zip");
+    } catch(cause) {
+      window.alert(cause instanceof Error ? cause.message : "전체 편지를 저장하지 못했습니다.");
     } finally {
       setSavingImage(false);
     }
@@ -267,7 +319,7 @@ export function WinnerReasonLetters({
                       <p className="wrl-letter-message" style={{ textAlign }}>{displayedReason}</p>
                     </div>
                     <div className="wrl-letter-date-box" data-text-fit="pending">
-                      <span className="wrl-letter-date">{letterDate.label}</span>
+                      <span className="wrl-letter-date" style={{ textAlign }}>{letterDate.label}</span>
                     </div>
                     <div className="wrl-letter-signature-box" data-text-fit="pending">
                       <span className="wrl-letter-signature" style={{ textAlign }}>- 당신을 응원하는 누군가 -</span>
@@ -335,10 +387,25 @@ export function WinnerReasonLetters({
                 )}
               </>
             )}
-            {opened && <button type="button" className="wrl-sub-button wrl-save-button"
-              disabled={savingImage} onClick={() => void saveForever()}>
-              <Download size={15} aria-hidden /> {savingImage ? "저장 중…" : "영원히 기억하기"}
-            </button>}
+          </div>
+          {opened && <div className="wrl-save-row">
+            <div className="wrl-save-menu-wrap">
+              <button type="button" className="wrl-sub-button wrl-save-button"
+                aria-expanded={saveMenuOpen} aria-controls="wrl-save-menu"
+                disabled={savingImage} onClick={() => setSaveMenuOpen(open => !open)}>
+                <Download size={15} aria-hidden /> {savingImage ? "저장 중…" : "영원히 기억하기"}
+              </button>
+              {saveMenuOpen && <div id="wrl-save-menu" className="wrl-save-menu" role="menu">
+                <button type="button" role="menuitem" onClick={() => void saveCurrentLetter()}>
+                  <span className="wrl-save-menu-title">현재 편지 1장 저장</span>
+                  <span>지금 보고 있는 편지만 PNG 이미지로 저장합니다.</span>
+                </button>
+                <button type="button" role="menuitem" onClick={() => void saveAllLettersZip()}>
+                  <span className="wrl-save-menu-title">전체 편지 ZIP 다운로드</span>
+                  <span>지금까지 받은 모든 편지를 ZIP 파일로 다운로드합니다.</span>
+                </button>
+              </div>}
+            </div>
           </div>
           <p className="wrl-privacy"><LockKeyhole size={13} aria-hidden />
             작성자 이름, 투표 시각, 득표수는 편지에 표시되지 않습니다.
