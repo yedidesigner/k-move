@@ -13,7 +13,9 @@
   padding:2px; overflow:hidden; overflow:clip; clip-path:inset(0); contain:paint;
 }
 .wrl-letter .wrl-letter-message-box {
-  left:19%; top:18%; width:62%; height:29%;
+  /* Starts below the visible top edge / user-marked guide line.
+     The bottom stops well above the date and the envelope folds. */
+  left:19%; top:27.5%; width:62%; height:18.5%;
 }
 .wrl-letter .wrl-letter-date-box {
   left:37%; top:49.2%; width:26%; height:3.4%;
@@ -35,10 +37,10 @@
   font-family:inherit; font-weight:400; font-style:normal;
   font-synthesis:none; letter-spacing:0; transform:none;
 }
-.wrl-letter .wrl-letter-message { font-size:12px; text-align:left; color:#36373a; }
+.wrl-letter .wrl-letter-message { font-size:12px; text-align:center; color:#36373a; }
 .wrl-letter .wrl-letter-date {
   font-family:inherit; font-size:9px; line-height:1.1;
-  color:#7d838c; text-align:inherit; letter-spacing:.02em;
+  color:#7d838c; text-align:center; letter-spacing:.02em;
 }
 .wrl-letter .wrl-letter-signature {
   font-size:10px; text-align:center; color:#686f7c;

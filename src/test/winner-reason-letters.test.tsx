@@ -26,11 +26,10 @@ describe("Winner-only anonymous envelope", () => {
     expect(screen.getByText(/^\d{2}년 \d{2}월 \d{2}일$/)).toBeInTheDocument();
     expect(screen.queryByText("투표자")).toBeNull();
     expect(screen.queryByText("2표")).toBeNull();
-    expect(screen.getByRole("button", { name: "왼쪽 정렬" })).toHaveAttribute("aria-pressed", "true");
-    expect(screen.getByRole("combobox", { name: "글자 크기" })).toHaveValue("16");
-    fireEvent.click(screen.getByRole("button", { name: "가운데 정렬" }));
-    expect(screen.getByRole("button", { name: "가운데 정렬" })).toHaveAttribute("aria-pressed", "true");
+    expect(screen.queryByRole("button", { name: "왼쪽 정렬" })).toBeNull();
+    expect(screen.queryByRole("button", { name: "오른쪽 정렬" })).toBeNull();
     expect(document.querySelector(".wrl-letter")).toHaveAttribute("data-letter-align", "center");
+    expect(screen.getByRole("combobox", { name: "글자 크기" })).toHaveValue("16");
     fireEvent.change(screen.getByRole("combobox", { name: "글자 크기" }), { target:{ value:"20" } });
     expect(document.querySelector(".wrl-letter")).toHaveAttribute("data-letter-point-size", "20");
 
@@ -103,18 +102,16 @@ describe("Winner-only anonymous envelope", () => {
     expect(screen.getByText("첫 번째 선정 이유입니다.")
       .closest("[data-letter-font]")?.getAttribute("data-letter-font")).toBe(firstFont);
   });
-  it("provides left/center/right icon alignment and 10–20pt choices", () => {
+  it("uses centered writing only and keeps 10–20pt choices", () => {
     render(<WinnerReasonLetters recipient="수강생가" letters={["정렬과 크기 테스트"]} instructor={false} />);
     fireEvent.click(screen.getByRole("button", { name: "편지 열기" }));
-    expect(screen.getByRole("button", { name:"왼쪽 정렬" })).toBeInTheDocument();
-    expect(screen.getByRole("button", { name:"가운데 정렬" })).toBeInTheDocument();
-    expect(screen.getByRole("button", { name:"오른쪽 정렬" })).toBeInTheDocument();
+    expect(screen.queryByRole("button", { name:"왼쪽 정렬" })).toBeNull();
+    expect(screen.queryByRole("button", { name:"오른쪽 정렬" })).toBeNull();
+    expect(document.querySelector(".wrl-letter")).toHaveAttribute("data-letter-align","center");
     const size = screen.getByRole("combobox", { name:"글자 크기" });
     expect(Array.from((size as HTMLSelectElement).options).map(option => option.text)).toEqual(
       ["10 pt","12 pt","14 pt","16 pt","18 pt","20 pt"],
     );
-    fireEvent.click(screen.getByRole("button", { name:"오른쪽 정렬" }));
-    expect(document.querySelector(".wrl-letter")).toHaveAttribute("data-letter-align","right");
     fireEvent.change(size,{target:{value:"10"}});
     expect(document.querySelector(".wrl-letter")).toHaveAttribute("data-letter-point-size","10");
   });

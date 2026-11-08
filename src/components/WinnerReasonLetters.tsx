@@ -1,5 +1,5 @@
 import { useLayoutEffect, useMemo, useRef, useState } from "react";
-import { AlignCenter, AlignLeft, AlignRight, ArrowLeft, ArrowRight, Download, LockKeyhole, MailOpen, RotateCcw, Type } from "lucide-react";
+import { ArrowLeft, ArrowRight, Download, LockKeyhole, MailOpen, RotateCcw, Type } from "lucide-react";
 import { WINNER_LETTER_FONTS, randomLetterFontSequence } from "@/lib/winner-letter-fonts";
 import { createStoreZip } from "@/lib/browser-zip";
 import { fitWinnerLetterText } from "@/lib/fit-winner-letter";
@@ -64,7 +64,6 @@ export function WinnerReasonLetters({
   const readable = letters.filter((reason) => reason.trim().length > 0);
   const [opened, setOpened] = useState(false);
   const [current, setCurrent] = useState(0);
-  const [textAlign, setTextAlign] = useState<"left" | "center" | "right">("left");
   const [pointSize, setPointSize] = useState(16);
   const [envelopeColor, setEnvelopeColor] = useState<EnvelopeColorId>("blue");
   const [savingImage, setSavingImage] = useState(false);
@@ -130,7 +129,7 @@ export function WinnerReasonLetters({
       window.removeEventListener("resize", schedule);
       fonts?.removeEventListener("loadingdone", schedule);
     };
-  }, [opened, current, displayedReason, selectedFont.family, pointSize, textAlign]);
+  }, [opened, current, displayedReason, selectedFont.family, pointSize]);
 
   async function getOpenEnvelopeImage() {
     const scene = letterRef.current?.closest<HTMLElement>(".wrl-open-scene");
@@ -182,7 +181,7 @@ export function WinnerReasonLetters({
     const box = (left:number,top:number,boxWidth:number,boxHeight:number) => ({
       x:left*width,y:top*height,w:boxWidth*width,h:boxHeight*height,
     });
-    const messageBox=box(.19,.18,.62,.29);
+    const messageBox=box(.19,.275,.62,.185);
     const dateBox=box(.37,.492,.26,.034);
     const signatureBox=box(.30,.532,.40,.045);
 
@@ -309,20 +308,20 @@ export function WinnerReasonLetters({
                   <article ref={letterRef} className="wrl-letter"
                     key={String(current) + ":" + recipient} aria-live="polite"
                     data-letter-font={selectedFont.name}
-                    data-letter-align={textAlign}
+                    data-letter-align="center"
                     data-letter-point-size={pointSize}
                     style={{
                       fontFamily: '"' + selectedFont.family + '", "Apple SD Gothic Neo", sans-serif',
-                      textAlign,
+                      "center",
                     }}>
                     <div className="wrl-letter-message-box" data-text-fit="pending">
-                      <p className="wrl-letter-message" style={{ textAlign }}>{displayedReason}</p>
+                      <p className="wrl-letter-message" style={{ "center" }}>{displayedReason}</p>
                     </div>
                     <div className="wrl-letter-date-box" data-text-fit="pending">
-                      <span className="wrl-letter-date" style={{ textAlign }}>{letterDate.label}</span>
+                      <span className="wrl-letter-date" style={{ "center" }}>{letterDate.label}</span>
                     </div>
                     <div className="wrl-letter-signature-box" data-text-fit="pending">
-                      <span className="wrl-letter-signature" style={{ textAlign }}>- 당신을 응원하는 누군가 -</span>
+                      <span className="wrl-letter-signature" style={{ "center" }}>- 당신을 응원하는 누군가 -</span>
                     </div>
                   </article>
                 )}
@@ -330,20 +329,6 @@ export function WinnerReasonLetters({
             </div>
           </div>
           <div className="wrl-editor-controls" aria-label="편지 글자 설정">
-            <div className="wrl-align-controls" role="group" aria-label="글자 정렬">
-              <button type="button" className={"wrl-icon-button" + (textAlign === "left" ? " is-active" : "")}
-                aria-label="왼쪽 정렬" aria-pressed={textAlign === "left"} onClick={() => setTextAlign("left")}>
-                <AlignLeft size={17} aria-hidden />
-              </button>
-              <button type="button" className={"wrl-icon-button" + (textAlign === "center" ? " is-active" : "")}
-                aria-label="가운데 정렬" aria-pressed={textAlign === "center"} onClick={() => setTextAlign("center")}>
-                <AlignCenter size={17} aria-hidden />
-              </button>
-              <button type="button" className={"wrl-icon-button" + (textAlign === "right" ? " is-active" : "")}
-                aria-label="오른쪽 정렬" aria-pressed={textAlign === "right"} onClick={() => setTextAlign("right")}>
-                <AlignRight size={17} aria-hidden />
-              </button>
-            </div>
             <label className="wrl-size-control">
               <Type size={15} aria-hidden />
               <span className="wrl-sr-only">글자 크기</span>
