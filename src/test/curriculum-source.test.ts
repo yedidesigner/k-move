@@ -23,7 +23,14 @@ describe("Reviewed Sheet 2 curriculum", () => {
   it("preserves the original introductory project order and individual feedback period", () => {
     const lesson = (number: number) => CURRICULUM_LESSONS[number - 1]!;
     expect(lesson(1).title).toContain("OT");
-    for (const number of [2, 3]) expect(lesson(number).cycle).toContain("개인 포트폴리오");
+    expect(lesson(2).cycle).toContain("개인 포트폴리오");
+        expect(lesson(3).title).toContain("Google AI Studio");
+        expect(lesson(3).cycle).toContain("Google AI Studio");
+        expect(lesson(3).topics).toHaveLength(8);
+        expect(lesson(3).topics[6]).toContain("서브페이지");
+        expect(lesson(3).topics[7]).toContain("개인별 제작");
+        expect(lesson(3).tools).toContain("Google AI Studio (Build · Playground)");
+        expect(JSON.stringify(lesson(3))).not.toMatch(/포트폴리오 v1 배포|GitHub에 올리고 Vercel/);
     for (const number of [4, 5]) expect(lesson(number).cycle).toContain("브랜드 랜딩페이지");
     for (const number of [6, 7]) expect(lesson(number).cycle).toContain("신청 서비스");
     expect(lesson(8).title).toContain("Google Sheets");
