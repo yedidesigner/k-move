@@ -207,29 +207,29 @@ export function WinnerReasonLetters({
     ctx.save();
     ctx.fillStyle="#36373a";
     ctx.textBaseline="top";
-    ctx.textAlign=textAlign;
+    ctx.textAlign="center";
     ctx.font=message.size+'px "'+font.family+'", sans-serif';
     message.lines.forEach((line,lineIndex)=>{
-      ctx.fillText(line,anchor(messageBox,textAlign),messageBox.y+lineIndex*message.lineHeight,messageBox.w);
+      ctx.fillText(line,anchor(messageBox,"center"),messageBox.y+lineIndex*message.lineHeight,messageBox.w);
     });
     ctx.restore();
 
     ctx.save();
     ctx.fillStyle="#7d838c";
     ctx.textBaseline="middle";
-    ctx.textAlign=textAlign;
+    ctx.textAlign="center";
     const dateSize=Math.min(maxFontPx*.48,10*displayScale);
     ctx.font=dateSize+'px "'+font.family+'", sans-serif';
-    ctx.fillText(letterDate.label,anchor(dateBox,textAlign),dateBox.y+dateBox.h/2,dateBox.w);
+    ctx.fillText(letterDate.label,anchor(dateBox,"center"),dateBox.y+dateBox.h/2,dateBox.w);
     ctx.restore();
 
     ctx.save();
     ctx.fillStyle="#686f7c";
     ctx.textBaseline="middle";
-    ctx.textAlign=textAlign;
+    ctx.textAlign="center";
     const signSize=Math.min(maxFontPx*.58,14*displayScale);
     ctx.font=signSize+'px "'+font.family+'", sans-serif';
-    ctx.fillText("- 당신을 응원하는 누군가 -",anchor(signatureBox,textAlign),signatureBox.y+signatureBox.h/2,signatureBox.w);
+    ctx.fillText("- 당신을 응원하는 누군가 -",anchor(signatureBox,"center"),signatureBox.y+signatureBox.h/2,signatureBox.w);
     ctx.restore();
 
     const blob=await new Promise<Blob|null>(resolve=>canvas.toBlob(resolve,"image/png"));
@@ -315,13 +315,13 @@ export function WinnerReasonLetters({
                       "center",
                     }}>
                     <div className="wrl-letter-message-box" data-text-fit="pending">
-                      <p className="wrl-letter-message" style={{ "center" }}>{displayedReason}</p>
+                      <p className="wrl-letter-message" style={{ textAlign:"center" }}>{displayedReason}</p>
                     </div>
                     <div className="wrl-letter-date-box" data-text-fit="pending">
-                      <span className="wrl-letter-date" style={{ "center" }}>{letterDate.label}</span>
+                      <span className="wrl-letter-date" style={{ textAlign:"center" }}>{letterDate.label}</span>
                     </div>
                     <div className="wrl-letter-signature-box" data-text-fit="pending">
-                      <span className="wrl-letter-signature" style={{ "center" }}>- 당신을 응원하는 누군가 -</span>
+                      <span className="wrl-letter-signature" style={{ textAlign:"center" }}>- 당신을 응원하는 누군가 -</span>
                     </div>
                   </article>
                 )}
