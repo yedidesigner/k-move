@@ -111,3 +111,8 @@
 
 /* 2026-11-09: centered writing is the only available letter alignment. */
 .wrl-letter-message,.wrl-letter-date,.wrl-letter-signature{text-align:center!important}
+
+/* Fixed center alignment indicator. */
+.wrl-align-controls{display:inline-flex;align-items:center;border:1px solid #d8d8d8;background:#fff}
+.wrl-icon-button{display:grid;place-items:center;width:36px;height:36px;background:#272727;color:#fff}
+@media(max-width:520px){.wrl-icon-button{width:34px;height:34px}}
