@@ -1,53 +1,56 @@
 @import url("https://fonts.googleapis.com/css2?family=Gaegu:wght@400;700&display=swap");
 
-/* Winner-only mail: warm paper material, quiet motion, no voter identifiers. */
-.wrl-mailbox{margin:16px 0 0;border:1px solid #dedbd5;background:#fbfaf7;padding:21px 21px 17px;color:#242321}
-.wrl-heading{text-align:center;margin:0 auto 13px;max-width:530px}
-.wrl-kicker{display:inline-flex;align-items:center;gap:7px;font-size:10px;letter-spacing:.16em;font-weight:650;color:#8b857c}
+/* Original blue letter imagery, optimized as transparent AVIF for the LMS. */
+.wrl-mailbox{margin:16px 0 0;border:1px solid #e2e2e2;background:#fcfcfc;padding:22px 22px 18px;color:#262626}
+.wrl-heading{text-align:center;margin:0 auto 13px;max-width:560px}
+.wrl-kicker{display:inline-flex;align-items:center;gap:7px;font-size:10px;letter-spacing:.16em;font-weight:650;color:#888}
 .wrl-heading h5{margin:10px 0 6px;font-size:20px;font-weight:680;letter-spacing:-.035em;line-height:1.4}
-.wrl-heading p{margin:0;color:#736e68;font-size:12px;line-height:1.8}
-.wrl-stage{position:relative;margin:13px auto 0;max-width:600px;height:380px;overflow:hidden;background:radial-gradient(ellipse at 50% 70%,#f2eee7 0%,#faf8f4 68%,#fbfaf7 100%);border:1px solid #f0ece5}
-.wrl-envelope{position:absolute;z-index:2;bottom:27px;left:50%;width:min(310px,84%);height:166px;transform:translateX(-50%);perspective:700px;filter:drop-shadow(0 8px 12px #3c291b16)}
-.wrl-envelope-back{position:absolute;inset:0;z-index:1;border:1px solid #d5c8b4;background:#e6d9c4}
-.wrl-envelope-flap{position:absolute;inset:0;z-index:3;background:#eee3d1;clip-path:polygon(0 0,100% 0,50% 56%);transform-origin:50% 0;transition:transform .52s ease,opacity .52s ease}
-.wrl-stage.is-open .wrl-envelope-flap{transform:rotateX(-160deg);opacity:.6}
-.wrl-envelope-front{position:absolute;inset:0;z-index:4;background:linear-gradient(155deg,#eee2d0,#e3d3be);clip-path:polygon(0 0,50% 52%,100% 0,100% 100%,0 100%);border-bottom:1px solid #cbbda9}
-.wrl-envelope-front:after{content:"";position:absolute;inset:0;background:linear-gradient(25deg,#ffffff35,transparent 55%)}
-.wrl-envelope-seal{position:absolute;z-index:5;left:50%;top:48%;width:45px;height:45px;display:flex;align-items:center;justify-content:center;transform:translate(-50%,-50%);border:1px solid #9f8c7b;border-radius:50%;background:#b3a092;color:#fffaf3;box-shadow:0 2px 5px #33291e23;transition:opacity .25s ease}
-.wrl-stage.is-open .wrl-envelope-seal{opacity:0}
-.wrl-sealed-copy{position:absolute;z-index:6;bottom:204px;left:0;width:100%;text-align:center;font-size:11px;letter-spacing:.12em;color:#9a9084;animation:wrl-fade .6s ease both}
-.wrl-stage.is-open .wrl-sealed-copy{display:none}
-.wrl-letter{position:absolute;z-index:7;left:50%;bottom:83px;width:min(360px,86%);height:270px;box-sizing:border-box;transform-origin:50% 100%;display:flex;flex-direction:column;padding:22px 25px 15px;background:repeating-linear-gradient(to bottom,#fffefa 0,#fffefa 32px,#c8bca91a 33px,#fffefa 34px);border:1px solid #d7cebf;box-shadow:0 10px 28px #3f352123,0 2px 5px #3f352119;animation:wrl-sheet-rise .66s cubic-bezier(.18,.76,.22,1) both}
-.wrl-letter-kicker{font-size:9px;color:#999085;letter-spacing:.13em;white-space:nowrap}
-.wrl-letter-divider{height:1px;background:#ddd4c6;margin:9px 0 10px}
-.wrl-letter-message{flex:1;min-height:0;margin:0;overflow-y:auto;overscroll-behavior:contain;font-family:"Gaegu","Nanum Pen Script","Apple SD Gothic Neo",cursive;font-size:clamp(24px,3.5vw,31px);font-weight:400;line-height:1.27;letter-spacing:-.035em;color:#37312b;white-space:pre-wrap;overflow-wrap:anywhere;scrollbar-width:thin}
-.wrl-letter-signature{display:block;flex-shrink:0;padding-top:8px;text-align:right;font-family:"Gaegu","Nanum Pen Script",cursive;color:#918479;font-size:17px}
-.wrl-controls{display:flex;justify-content:center;flex-wrap:wrap;gap:8px;margin-top:14px}
-.wrl-main-button,.wrl-sub-button{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:41px;padding:10px 19px;border:1px solid #272625;font-size:12px;font-weight:600;transition:background-color .2s ease,color .2s ease;cursor:pointer}
-.wrl-main-button{background:#272625;color:#fff}
-.wrl-main-button:hover{background:#494643}
-.wrl-sub-button{background:transparent;color:#393632}
-.wrl-sub-button:hover{background:#f1ede5}
-.wrl-mailbox button:focus-visible{outline:2px solid #272625;outline-offset:3px}
-.wrl-privacy{display:flex;justify-content:center;align-items:center;gap:6px;margin:13px 0 0;color:#958e84;font-size:10px;line-height:1.6;text-align:center}
+.wrl-heading p{margin:0;color:#777;font-size:12px;line-height:1.8}
+.wrl-stage{position:relative;isolation:isolate;margin:14px auto 0;max-width:880px;height:540px;overflow:hidden;border:1px solid #f0f0f0;background:radial-gradient(ellipse at center,#fff 0%,#fafafa 79%,#f7f7f7 100%)}
+.wrl-envelope-art{position:absolute;inset:0 auto 0 50%;width:min(460px,92%);transform:translateX(-50%)}
+.wrl-envelope-closed{position:absolute;top:50%;left:0;display:block;width:100%;height:auto;object-fit:contain;transform:translateY(-50%) scale(1);opacity:1;transition:opacity .26s ease,transform .5s cubic-bezier(.2,.75,.2,1);filter:drop-shadow(0 14px 13px #18283d18)}
+.wrl-stage.is-open .wrl-envelope-closed{opacity:0;transform:translateY(-50%) scale(.93);pointer-events:none}
+.wrl-open-scene{position:absolute;top:50%;left:50%;width:96%;height:auto;aspect-ratio:985/1143;transform:translate(-50%,-46%) scale(.95);opacity:0;visibility:hidden;pointer-events:none;transition:opacity .4s ease,transform .6s cubic-bezier(.16,.76,.24,1),visibility 0s linear .4s}
+.wrl-stage.is-open .wrl-open-scene{opacity:1;visibility:visible;pointer-events:auto;transform:translate(-50%,-50%) scale(1);transition-delay:0s}
+.wrl-envelope-open{display:block;width:100%;height:100%;object-fit:contain;filter:drop-shadow(0 14px 15px #18283d18)}
+/* Handwriting sits directly on the white sheet within the user's open-envelope image. */
+.wrl-letter{position:absolute;z-index:2;top:24%;left:15%;width:70%;height:34%;display:flex;flex-direction:column;box-sizing:border-box;margin:0;padding:0;background:transparent;border:0;box-shadow:none;animation:wrl-ink-in .55s .2s both}
+.wrl-letter-kicker{flex-shrink:0;color:#a09f9d;font-size:9px;letter-spacing:.08em;text-align:left;white-space:nowrap;opacity:.78}
+.wrl-letter-message{flex:1;min-height:0;margin:5px 0 0;overflow-y:auto;overscroll-behavior:contain;font-family:"Gaegu","Nanum Pen Script","Apple SD Gothic Neo",cursive;font-size:clamp(22px,3vw,29px);font-weight:400;line-height:1.18;letter-spacing:-.035em;color:#36373a;white-space:pre-wrap;overflow-wrap:anywhere;scrollbar-width:thin}
+.wrl-letter-signature{flex-shrink:0;padding-top:2px;text-align:right;font-family:"Gaegu","Nanum Pen Script",cursive;color:#7f8794;font-size:16px}
+.wrl-controls{display:flex;justify-content:center;flex-wrap:wrap;gap:8px;margin-top:16px}
+.wrl-main-button,.wrl-sub-button{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:41px;padding:10px 19px;border:1px solid #272727;font-size:12px;font-weight:600;transition:background-color .2s ease,color .2s ease;cursor:pointer}
+.wrl-main-button{background:#272727;color:white}
+.wrl-main-button:hover{background:#444}
+.wrl-sub-button{background:transparent;color:#393939}
+.wrl-sub-button:hover{background:#f3f3f3}
+.wrl-mailbox button:focus-visible{outline:2px solid #272727;outline-offset:3px}
+.wrl-privacy{display:flex;justify-content:center;align-items:center;gap:6px;margin:13px 0 0;color:#888;font-size:10px;line-height:1.6;text-align:center}
 .wrl-privacy svg{flex-shrink:0}
-.wrl-empty{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:9px;min-height:110px;color:#857e74;font-size:12px}
+.wrl-empty{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:9px;min-height:110px;color:#858585;font-size:12px}
 .wrl-empty p{margin:0;text-align:center}
-@keyframes wrl-sheet-rise{from{opacity:0;transform:translate(-50%,105px) scale(.95)}to{opacity:1;transform:translate(-50%,0) scale(1)}}
-@keyframes wrl-fade{from{opacity:0}to{opacity:1}}
+@keyframes wrl-ink-in{from{opacity:0;transform:translateY(9px)}to{opacity:1;transform:translateY(0)}}
 @media(max-width:640px){
-.wrl-mailbox{padding:17px 12px 15px}
+.wrl-mailbox{padding:18px 12px 16px}
 .wrl-heading h5{font-size:18px}
 .wrl-heading p{font-size:11px}
-.wrl-stage{height:340px}
-.wrl-envelope{height:138px;bottom:21px}
-.wrl-letter{width:90%;height:246px;bottom:68px;padding:17px 17px 12px}
-.wrl-letter-message{font-size:25px}
+.wrl-stage{height:430px}
+.wrl-envelope-art{width:min(360px,96%)}
+.wrl-open-scene{width:94%}
+.wrl-letter{top:23%;left:14%;width:72%;height:35%}
+.wrl-letter-kicker{font-size:7px}
+.wrl-letter-message{font-size:clamp(18px,5vw,23px);line-height:1.15}
+.wrl-letter-signature{font-size:13px}
 .wrl-privacy{font-size:9px}
 .wrl-controls>button{flex:1;min-width:130px}
 }
+@media(max-width:390px){
+.wrl-stage{height:390px}
+.wrl-envelope-art{width:min(324px,98%)}
+.wrl-letter-message{font-size:18px}
+.wrl-letter{height:33%}
+}
 @media(prefers-reduced-motion:reduce){
-.wrl-envelope-flap,.wrl-envelope-seal,.wrl-main-button,.wrl-sub-button{transition:none}
-.wrl-letter,.wrl-sealed-copy{animation:none}
-.wrl-letter{transform:translate(-50%,0)}
+.wrl-envelope-closed,.wrl-open-scene,.wrl-main-button,.wrl-sub-button{transition:none}
+.wrl-letter{animation:none}
 }

@@ -1,6 +1,9 @@
 import { useState } from "react";
-import { ArrowLeft, ArrowRight, Heart, LockKeyhole, MailOpen, RotateCcw } from "lucide-react";
+import { ArrowLeft, ArrowRight, LockKeyhole, MailOpen, RotateCcw } from "lucide-react";
 import "./winner-reason-letters.css";
+
+const CLOSED_IMAGE = "/images/envelope-yd-closed.avif";
+const OPEN_IMAGE = "/images/envelope-yd-open.avif";
 
 export function WinnerReasonLetters({
   recipient,
@@ -39,25 +42,32 @@ export function WinnerReasonLetters({
       {readable.length > 0 ? (
         <>
           <div className={"wrl-stage" + (opened ? " is-open" : "")}>
-            <div className="wrl-envelope" aria-hidden="true">
-              <div className="wrl-envelope-back" />
-              <div className="wrl-envelope-flap" />
-              <div className="wrl-envelope-front" />
-              <div className="wrl-envelope-seal"><Heart size={21} strokeWidth={1.5} /></div>
-            </div>
-            {opened && (
-              <article className="wrl-letter" key={String(current) + ":" + recipient} aria-live="polite">
-                <span className="wrl-letter-kicker">A NOTE FROM A CLASSMATE</span>
-                <div className="wrl-letter-divider" aria-hidden="true" />
-                <p className="wrl-letter-message">{readable[current]}</p>
-                <span className="wrl-letter-signature">with warmth, ♡</span>
-              </article>
-            )}
-            {!opened && (
-              <div className="wrl-sealed-copy" aria-hidden="true">
-                <span>당신에게 전해진 마음</span>
+            <div className="wrl-envelope-art">
+              <img
+                className="wrl-envelope-closed"
+                src={CLOSED_IMAGE}
+                alt="YEDI'S DESIGN CLASS가 새겨진 파란색 닫힌 봉투"
+                aria-hidden={opened}
+                loading="eager"
+                decoding="async"
+              />
+              <div className="wrl-open-scene" aria-hidden={!opened}>
+                <img
+                  className="wrl-envelope-open"
+                  src={OPEN_IMAGE}
+                  alt=""
+                  loading="eager"
+                  decoding="async"
+                />
+                {opened && (
+                  <article className="wrl-letter" key={String(current) + ":" + recipient} aria-live="polite">
+                    <span className="wrl-letter-kicker">A NOTE FROM A CLASSMATE</span>
+                    <p className="wrl-letter-message">{readable[current]}</p>
+                    <span className="wrl-letter-signature">with warmth, ♡</span>
+                  </article>
+                )}
               </div>
-            )}
+            </div>
           </div>
 
           <div className="wrl-controls">

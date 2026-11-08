@@ -8,10 +8,15 @@ describe("Winner-only anonymous envelope", () => {
   it("keeps notes out of sight until the recipient opens the envelope", () => {
     render(<WinnerReasonLetters recipient="수강생가"
       letters={["친구를 응원하는 따뜻한 한마디입니다."]} instructor={false} />);
+    expect(document.querySelector<HTMLImageElement>(".wrl-envelope-closed")?.getAttribute("src")).toBe("/images/envelope-yd-closed.avif");
+    expect(document.querySelector<HTMLImageElement>(".wrl-envelope-open")?.getAttribute("src")).toBe("/images/envelope-yd-open.avif");
+    expect(document.querySelector(".wrl-open-scene")).toHaveAttribute("aria-hidden", "true");
     expect(screen.getByRole("button", { name: "편지 열기" })).toBeInTheDocument();
     expect(screen.queryByText("친구를 응원하는 따뜻한 한마디입니다.")).toBeNull();
     expect(screen.getByText(/1등으로 선정되었어요/)).toBeInTheDocument();
     fireEvent.click(screen.getByRole("button", { name: "편지 열기" }));
+    expect(document.querySelector(".wrl-open-scene")).toHaveAttribute("aria-hidden", "false");
+    expect(document.querySelector(".wrl-stage")).toHaveClass("is-open");
     expect(screen.getByText("친구를 응원하는 따뜻한 한마디입니다.")).toBeInTheDocument();
     expect(screen.queryByText("투표자")).toBeNull();
     expect(screen.queryByText("2표")).toBeNull();
