@@ -1,6 +1,8 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import {
-  closePracticePoll, createPracticePoll, didVoteInPracticePoll, getPracticePollAdminResults,
+  closePracticePoll, createPracticePoll, changePracticePollVote, didVoteInPracticePoll,
+  getMyPracticePollVote, getPracticePollAdminResults, getMyPracticePollCandidateIndex,
+  isPracticePollComplete,
   getPracticePollCandidates,
   getPracticePolls, getPracticePollWinnerList, publishPracticePollWinner,
   validateNewPoll, voteInPracticePoll,
@@ -67,6 +69,58 @@ describe("Practice polls member-safe API", () => {
     expect(await voteInPracticePoll("poll-a",2)).toBe(false);
     await expect(voteInPracticePoll("poll-a",0)).rejects.toThrow();
     await expect(voteInPracticePoll("poll-a",101)).rejects.toThrow();
+  });
+
+
+  it("loads only the current student's selected candidate, never other ballots", async () => {
+    mocks.rpc.mockResolvedValueOnce({ data: 14, error: null });
+    expect(await getMyPracticePollVote("poll-a")).toBe(14);
+    expect(mocks.rpc).toHaveBeenCalledWith("kmove_practice_my_vote", { p_poll: "poll-a" });
+    mocks.rpc.mockResolvedValueOnce({ data: null, error: null });
+    expect(await getMyPracticePollVote("poll-a")).toBeNull();
+    expect(mocks.from).not.toHaveBeenCalledWith("kmove_practice_ballots");
+  });
+
+  it("replaces an existing vote with exactly one other candidate", async () => {
+    expect(await changePracticePollVote("poll-a", 15, 2)).toBe(true);
+    expect(mocks.rpc).toHaveBeenCalledWith("kmove_practice_change_vote", {
+      p_poll: "poll-a", p_option: 15, p_previous: 2,
+    });
+    await expect(changePracticePollVote("poll-a", 2, 2)).rejects.toThrow(/다른 수강생/);
+    await expect(changePracticePollVote("poll-a", 0, 1)).rejects.toThrow();
+    await expect(changePracticePollVote("poll-a", 101, 1)).rejects.toThrow();
+    expect(mocks.rpc).toHaveBeenCalledTimes(1);
+  });
+
+  it("surfaces a closed poll or stale ballot instead of reporting a successful change", async () => {
+    mocks.rpc.mockResolvedValueOnce({ data: null, error: { message: "수업 시간이 종료되어 투표를 변경할 수 없습니다." } });
+    await expect(changePracticePollVote("poll-a", 2, 1)).rejects.toThrow(/수업 시간이 종료/);
+    mocks.rpc.mockResolvedValueOnce({ data: false, error: null });
+    expect(await changePracticePollVote("poll-a", 3, 1)).toBe(false);
+  });
+
+
+  it("returns the signed-in student's own candidate position and rejects invalid positions", async () => {
+    mocks.rpc.mockResolvedValueOnce({ data: 7, error: null });
+    expect(await getMyPracticePollCandidateIndex("poll-a")).toBe(7);
+    expect(mocks.rpc).toHaveBeenCalledWith("kmove_practice_self_candidate_index", {
+      p_poll: "poll-a",
+    });
+    mocks.rpc.mockResolvedValueOnce({ data: null, error: null });
+    expect(await getMyPracticePollCandidateIndex("poll-a")).toBeNull();
+    mocks.rpc.mockResolvedValueOnce({ data: -1, error: null });
+    await expect(getMyPracticePollCandidateIndex("poll-a")).rejects.toThrow(/정보/);
+  });
+
+  it("returns a completion boolean only, with no counts or voter identifiers", async () => {
+    mocks.rpc.mockResolvedValueOnce({ data: false, error: null });
+    expect(await isPracticePollComplete("poll-a")).toBe(false);
+    mocks.rpc.mockResolvedValueOnce({ data: true, error: null });
+    expect(await isPracticePollComplete("poll-a")).toBe(true);
+    expect(mocks.rpc).toHaveBeenCalledWith("kmove_practice_poll_complete", {
+      p_poll: "poll-a",
+    });
+    expect(mocks.from).not.toHaveBeenCalledWith("kmove_practice_ballots");
   });
 
   it("exposes only own participation status and published winner names to students", async () => {

@@ -85,7 +85,61 @@ export async function voteInPracticePoll(pollId: string, selectedIndex: number):
   return data === true;
 }
 
+/** Returns the index of the current student's own name, never anyone else's vote. */
+export async function getMyPracticePollCandidateIndex(pollId: string): Promise<number | null> {
+  const { data, error } = await getSupabase().rpc("kmove_practice_self_candidate_index", {
+    p_poll: pollId,
+  });
+  if (error) throw problem(error, "내 수강생 정보를 확인하지 못했습니다.");
+  if (data === null) return null;
+  if (!Number.isInteger(data) || data < 1 || data > 100)
+    throw new Error("내 후보 정보가 올바르지 않습니다.");
+  return data as number;
+}
+
+/** Returns only completion status; never retrieves ballot totals or voter identities. */
+export async function isPracticePollComplete(pollId: string): Promise<boolean> {
+  const { data, error } = await getSupabase().rpc("kmove_practice_poll_complete", {
+    p_poll: pollId,
+  });
+  if (error) throw problem(error, "투표 완료 여부를 확인하지 못했습니다.");
+  return data === true;
+}
+
 /** Candidate names are always snapshotted by the server from enrolled students. */
+
+/** Returns only the signed-in student's own selection. Never lists other voters. */
+export async function getMyPracticePollVote(pollId: string): Promise<number | null> {
+  const { data, error } = await getSupabase().rpc("kmove_practice_my_vote", {
+    p_poll: pollId,
+  });
+  if (error) throw problem(error, "내 투표를 확인하지 못했습니다.");
+  if (data === null) return null;
+  if (!Number.isInteger(data) || data < 1 || data > 100) {
+    throw new Error("내 투표 정보가 올바르지 않습니다.");
+  }
+  return data as number;
+}
+
+/** Replace an existing ballot without adding a second vote; only before close. */
+export async function changePracticePollVote(
+  pollId: string, selectedIndex: number, previousIndex: number,
+): Promise<boolean> {
+  if (!Number.isInteger(selectedIndex) || !Number.isInteger(previousIndex)
+      || selectedIndex < 1 || selectedIndex > 100
+      || previousIndex < 1 || previousIndex > 100) {
+    throw new Error("투표할 수강생 한 명을 선택해 주세요.");
+  }
+  if (selectedIndex === previousIndex) {
+    throw new Error("기존과 다른 수강생을 선택해 주세요.");
+  }
+  const { data, error } = await getSupabase().rpc("kmove_practice_change_vote", {
+    p_poll: pollId, p_option: selectedIndex, p_previous: previousIndex,
+  });
+  if (error) throw problem(error, "투표를 변경하지 못했습니다.");
+  return data === true;
+}
+
 export async function createPracticePoll(
   session: number, question: string,
 ): Promise<string> {
