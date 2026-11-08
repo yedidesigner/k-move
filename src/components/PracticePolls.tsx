@@ -161,7 +161,7 @@ export function PracticePolls({ sessionNumber }: { sessionNumber: number }) {
       <p className="pr-polls-roster-note">
         수강 등록 상태가 유효한 학생만 포함하며, 홍길동·홍길순은 제외합니다.
         투표를 게시하는 시점의 명단으로 확정됩니다.
-      </p>}
+      </p>
       <div className="pr-polls-create-footer">
         <p>위 후보 전체가 자동 등록됩니다. 각 수강생은 한 명에게만 1회 투표할 수 있습니다.</p>
         <button type="submit" className="pr-polls-action pr-polls-primary" disabled={!!busy || candidateNames.length < 2}>
