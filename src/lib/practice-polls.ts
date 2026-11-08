@@ -29,6 +29,10 @@ export type PracticePollWinner = {
   winners: string[];
 };
 export type PracticePollAnonymousReasons = { label: string; reasons: string[] };
+export type PracticeWinnerMailbox = {
+  recipient: string;
+  letters: string[];
+};
 
 export const PRACTICE_REASON_MAX_LENGTH = 200;
 
@@ -137,6 +141,28 @@ export async function getPracticePollAdminReasons(pollId: string): Promise<Pract
   if (error) throw problem(error, "강사용 선정 이유를 불러오지 못했습니다.");
   if (!Array.isArray(data)) throw new Error("강사용 선정 이유 형식이 올바르지 않습니다.");
   return data as PracticePollAnonymousReasons[];
+}
+
+/** Server returns notes only for the actual winner (or all winners for an instructor).
+ * Never returns author identity, timestamps, vote totals, or ballot metadata.
+ */
+export async function getPracticeWinnerLetters(pollId: string): Promise<PracticeWinnerMailbox[]> {
+  const { data, error } = await getSupabase().rpc("kmove_practice_winner_letters", {
+    p_poll: pollId,
+  });
+  if (error) throw problem(error, "선정 이유 편지함을 불러오지 못했습니다.");
+  if (!Array.isArray(data)) throw new Error("편지함 형식이 올바르지 않습니다.");
+  return data.map((item: unknown) => {
+    if (typeof item !== "object" || item === null || Array.isArray(item)) {
+      throw new Error("편지함 형식이 올바르지 않습니다.");
+    }
+    const row = item as Record<string, unknown>;
+    if (typeof row["recipient"] !== "string" || !Array.isArray(row["letters"]) ||
+        !row["letters"].every((note) => typeof note === "string")) {
+      throw new Error("편지함 내용이 올바르지 않습니다.");
+    }
+    return { recipient: row["recipient"], letters: row["letters"] as string[] };
+  });
 }
 
 /** Candidate names are always snapshotted by the server from enrolled students. */

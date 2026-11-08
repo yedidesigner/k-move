@@ -9,6 +9,7 @@ const mocks = vi.hoisted(() => ({
   myVote: vi.fn(),
   myReason: vi.fn(),
   adminReasons: vi.fn(),
+  winnerLetters: vi.fn(),
   myCandidate: vi.fn(),
   complete: vi.fn(),
   change: vi.fn(),
@@ -27,6 +28,7 @@ vi.mock("@/lib/practice-polls", () => ({
   getMyPracticePollVote: mocks.myVote,
   getMyPracticePollReason: mocks.myReason,
   getPracticePollAdminReasons: mocks.adminReasons,
+  getPracticeWinnerLetters: mocks.winnerLetters,
   PRACTICE_REASON_MAX_LENGTH: 200,
   validatePracticeVoteReason: (reason: string) => {
     const trimmed = reason.trim();
@@ -62,6 +64,7 @@ beforeEach(() => {
   mocks.myVote.mockReset().mockResolvedValue(null);
   mocks.myReason.mockReset().mockResolvedValue(null);
   mocks.adminReasons.mockReset().mockResolvedValue([]);
+  mocks.winnerLetters.mockReset().mockResolvedValue([]);
   mocks.myCandidate.mockReset().mockResolvedValue(1);
   mocks.complete.mockReset().mockResolvedValue(false);
   mocks.vote.mockReset().mockResolvedValue(true);
@@ -183,6 +186,56 @@ describe("Practice poll self-vote and completion interface", () => {
     expect(await screen.findByText("투표 완료")).toBeInTheDocument();
     expect(screen.getByText(/수강생 전원이 참여했습니다/)).toBeInTheDocument();
     expect(mocks.complete).toHaveBeenCalledWith("poll-a");
+  });
+
+
+  it("never loads winner mailboxes while the vote is open", async () => {
+    render(<PracticePolls sessionNumber={24} />);
+    await screen.findByRole("button", { name: "선택한 1명에게 투표" });
+    expect(mocks.winnerLetters).not.toHaveBeenCalled();
+    expect(screen.queryByText("친구들이 남긴 한마디")).toBeNull();
+  });
+
+  it("does not request or show private winner notes before instructor publication", async () => {
+    mocks.polls.mockResolvedValue([{ ...poll, status: "closed", winner_published: false }]);
+    render(<PracticePolls sessionNumber={24} />);
+    await screen.findByText("투표가 마감되었습니다.");
+    expect(mocks.winnerLetters).not.toHaveBeenCalled();
+    expect(screen.queryByRole("button", { name: "편지 열기" })).toBeNull();
+  });
+
+  it("gives the published winner an envelope but keeps a non-winner's inbox empty", async () => {
+    mocks.polls.mockResolvedValue([{ ...poll, status: "closed", winner_published: true }]);
+    mocks.winnerLetters.mockResolvedValueOnce([{ recipient:"수강생가", letters:["친절하게 디자인을 설명해줬어요."] }]);
+    const view=render(<PracticePolls sessionNumber={24} />);
+    const open=await screen.findByRole("button", { name: "편지 열기" });
+    expect(mocks.winnerLetters).toHaveBeenCalledWith("poll-a");
+    fireEvent.click(open);
+    expect(screen.getByText("친절하게 디자인을 설명해줬어요.")).toBeInTheDocument();
+    view.unmount();
+
+    mocks.winnerLetters.mockResolvedValue([]);
+    render(<PracticePolls sessionNumber={24} />);
+    await screen.findByText("투표가 마감되었습니다.");
+    await waitFor(() => expect(mocks.winnerLetters).toHaveBeenCalledTimes(2));
+    expect(screen.queryByRole("button", { name: "편지 열기" })).toBeNull();
+  });
+
+  it("shows every co-winner's private letter inbox to an instructor after close, even before publication", async () => {
+    mocks.auth.status="instructor";
+    mocks.polls.mockResolvedValue([{ ...poll, status:"closed", winner_published:false }]);
+    mocks.candidates.mockResolvedValue(["수강생가", "수강생나"]);
+    mocks.admin.mockResolvedValue({ totalVotes:2, options:[], participants:[] });
+    mocks.winnerLetters.mockResolvedValue([
+      { recipient:"수강생가", letters:["첫 번째 공동 1등에게 쓰는 글."] },
+      { recipient:"수강생나", letters:["두 번째 공동 1등에게 쓰는 글."] },
+    ]);
+    render(<PracticePolls sessionNumber={24} />);
+    await screen.findByText("수강생가님에게 도착한 편지");
+    expect(screen.getByText("수강생나님에게 도착한 편지")).toBeInTheDocument();
+    expect(screen.getAllByRole("button", { name: "편지 열기" })).toHaveLength(2);
+    expect(mocks.winnerLetters).toHaveBeenCalledWith("poll-a");
+    expect(mocks.myReason).not.toHaveBeenCalled();
   });
 
   it("does not expose voting controls to a noncandidate sample account", async () => {

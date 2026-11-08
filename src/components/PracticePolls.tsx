@@ -9,7 +9,9 @@ import {
   getPracticePollAdminReasons, publishPracticePollWinner, voteInPracticePoll, validateNewPoll,
   validatePracticeVoteReason, PRACTICE_REASON_MAX_LENGTH,
   type PracticePoll, type PracticePollAdminResults, type PracticePollAnonymousReasons,
+  getPracticeWinnerLetters, type PracticeWinnerMailbox,
 } from "@/lib/practice-polls";
+import { WinnerReasonLetters } from "@/components/WinnerReasonLetters";
 import "./practice-polls.css";
 
 const koreanDateTime = new Intl.DateTimeFormat("ko-KR", {
@@ -37,6 +39,7 @@ export function PracticePolls({ sessionNumber }: { sessionNumber: number }) {
   const [admin, setAdmin] = useState<MapOf<PracticePollAdminResults>>({});
   const [adminReasons, setAdminReasons] = useState<MapOf<PracticePollAnonymousReasons[]>>({});
   const [winners, setWinners] = useState<MapOf<string[]>>({});
+  const [winnerMailboxes, setWinnerMailboxes] = useState<MapOf<PracticeWinnerMailbox[]>>({});
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [notice, setNotice] = useState("");
@@ -54,6 +57,10 @@ export function PracticePolls({ sessionNumber }: { sessionNumber: number }) {
     try {
       const nextPolls = await getPracticePolls(sessionNumber);
       const visible = await getPracticePollWinnerList(sessionNumber);
+      // No letters may reach a student until winner publication; instructor can
+      // review after closing. The RPC re-checks the same policy on the server.
+      const eligibleLetters = nextPolls.filter(p => p.status === "closed" && (instructor || p.winner_published));
+      const deliveredLetters = await Promise.all(eligibleLetters.map(p => getPracticeWinnerLetters(p.id)));
       // Course-wide turnout is instructor-only. Never request it on a student's session.
       const completed = instructor
         ? await Promise.all(nextPolls.map(p => isPracticePollComplete(p.id)))
@@ -95,6 +102,7 @@ export function PracticePolls({ sessionNumber }: { sessionNumber: number }) {
       setAdminReasons(nextAdminReasons);
       setCandidateNames(nextCandidateNames);
       setWinners(Object.fromEntries(visible.map(row => [row.poll_id,row.winners])));
+      setWinnerMailboxes(Object.fromEntries(eligibleLetters.map((poll, index) => [poll.id, deliveredLetters[index] ?? []])));
       setError("");
     } catch (cause) {
       if (sequence.current === sequenceNumber) setError(messageOf(cause));
@@ -171,7 +179,7 @@ export function PracticePolls({ sessionNumber }: { sessionNumber: number }) {
         return next;
       });
       setReasonDrafts(current => { const next = { ...current }; delete next[poll.id]; return next; });
-    }, "선정 이유와 함께 투표가 저장되었습니다. 다른 수강생에게는 공개되지 않습니다.");
+    }, "선정 이유와 함께 투표가 저장되었습니다. 익명으로 보관되며 1등에게만 전달됩니다.");
   }
 
   async function submitVoteChange(poll: PracticePoll) {
@@ -295,6 +303,7 @@ export function PracticePolls({ sessionNumber }: { sessionNumber: number }) {
         const showReasonInput = canSelect && selected[poll.id] !== undefined && selected[poll.id] !== ownCandidate && (!isVoted || selected[poll.id] !== myChoice);
         const statistics = admin[poll.id];
         const published = winners[poll.id] ?? [];
+        const mailboxes = winnerMailboxes[poll.id] ?? [];
         return <article className="pr-poll-card" key={poll.id}>
           <header className="pr-poll-card-header">
             <div>
@@ -332,7 +341,7 @@ export function PracticePolls({ sessionNumber }: { sessionNumber: number }) {
               onChange={event => setReasonDrafts(current => ({ ...current, [poll.id]: event.target.value }))}
               placeholder="이 친구를 선택한 이유를 간단히 적어주세요. 예: 발표가 명확하고 친구들을 잘 도와줬어요." />
             <div id={"poll-reason-hint-" + poll.id} className="pr-polls-reason-hint">
-              <span>2~200자 · 선정 이유는 다른 수강생에게 공개되지 않습니다.</span>
+              <span>2~200자 · 1등 당사자에게 마감·결과 공개 후 익명으로 전달되며, 강사는 마감 후 확인할 수 있습니다.</span>
               <span>{selectedReason.length}/{PRACTICE_REASON_MAX_LENGTH}</span>
             </div>
           </div>}
@@ -414,6 +423,13 @@ export function PracticePolls({ sessionNumber }: { sessionNumber: number }) {
             <span className="pr-polls-hidden-count"><EyeOff size={12} aria-hidden /> 득표수 비공개</span>
           </div>}
           {isClosed && !poll.winner_published && !instructor && <p className="pr-polls-hold"><LockKeyhole size={13} aria-hidden /> 강사가 결과를 공개하면 1위만 표시됩니다.</p>}
+          {isClosed && (instructor || poll.winner_published) && mailboxes.length > 0 &&
+            <div className="wrl-mailbox-group" aria-label="1등 학생의 익명 선정 이유 편지함">
+              {mailboxes.map(box => <WinnerReasonLetters
+                key={poll.id + ":" + box.recipient}
+                recipient={box.recipient} letters={box.letters} instructor={instructor} />)}
+            </div>}
+
           {instructor && <div className="pr-polls-admin">
             <div className="pr-polls-admin-title"><strong>강사 전용 집계</strong><span>학생 화면에는 보이지 않습니다.</span></div>
             {statistics && <div className="pr-polls-stats">
@@ -425,7 +441,7 @@ export function PracticePolls({ sessionNumber }: { sessionNumber: number }) {
               </div>}
               {!isClosed && <p className="pr-polls-admin-note">진행 중에는 선택 항목별 득표수를 숨깁니다. 마감 후 확인할 수 있습니다.</p>}
               {poll.status === "closed" && (adminReasons[poll.id] ?? []).some(item => item.reasons.length > 0) && <details className="pr-polls-admin-reasons">
-                <summary>선정 이유 확인 · 익명 <ChevronDown size={13} aria-hidden /></summary>
+                <summary>전체 후보 선정 이유 · 강사 전용 <ChevronDown size={13} aria-hidden /></summary>
                 <div>
                   {(adminReasons[poll.id] ?? []).filter(item => item.reasons.length > 0).map(item => <section key={item.label}>
                     <h5>{item.label}</h5>

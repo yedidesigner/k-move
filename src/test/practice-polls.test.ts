@@ -2,6 +2,7 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 import {
   closePracticePoll, createPracticePoll, changePracticePollVote, didVoteInPracticePoll,
   getMyPracticePollVote, getMyPracticePollReason, getPracticePollAdminResults,
+  getPracticeWinnerLetters,
   getPracticePollAdminReasons, getMyPracticePollCandidateIndex, validatePracticeVoteReason,
   isPracticePollComplete,
   getPracticePollCandidates,
@@ -162,6 +163,25 @@ describe("Practice polls member-safe API", () => {
       poll_id:"poll-a", winners:["시안 A"],
     }]);
     expect(mocks.rpc).toHaveBeenCalledWith("kmove_practice_published_winners",{ p_session:3 });
+  });
+
+
+  it("fetches anonymous winner letters via a server-filtered RPC only", async () => {
+    mocks.rpc.mockResolvedValueOnce({ data: [
+      { recipient:"수강생가", letters:["섬세하게 디자인했어요."], voter_id:"must-not-propagate", votes:4 },
+    ], error:null });
+    expect(await getPracticeWinnerLetters("poll-a")).toEqual([
+      { recipient:"수강생가", letters:["섬세하게 디자인했어요."] },
+    ]);
+    expect(mocks.rpc).toHaveBeenCalledWith("kmove_practice_winner_letters", { p_poll:"poll-a" });
+    expect(mocks.from).not.toHaveBeenCalledWith("kmove_practice_ballots");
+  });
+
+  it("accepts a non-winner's empty mailbox and rejects malformed server responses", async () => {
+    mocks.rpc.mockResolvedValueOnce({ data:[], error:null });
+    expect(await getPracticeWinnerLetters("poll-a")).toEqual([]);
+    mocks.rpc.mockResolvedValueOnce({ data:[{recipient:"A",letters:["valid",123]}], error:null });
+    await expect(getPracticeWinnerLetters("poll-a")).rejects.toThrow(/편지함/);
   });
 
   it("keeps vote counts and participant identities behind instructor-only RPC", async () => {
