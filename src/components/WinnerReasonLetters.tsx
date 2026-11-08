@@ -312,7 +312,7 @@ export function WinnerReasonLetters({
                     data-letter-point-size={pointSize}
                     style={{
                       fontFamily: '"' + selectedFont.family + '", "Apple SD Gothic Neo", sans-serif',
-                      "center",
+                      textAlign:"center",
                     }}>
                     <div className="wrl-letter-message-box" data-text-fit="pending">
                       <p className="wrl-letter-message" style={{ textAlign:"center" }}>{displayedReason}</p>
