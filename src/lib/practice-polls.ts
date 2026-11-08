@@ -33,18 +33,19 @@ function problem(error: { message: string } | null, fallback: string): Error {
   return new Error(error?.message || fallback);
 }
 
-export function validateNewPoll(question: string, options: string[]) {
+export function validateNewPoll(question: string) {
   const title = question.trim();
-  const choices = options.map(item => item.trim());
   if (title.length < 4 || title.length > 180)
     throw new Error("질문은 4~180자로 작성해 주세요.");
-  if (choices.length < 2 || choices.length > 8)
-    throw new Error("투표 항목은 2~8개 작성해 주세요.");
-  if (choices.some(choice => !choice || choice.length > 120))
-    throw new Error("각 항목은 1~120자로 작성해 주세요.");
-  if (new Set(choices.map(choice => choice.toLocaleLowerCase("ko-KR"))).size !== choices.length)
-    throw new Error("같은 항목은 두 번 넣을 수 없습니다.");
-  return { title, choices };
+  return { title };
+}
+
+/** The instructor sees a roster-only preview, without student identifiers. */
+export async function getPracticePollCandidates(): Promise<string[]> {
+  const { data, error } = await getSupabase().rpc("kmove_practice_candidate_names");
+  if (error) throw problem(error, "수강생 명단을 불러오지 못했습니다.");
+  if (!Array.isArray(data)) throw new Error("수강생 명단 형식이 올바르지 않습니다.");
+  return data as string[];
 }
 
 export async function getPracticePolls(session: number): Promise<PracticePoll[]> {
@@ -74,7 +75,7 @@ export async function didVoteInPracticePoll(pollId: string): Promise<boolean> {
 }
 
 export async function voteInPracticePoll(pollId: string, selectedIndex: number): Promise<boolean> {
-  if (!Number.isInteger(selectedIndex) || selectedIndex < 1 || selectedIndex > 8)
+  if (!Number.isInteger(selectedIndex) || selectedIndex < 1 || selectedIndex > 100)
     throw new Error("올바른 항목을 선택해 주세요.");
   const { data, error } = await getSupabase().rpc("kmove_practice_cast_vote", {
     p_poll: pollId,
@@ -84,16 +85,16 @@ export async function voteInPracticePoll(pollId: string, selectedIndex: number):
   return data === true;
 }
 
+/** Candidate names are always snapshotted by the server from enrolled students. */
 export async function createPracticePoll(
-  session: number, question: string, options: string[],
+  session: number, question: string,
 ): Promise<string> {
-  const { title, choices } = validateNewPoll(question, options);
-  const { data, error } = await getSupabase().rpc("kmove_practice_create_poll", {
+  const { title } = validateNewPoll(question);
+  const { data, error } = await getSupabase().rpc("kmove_practice_create_roster_poll", {
     p_session: session,
     p_question: title,
-    p_options: choices,
   });
-  if (error || !data) throw problem(error, "투표를 만들지 못했습니다.");
+  if (error || !data) throw problem(error, "수강생 투표를 만들지 못했습니다.");
   return data as string;
 }
 

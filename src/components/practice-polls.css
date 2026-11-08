@@ -89,3 +89,14 @@
 .pr-polls-winner{gap:9px}
 .pr-polls-footer{font-size:9px}
 }
+
+/* All enrolled candidate names are visible before posting, without edits. */
+.pr-polls-roster-preview{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:6px;max-height:315px;overflow-y:auto;padding:9px;border:1px solid #dfdfdf;background:#fff}
+.pr-polls-roster-preview>div{display:flex;align-items:center;gap:8px;min-height:37px;padding:7px 9px;background:#fafafa;border:1px solid #eee}
+.pr-polls-roster-preview>div>span{color:#999;font-size:10px;font-weight:500}
+.pr-polls-roster-preview>div>strong{color:#171717;font-size:12px;font-weight:550}
+.pr-polls-roster-preview>p{grid-column:1/-1;color:#737373;font-size:12px}
+.pr-polls-roster-note{color:#737373;font-size:10px;line-height:1.8;margin:9px 0 0}
+.pr-poll-options{max-height:490px;overflow-y:auto;overscroll-behavior:contain;scrollbar-width:thin}
+@media(min-width:850px){.pr-poll-options{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:640px){.pr-polls-roster-preview{grid-template-columns:repeat(2,minmax(0,1fr))}.pr-poll-options{max-height:425px}}

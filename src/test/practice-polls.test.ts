@@ -1,6 +1,7 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import {
   closePracticePoll, createPracticePoll, didVoteInPracticePoll, getPracticePollAdminResults,
+  getPracticePollCandidates,
   getPracticePolls, getPracticePollWinnerList, publishPracticePollWinner,
   validateNewPoll, voteInPracticePoll,
 } from "@/lib/practice-polls";
@@ -36,14 +37,19 @@ beforeEach(() => {
 });
 
 describe("Practice polls member-safe API", () => {
-  it("validates clean single-choice polls and blocks duplicate candidates", () => {
-    expect(validateNewPoll("가장 좋은 시안은?",[" 시안 A ", "시안 B"])).toEqual({
-      title: "가장 좋은 시안은?", choices: ["시안 A", "시안 B"],
+  it("validates the question only; candidate names are not accepted from the browser", () => {
+    expect(validateNewPoll(" 이번 회차에서 누구를 선택할까요? ")).toEqual({
+      title: "이번 회차에서 누구를 선택할까요?",
     });
-    expect(() => validateNewPoll("짧",["시안 A","시안 B"])).toThrow();
-    expect(() => validateNewPoll("가장 좋은 시안은?",["시안 A","시안 a"])).toThrow();
-    expect(() => validateNewPoll("가장 좋은 시안은?",["시안 A"])).toThrow();
-    expect(() => validateNewPoll("가장 좋은 시안은?",["시안 A","시안 B",...Array(7).fill("항목")])).toThrow();
+    expect(() => validateNewPoll("짧")).toThrow();
+    expect(() => validateNewPoll("가".repeat(181))).toThrow();
+  });
+
+  it("loads the enrolled-candidate preview from an instructor-only server RPC", async () => {
+    mocks.rpc.mockResolvedValueOnce({ data: ["수강생가","수강생나","수강생다"], error: null });
+    expect(await getPracticePollCandidates()).toEqual(["수강생가","수강생나","수강생다"]);
+    expect(mocks.rpc).toHaveBeenCalledWith("kmove_practice_candidate_names");
+    expect(mocks.from).not.toHaveBeenCalledWith("kmove_enrollments");
   });
 
   it("reads only public poll metadata for an enrolled class session", async () => {
@@ -53,13 +59,14 @@ describe("Practice polls member-safe API", () => {
   });
 
   it("issues one vote through a restricted RPC and handles duplicate vote response", async () => {
-    expect(await voteInPracticePoll("poll-a",2)).toBe(true);
+    expect(await voteInPracticePoll("poll-a",15)).toBe(true);
     expect(mocks.rpc).toHaveBeenCalledWith("kmove_practice_cast_vote", {
-      p_poll:"poll-a", p_option:2,
+      p_poll:"poll-a", p_option:15,
     });
     mocks.rpc.mockResolvedValueOnce({ data:false,error:null });
     expect(await voteInPracticePoll("poll-a",2)).toBe(false);
     await expect(voteInPracticePoll("poll-a",0)).rejects.toThrow();
+    await expect(voteInPracticePoll("poll-a",101)).rejects.toThrow();
   });
 
   it("exposes only own participation status and published winner names to students", async () => {
@@ -87,9 +94,9 @@ describe("Practice polls member-safe API", () => {
 
   it("allows instructors to create, close and control winner publication with distinct operations", async () => {
     mocks.rpc.mockResolvedValueOnce({ data:"new-poll",error:null });
-    await createPracticePoll(3,"어떤 시안이 좋을까요?",["A","B"]);
-    expect(mocks.rpc).toHaveBeenCalledWith("kmove_practice_create_poll",{
-      p_session:3,p_question:"어떤 시안이 좋을까요?",p_options:["A","B"],
+    await createPracticePoll(3,"어떤 수강생을 선택할까요?");
+    expect(mocks.rpc).toHaveBeenCalledWith("kmove_practice_create_roster_poll",{
+      p_session:3,p_question:"어떤 수강생을 선택할까요?",
     });
     await closePracticePoll("new-poll");
     await publishPracticePollWinner("new-poll",true);

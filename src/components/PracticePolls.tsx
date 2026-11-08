@@ -3,7 +3,7 @@ import { CheckCircle2, ChevronDown, CircleDot, Eye, EyeOff, LockKeyhole, Plus, R
 import { useAuth } from "@/lib/auth";
 import {
   closePracticePoll, createPracticePoll, didVoteInPracticePoll,
-  getPracticePollAdminResults, getPracticePolls, getPracticePollWinnerList,
+  getPracticePollAdminResults, getPracticePollCandidates, getPracticePolls, getPracticePollWinnerList,
   publishPracticePollWinner, voteInPracticePoll, validateNewPoll,
   type PracticePoll, type PracticePollAdminResults,
 } from "@/lib/practice-polls";
@@ -29,8 +29,8 @@ export function PracticePolls({ sessionNumber }: { sessionNumber: number }) {
   const [notice, setNotice] = useState("");
   const [busy, setBusy] = useState("");
   const [creating, setCreating] = useState(false);
-  const [question, setQuestion] = useState("");
-  const [options, setOptions] = useState(["", ""]);
+  const [question, setQuestion] = useState(`${sessionNumber}회차 실습에서 한 명을 선택해 주세요.`);
+  const [candidateNames, setCandidateNames] = useState<string[]>([]);
   const sequence = useRef(0);
 
   const refresh = useCallback(async () => {
@@ -40,9 +40,14 @@ export function PracticePolls({ sessionNumber }: { sessionNumber: number }) {
       const visible = await getPracticePollWinnerList(sessionNumber);
       let nextVoted: MapOf<boolean> = {};
       let nextAdmin: MapOf<PracticePollAdminResults> = {};
+      let nextCandidateNames: string[] = [];
       if (instructor) {
-        const stats = await Promise.all(nextPolls.map(p => getPracticePollAdminResults(p.id)));
+        const [stats, roster] = await Promise.all([
+          Promise.all(nextPolls.map(p => getPracticePollAdminResults(p.id))),
+          getPracticePollCandidates(),
+        ]);
         nextAdmin = Object.fromEntries(nextPolls.map((poll, index) => [poll.id, stats[index]!]));
+        nextCandidateNames = roster;
       } else if (status === "student") {
         const state = await Promise.all(nextPolls.map(p => didVoteInPracticePoll(p.id)));
         nextVoted = Object.fromEntries(nextPolls.map((poll, index) => [poll.id, state[index]!]));
@@ -51,6 +56,7 @@ export function PracticePolls({ sessionNumber }: { sessionNumber: number }) {
       setPolls(nextPolls);
       setChecked(nextVoted);
       setAdmin(nextAdmin);
+      setCandidateNames(nextCandidateNames);
       setWinners(Object.fromEntries(visible.map(row => [row.poll_id,row.winners])));
       setError("");
     } catch (cause) {
@@ -91,7 +97,7 @@ export function PracticePolls({ sessionNumber }: { sessionNumber: number }) {
   async function submitVote(poll: PracticePoll) {
     if (!user || status !== "student" || poll.status !== "open") return;
     const option = selected[poll.id];
-    if (option === undefined) { setError("먼저 항목 하나를 선택해 주세요."); return; }
+    if (option === undefined) { setError("투표할 수강생 한 명을 선택해 주세요."); return; }
     await action(poll.id, async () => {
       const accepted = await voteInPracticePoll(poll.id, option);
       if (!accepted) throw new Error("이미 참여한 투표입니다. 다시 투표할 수 없습니다.");
@@ -107,20 +113,22 @@ export function PracticePolls({ sessionNumber }: { sessionNumber: number }) {
     event.preventDefault();
     if (!instructor) return;
     let values: ReturnType<typeof validateNewPoll>;
-    try { values=validateNewPoll(question,options); }
-    catch (cause) { setError(messageOf(cause)); return; }
+    try {
+      values = validateNewPoll(question);
+      if (candidateNames.length < 2) throw new Error("수강생 명단을 먼저 불러와 주세요.");
+    } catch (cause) { setError(messageOf(cause)); return; }
     await action("create", async () => {
-      await createPracticePoll(sessionNumber,values.title,values.choices);
-      setCreating(false); setQuestion(""); setOptions(["",""]);
-    }, "새 투표를 만들었습니다. 이 회차의 수강생에게 표시됩니다.");
+      await createPracticePoll(sessionNumber, values.title);
+      setCreating(false);
+    }, "수강생 이름이 후보로 자동 등록되었습니다. 각 수강생은 한 명만 선택할 수 있습니다.");
   }
 
   return <section className="pr-polls" aria-label={sessionNumber + "회차 투표"}>
     <div className="pr-polls-header">
       <div>
         <p className="pr-polls-eyebrow"><Vote size={14} aria-hidden /> PRIVATE VOTING</p>
-        <h3>실습 투표</h3>
-        <p className="pr-polls-description">회차별로 의견을 모으고, 마감한 투표는 1위만 공개할 수 있어요.</p>
+        <h3>수강생 투표</h3>
+        <p className="pr-polls-description">등록된 수강생 이름 가운데 한 명을 선택합니다. 투표 마감 후에는 1위만 공개할 수 있어요.</p>
         <p className="pr-polls-privacy"><LockKeyhole size={14} aria-hidden /> 수강생에게 투표자·항목별 득표수·개별 선택 내역은 공개되지 않습니다.</p>
       </div>
       <div className="pr-polls-header-actions">
@@ -140,26 +148,23 @@ export function PracticePolls({ sessionNumber }: { sessionNumber: number }) {
       <p className="pr-polls-label">새 투표 · {String(sessionNumber).padStart(2,"0")}회차</p>
       <label className="pr-polls-field">질문
         <input required minLength={4} maxLength={180} value={question} disabled={!!busy}
-          placeholder="예: 가장 완성도가 높은 브랜드 시안은?"
+          placeholder="예: 이번 회차에서 가장 인상적이었던 수강생은 누구인가요?"
           onChange={event=>setQuestion(event.target.value)} />
       </label>
-      <p className="pr-polls-field-title">투표 항목 (2~8개)</p>
-      <div className="pr-polls-option-inputs">
-        {options.map((option,index)=><div key={index} className="pr-polls-option-input">
-          <span>{String(index+1).padStart(2,"0")}</span>
-          <input required maxLength={120} value={option} disabled={!!busy}
-            aria-label={(index+1)+"번 항목"}
-            placeholder={(index+1)+"번 항목"}
-            onChange={event=>setOptions(current=>current.map((item,i)=>i===index?event.target.value:item))} />
-          {options.length>2 && <button type="button" disabled={!!busy} aria-label={(index+1)+"번 항목 삭제"}
-            onClick={()=>setOptions(current=>current.filter((_,i)=>i!==index))}><X size={14} aria-hidden /></button>}
+      <p className="pr-polls-field-title">수강생 후보 명단 · {candidateNames.length}명 자동 등록</p>
+      <div className="pr-polls-roster-preview" role="list" aria-label="투표에 등록할 수강생 이름">
+        {candidateNames.map((name,index)=><div role="listitem" key={name}>
+          <span>{String(index+1).padStart(2,"0")}</span><strong>{name}</strong>
         </div>)}
+        {!candidateNames.length && <p>등록된 수강생 명단을 확인하는 중입니다.</p>}
       </div>
-      {options.length<8 && <button type="button" className="pr-polls-add" disabled={!!busy}
-        onClick={()=>setOptions(items=>[...items,""])}><Plus size={14} aria-hidden /> 항목 추가</button>}
+      <p className="pr-polls-roster-note">
+        수강 등록 상태가 유효한 학생만 포함하며, 홍길동·홍길순은 제외합니다.
+        투표를 게시하는 시점의 명단으로 확정됩니다.
+      </p>}
       <div className="pr-polls-create-footer">
-        <p>생성 후에는 항목을 수정할 수 없어요. 수강생은 투표당 한 번만 참여할 수 있습니다.</p>
-        <button type="submit" className="pr-polls-action pr-polls-primary" disabled={!!busy}>
+        <p>위 후보 전체가 자동 등록됩니다. 각 수강생은 한 명에게만 1회 투표할 수 있습니다.</p>
+        <button type="submit" className="pr-polls-action pr-polls-primary" disabled={!!busy || candidateNames.length < 2}>
           {busy==="create"?"만드는 중…":"이 회차에 투표 게시"}
         </button>
       </div>
@@ -172,7 +177,7 @@ export function PracticePolls({ sessionNumber }: { sessionNumber: number }) {
       !polls.length ? <div className="pr-polls-empty">
         <CircleDot size={30} aria-hidden />
         <strong>이 회차에는 아직 투표가 없습니다.</strong>
-        <p>{instructor?"‘투표 만들기’를 눌러 질문과 항목을 등록해 주세요.":"강사가 투표를 게시하면 이곳에서 참여할 수 있습니다."}</p>
+        <p>{instructor?"‘투표 만들기’를 누르면 등록된 수강생 이름이 자동으로 후보에 들어갑니다.":"강사가 투표를 게시하면 수강생 이름 중 한 명에게 투표할 수 있습니다."}</p>
       </div> :
       <div className="pr-polls-list">{polls.map(poll=>{
         const isClosed = poll.status === "closed";
@@ -188,7 +193,7 @@ export function PracticePolls({ sessionNumber }: { sessionNumber: number }) {
             </div>
             {instructor && <span className="pr-polls-admin-mark"><LockKeyhole size={12} aria-hidden /> 강사 관리</span>}
           </header>
-          <div className="pr-poll-options">
+          <div className="pr-poll-options" role="group" aria-label="수강생 한 명 선택">
             {poll.options.map((label,index)=>{
               const value = index+1;
               return <label key={value} className={"pr-poll-option"+(!instructor&&!isVoted&&!isClosed&&selected[poll.id]===value?" is-selected":"")}>
@@ -200,10 +205,10 @@ export function PracticePolls({ sessionNumber }: { sessionNumber: number }) {
             })}
           </div>
           {!instructor && !isClosed && !isVoted && <div className="pr-polls-vote-footer">
-            <p>투표는 한 번만 가능합니다. 선택 후 변경할 수 없어요.</p>
+            <p>수강생 이름 중 한 명만 선택할 수 있습니다. 제출 후 변경할 수 없어요.</p>
             <button type="button" className="pr-polls-action pr-polls-primary"
               disabled={!!busy || selected[poll.id]===undefined}
-              onClick={()=>void submitVote(poll)}>{busy===poll.id?"저장 중…":"익명으로 투표하기"}</button>
+              onClick={()=>void submitVote(poll)}>{busy===poll.id?"저장 중…":"선택한 1명에게 투표"}</button>
           </div>}
           {!instructor && isVoted && <p className="pr-polls-done"><CheckCircle2 size={15} aria-hidden /> 참여 완료 · 내 선택은 공개되지 않습니다.</p>}
           {!instructor && isClosed && !isVoted && <p className="pr-polls-done">투표가 마감되었습니다.</p>}
