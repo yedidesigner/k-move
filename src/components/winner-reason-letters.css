@@ -23,10 +23,10 @@
 .wrl-stage.is-open .wrl-open-scene{opacity:1;visibility:visible;pointer-events:auto;transform:translate(-50%,-50%) scale(1);transition-delay:0s}
 .wrl-envelope-open{display:block;width:100%;height:100%;object-fit:contain;filter:drop-shadow(0 14px 15px #18283d18)}
 /* Handwriting sits directly on the white sheet within the user's open-envelope image. */
-.wrl-letter{position:absolute;z-index:2;top:24%;left:15%;width:70%;height:34%;display:flex;flex-direction:column;box-sizing:border-box;margin:0;padding:0;background:transparent;border:0;box-shadow:none;animation:wrl-ink-in .55s .2s both}
+.wrl-letter{position:absolute;z-index:2;top:24%;left:20%;width:60%;height:34%;display:flex;flex-direction:column;box-sizing:border-box;margin:0;padding:0 2px;background:transparent;border:0;box-shadow:none;animation:wrl-ink-in .55s .2s both}
 .wrl-letter-kicker{flex-shrink:0;color:#a09f9d;font-size:9px;letter-spacing:.08em;text-align:left;white-space:nowrap;opacity:.78}
-.wrl-letter-message{flex:1;min-height:0;margin:5px 0 0;overflow-y:auto;overscroll-behavior:contain;font-family:inherit;font-size:clamp(22px,3vw,29px);font-weight:400;line-height:1.18;letter-spacing:-.035em;color:#36373a;white-space:pre-wrap;overflow-wrap:anywhere;scrollbar-width:thin}
-.wrl-letter-signature{flex-shrink:0;padding-top:2px;text-align:right;font-family:inherit;color:#7f8794;font-size:16px}
+.wrl-letter-message{flex:1;min-height:0;width:100%;margin:5px 0 0;overflow:hidden;font-family:inherit;font-size:1em;font-weight:400;line-height:1.14;letter-spacing:-.025em;color:#36373a;white-space:normal;overflow-wrap:anywhere;word-break:break-word;text-align:left}
+.wrl-letter-signature{flex-shrink:0;display:block;width:100%;min-width:0;margin:5px 0 0;padding:0;font-family:inherit;font-size:clamp(10px,.48em,16px);line-height:1.2;text-align:center;color:#686f7c;white-space:nowrap}
 .wrl-controls{display:flex;justify-content:center;flex-wrap:wrap;gap:8px;margin-top:16px}
 .wrl-main-button,.wrl-sub-button{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:41px;padding:10px 19px;border:1px solid #272727;font-size:12px;font-weight:600;transition:background-color .2s ease,color .2s ease;cursor:pointer}
 .wrl-main-button{background:#272727;color:white}
@@ -46,18 +46,18 @@
 .wrl-stage{height:430px}
 .wrl-envelope-art{width:min(360px,96%)}
 .wrl-open-scene{width:94%}
-.wrl-letter{top:23%;left:14%;width:72%;height:35%}
+.wrl-letter{top:23%;left:19%;width:62%;height:36%}
 .wrl-letter-kicker{font-size:7px}
-.wrl-letter-message{font-size:clamp(18px,5vw,23px);line-height:1.15}
-.wrl-letter-signature{font-size:13px}
+.wrl-letter-message{font-size:1em;line-height:1.12}
+.wrl-letter-signature{font-size:clamp(10px,.48em,15px)}
 .wrl-privacy{font-size:9px}
 .wrl-controls>button{flex:1;min-width:130px}
 }
 @media(max-width:390px){
 .wrl-stage{height:390px}
 .wrl-envelope-art{width:min(324px,98%)}
-.wrl-letter-message{font-size:18px}
-.wrl-letter{height:33%}
+.wrl-letter-message{font-size:1em}
+.wrl-letter{height:35%}
 }
 @media(prefers-reduced-motion:reduce){
 .wrl-envelope-closed,.wrl-open-scene,.wrl-main-button,.wrl-sub-button{transition:none}

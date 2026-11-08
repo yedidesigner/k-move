@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { WINNER_LETTER_FONTS, randomLetterFontSequence } from "@/lib/winner-letter-fonts";
+import { WINNER_LETTER_FONTS, randomLetterFontSequence, findLargestFittingLetterSize } from "@/lib/winner-letter-fonts";
 
 describe("Per-note Korean handwriting selection", () => {
   it("has unique verified font faces in the allowed web-font set", () => {
@@ -20,6 +20,13 @@ describe("Per-note Korean handwriting selection", () => {
         expect(fonts[i]?.family).not.toBe(fonts[i-1]?.family);
       }
     }
+  });
+
+  it("selects the largest font that actually fits the measured paper space", () => {
+    expect(findLargestFittingLetterSize(size => size <= 18)).toBe(18);
+    expect(findLargestFittingLetterSize(size => size <= 30)).toBe(30);
+    expect(findLargestFittingLetterSize(() => false)).toBe(8);
+    expect(findLargestFittingLetterSize(size => size <= 12, 10, 20)).toBe(12);
   });
 
   it("handles invalid counts safely", () => {

@@ -52,3 +52,30 @@ export function randomLetterFontSequence(
   }
   return result;
 }
+
+
+/**
+ * Find the largest font size that fits within the actual letter viewport.
+ * DOM dimensions depend on the selected handwriting font and device width, so
+ * callers measure rendered text after each candidate size instead of guessing
+ * from character count. The minimum is a legibility fallback, not scrolling.
+ */
+export function findLargestFittingLetterSize(
+  fits: (size: number) => boolean,
+  minimum = 8,
+  maximum = 30,
+): number {
+  let low = Math.max(1, Math.floor(minimum));
+  let high = Math.max(low, Math.floor(maximum));
+  let best = low;
+  while (low <= high) {
+    const candidate = Math.floor((low + high) / 2);
+    if (fits(candidate)) {
+      best = candidate;
+      low = candidate + 1;
+    } else {
+      high = candidate - 1;
+    }
+  }
+  return best;
+}

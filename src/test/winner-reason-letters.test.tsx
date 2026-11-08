@@ -18,8 +18,22 @@ describe("Winner-only anonymous envelope", () => {
     expect(document.querySelector(".wrl-open-scene")).toHaveAttribute("aria-hidden", "false");
     expect(document.querySelector(".wrl-stage")).toHaveClass("is-open");
     expect(screen.getByText("친구를 응원하는 따뜻한 한마디입니다.")).toBeInTheDocument();
+    const signature = screen.getByText("- 당신을 응원하는 누군가 -");
+    const handwrittenNote = screen.getByText("친구를 응원하는 따뜻한 한마디입니다.");
+    expect(signature.closest(".wrl-letter")).toBe(handwrittenNote.closest(".wrl-letter"));
+    expect(screen.queryByText("with warmth, ♡")).toBeNull();
     expect(screen.queryByText("투표자")).toBeNull();
     expect(screen.queryByText("2표")).toBeNull();
+  });
+
+  it("keeps an entire long Korean reason and its anonymous signature on the same paper", () => {
+    const reason = "디자인 과정에서 꾸준히 친구들을 도와주고, 새로운 아이디어와 정교한 설명으로 완성도를 높인 점이 아주 인상 깊었습니다. ".repeat(2).trim();
+    render(<WinnerReasonLetters recipient="수강생가" letters={[reason]} instructor={false} />);
+    fireEvent.click(screen.getByRole("button", { name: "편지 열기" }));
+    expect(screen.getByText(reason)).toBeInTheDocument();
+    expect(screen.getByText("- 당신을 응원하는 누군가 -")).toBeInTheDocument();
+    expect(document.querySelector(".wrl-letter-message")).toBeInTheDocument();
+    expect(screen.queryByText("with warmth, ♡")).toBeNull();
   });
 
   it("shows only one handwritten note at a time, with previous/next and restart", () => {

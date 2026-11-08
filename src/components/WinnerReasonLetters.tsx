@@ -1,6 +1,6 @@
-import { useMemo, useState } from "react";
+import { useLayoutEffect, useMemo, useRef, useState } from "react";
 import { ArrowLeft, ArrowRight, LockKeyhole, MailOpen, RotateCcw } from "lucide-react";
-import { WINNER_LETTER_FONTS, randomLetterFontSequence } from "@/lib/winner-letter-fonts";
+import { WINNER_LETTER_FONTS, randomLetterFontSequence, findLargestFittingLetterSize } from "@/lib/winner-letter-fonts";
 import "./winner-reason-letters.css";
 
 const CLOSED_IMAGE = "/images/envelope-yd-closed-hq-v2.avif";
@@ -18,12 +18,67 @@ export function WinnerReasonLetters({
   const readable = letters.filter((reason) => reason.trim().length > 0);
   const [opened, setOpened] = useState(false);
   const [current, setCurrent] = useState(0);
+  const [fontSize, setFontSize] = useState(30);
+  const letterRef = useRef<HTMLElement | null>(null);
   // Each note receives a random, stable handwriting font. No changes while reading.
   const letterContentSignature = recipient + "\u241f" + readable.join("\u241e");
   const letterFontOrder = useMemo(() => randomLetterFontSequence(readable.length), [letterContentSignature]);
   const selectedFont = letterFontOrder[current] ?? WINNER_LETTER_FONTS[0];
   const hasPrevious = opened && current > 0;
   const hasNext = opened && current < readable.length - 1;
+  // Keep all characters, but collapse excess line breaks to avoid wasting paper space.
+  const displayedReason = (readable[current] ?? "").replace(/\s+/g, " ").trim();
+
+  useLayoutEffect(() => {
+    if (!opened) return;
+    const sheet = letterRef.current;
+    const message = sheet?.querySelector<HTMLElement>(".wrl-letter-message");
+    const signature = sheet?.querySelector<HTMLElement>(".wrl-letter-signature");
+    if (!sheet || !message || !signature) return;
+
+    let active = true;
+    let frame = 0;
+    const fit = () => {
+      if (!active || !sheet.isConnected || !message.clientHeight || !message.clientWidth) return;
+      const fits = (size: number) => {
+        sheet.style.fontSize = size + "px";
+        return message.scrollHeight <= message.clientHeight + 1 &&
+          message.scrollWidth <= message.clientWidth + 1 &&
+          signature.scrollWidth <= signature.clientWidth + 1 &&
+          sheet.scrollHeight <= sheet.clientHeight + 1;
+      };
+      const largest = findLargestFittingLetterSize(fits, 8, 30);
+      sheet.style.fontSize = largest + "px";
+      setFontSize(largest);
+    };
+    const schedule = () => {
+      if (!active) return;
+      if (typeof window.requestAnimationFrame === "function") {
+        if (frame) window.cancelAnimationFrame(frame);
+        frame = window.requestAnimationFrame(fit);
+      } else fit();
+    };
+    // Layout is known before paint, so initial open is not visibly clipped.
+    fit();
+    const observer = typeof ResizeObserver !== "undefined" ? new ResizeObserver(schedule) : null;
+    observer?.observe(sheet);
+    window.addEventListener("resize", schedule);
+    const fonts = document.fonts;
+    if (fonts) {
+      // Refit after external handwritten webfont finishes loading.
+      void fonts.load('30px "' + selectedFont.family + '"').then(schedule, schedule);
+      void fonts.ready.then(schedule, schedule);
+      fonts.addEventListener("loadingdone", schedule);
+    }
+    return () => {
+      active = false;
+      if (frame && typeof window.cancelAnimationFrame === "function") window.cancelAnimationFrame(frame);
+      observer?.disconnect();
+      window.removeEventListener("resize", schedule);
+      fonts?.removeEventListener("loadingdone", schedule);
+    };
+  }, [opened, current, displayedReason, selectedFont.family]);
+
 
   function restart() {
     setCurrent(0);
@@ -66,15 +121,19 @@ export function WinnerReasonLetters({
                 />
                 {opened && (
                   <article
+                    ref={letterRef}
                     className="wrl-letter"
                     key={String(current) + ":" + recipient}
                     aria-live="polite"
                     data-letter-font={selectedFont.name}
-                    style={{ fontFamily: '"' + selectedFont.family + '", "Apple SD Gothic Neo", sans-serif' }}
+                    style={{
+                      fontFamily: '"' + selectedFont.family + '", "Apple SD Gothic Neo", sans-serif',
+                      fontSize: fontSize + "px",
+                    }}
                   >
                     <span className="wrl-letter-kicker">A NOTE FROM A CLASSMATE</span>
-                    <p className="wrl-letter-message">{readable[current]}</p>
-                    <span className="wrl-letter-signature">with warmth, ♡</span>
+                    <p className="wrl-letter-message">{displayedReason}</p>
+                    <span className="wrl-letter-signature">- 당신을 응원하는 누군가 -</span>
                   </article>
                 )}
               </div>
