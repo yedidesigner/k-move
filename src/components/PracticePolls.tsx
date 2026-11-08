@@ -5,9 +5,10 @@ import { SESSIONS, CLASS_END } from "@/data/schedule";
 import {
   closePracticePoll, createPracticePoll, changePracticePollVote, getMyPracticePollVote,
   getPracticePollAdminResults, getPracticePollCandidates, getPracticePolls, getPracticePollWinnerList,
-  getMyPracticePollCandidateIndex, isPracticePollComplete,
-  publishPracticePollWinner, voteInPracticePoll, validateNewPoll,
-  type PracticePoll, type PracticePollAdminResults,
+  getMyPracticePollCandidateIndex, getMyPracticePollReason, isPracticePollComplete,
+  getPracticePollAdminReasons, publishPracticePollWinner, voteInPracticePoll, validateNewPoll,
+  validatePracticeVoteReason, PRACTICE_REASON_MAX_LENGTH,
+  type PracticePoll, type PracticePollAdminResults, type PracticePollAnonymousReasons,
 } from "@/lib/practice-polls";
 import "./practice-polls.css";
 
@@ -24,12 +25,15 @@ export function PracticePolls({ sessionNumber }: { sessionNumber: number }) {
   const instructor = status === "instructor";
   const [polls, setPolls] = useState<PracticePoll[]>([]);
   const [myVotes, setMyVotes] = useState<MapOf<number | null>>({});
+  const [myReasons, setMyReasons] = useState<MapOf<string | null>>({});
+  const [reasonDrafts, setReasonDrafts] = useState<MapOf<string>>({});
   const [myCandidateIndexes, setMyCandidateIndexes] = useState<MapOf<number | null>>({});
   const [pollCompleted, setPollCompleted] = useState<MapOf<boolean>>({});
   const [changingPollId, setChangingPollId] = useState<string | null>(null);
   const [nowMs, setNowMs] = useState(() => Date.now());
   const [selected, setSelected] = useState<MapOf<number>>({});
   const [admin, setAdmin] = useState<MapOf<PracticePollAdminResults>>({});
+  const [adminReasons, setAdminReasons] = useState<MapOf<PracticePollAnonymousReasons[]>>({});
   const [winners, setWinners] = useState<MapOf<string[]>>({});
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -50,31 +54,40 @@ export function PracticePolls({ sessionNumber }: { sessionNumber: number }) {
       const visible = await getPracticePollWinnerList(sessionNumber);
       const completed = await Promise.all(nextPolls.map(p => isPracticePollComplete(p.id)));
       let nextMyVotes: MapOf<number | null> = {};
+      let nextMyReasons: MapOf<string | null> = {};
       let nextMyIndexes: MapOf<number | null> = {};
       let nextAdmin: MapOf<PracticePollAdminResults> = {};
+      let nextAdminReasons: MapOf<PracticePollAnonymousReasons[]> = {};
       let nextCandidateNames: string[] = [];
       if (instructor) {
-        const [stats, roster] = await Promise.all([
+        const closedPolls = nextPolls.filter(p => p.status === "closed");
+        const [stats, roster, reviewedReasons] = await Promise.all([
           Promise.all(nextPolls.map(p => getPracticePollAdminResults(p.id))),
           getPracticePollCandidates(),
+          Promise.all(closedPolls.map(p => getPracticePollAdminReasons(p.id))),
         ]);
         nextAdmin = Object.fromEntries(nextPolls.map((poll, index) => [poll.id, stats[index]!]));
+        nextAdminReasons = Object.fromEntries(closedPolls.map((poll, index) => [poll.id, reviewedReasons[index]!]));
         nextCandidateNames = roster;
       } else if (status === "student") {
-        const [choices, indexes] = await Promise.all([
+        const [choices, indexes, reasons] = await Promise.all([
           Promise.all(nextPolls.map(p => getMyPracticePollVote(p.id))),
           Promise.all(nextPolls.map(p => getMyPracticePollCandidateIndex(p.id))),
+          Promise.all(nextPolls.map(p => getMyPracticePollReason(p.id))),
         ]);
         nextMyVotes = Object.fromEntries(nextPolls.map((poll, index) => [poll.id, choices[index] ?? null]));
         nextMyIndexes = Object.fromEntries(nextPolls.map((poll, index) => [poll.id, indexes[index] ?? null]));
+        nextMyReasons = Object.fromEntries(nextPolls.map((poll, index) => [poll.id, reasons[index] ?? null]));
       }
       if (sequence.current !== sequenceNumber) return;
       setPolls(nextPolls);
       setMyVotes(nextMyVotes);
+      setMyReasons(nextMyReasons);
       setMyCandidateIndexes(nextMyIndexes);
       setPollCompleted(Object.fromEntries(nextPolls.map((poll, index) => [poll.id, completed[index] === true])));
       setNowMs(Date.now());
       setAdmin(nextAdmin);
+      setAdminReasons(nextAdminReasons);
       setCandidateNames(nextCandidateNames);
       setWinners(Object.fromEntries(visible.map(row => [row.poll_id,row.winners])));
       setError("");
@@ -141,15 +154,19 @@ export function PracticePolls({ sessionNumber }: { sessionNumber: number }) {
       return;
     }
     if (option === myIndex) { window.alert(SELF_VOTE_NOTICE); return; }
+    let reason: string;
+    try { reason = validatePracticeVoteReason(reasonDrafts[poll.id] ?? ""); }
+    catch (cause) { setError(messageOf(cause)); return; }
     await action(poll.id, async () => {
-      const accepted = await voteInPracticePoll(poll.id, option);
+      const accepted = await voteInPracticePoll(poll.id, option, reason);
       if (!accepted) throw new Error("이미 참여한 투표입니다. ‘투표 변경’을 이용해 주세요.");
       setSelected(current => {
         const next = { ...current };
         delete next[poll.id];
         return next;
       });
-    }, "투표가 저장되었습니다. 참여자와 선택 항목은 다른 수강생에게 공개되지 않습니다.");
+      setReasonDrafts(current => { const next = { ...current }; delete next[poll.id]; return next; });
+    }, "선정 이유와 함께 투표가 저장되었습니다. 다른 수강생에게는 공개되지 않습니다.");
   }
 
   async function submitVoteChange(poll: PracticePoll) {
@@ -165,14 +182,18 @@ export function PracticePolls({ sessionNumber }: { sessionNumber: number }) {
       window.alert(SELF_VOTE_NOTICE);
       return;
     }
+    let reason: string;
+    try { reason = validatePracticeVoteReason(reasonDrafts[poll.id] ?? ""); }
+    catch (cause) { setError(messageOf(cause)); return; }
     const originalName = poll.options[originalIndex - 1] ?? "이전 수강생";
     const nextName = poll.options[nextIndex - 1] ?? "변경할 수강생";
     if (!window.confirm(
       "투표 1명을 변경하시겠습니까?\n\n" +
-      "기존 선택: " + originalName + "\n변경 선택: " + nextName
+      "기존 선택: " + originalName + "\n변경 선택: " + nextName +
+      "\n\n선정 이유: " + reason
     )) return;
     await action(poll.id, async () => {
-      const changed = await changePracticePollVote(poll.id, nextIndex, originalIndex);
+      const changed = await changePracticePollVote(poll.id, nextIndex, originalIndex, reason);
       if (!changed) throw new Error("투표가 변경되지 않았습니다. 다시 확인해 주세요.");
       setChangingPollId(null);
       setSelected(current => {
@@ -180,7 +201,8 @@ export function PracticePolls({ sessionNumber }: { sessionNumber: number }) {
         delete next[poll.id];
         return next;
       });
-    }, "투표가 변경되었습니다. 기존 1표가 새 수강생에게 옮겨졌습니다.");
+      setReasonDrafts(current => { const next = { ...current }; delete next[poll.id]; return next; });
+    }, "투표와 선정 이유가 변경되었습니다. 기존 1표가 새 수강생에게 옮겨졌습니다.");
   }
 
   async function submitCreate(event: FormEvent<HTMLFormElement>) {
@@ -263,6 +285,9 @@ export function PracticePolls({ sessionNumber }: { sessionNumber: number }) {
         const isChanging = !instructor && isVoted && !isClosed && changingPollId === poll.id;
         const canSelect = !instructor && canParticipate && !isClosed && (!isVoted || isChanging);
         const completed = pollCompleted[poll.id] === true;
+        const selectedReason = reasonDrafts[poll.id] ?? "";
+        const reasonReady = selectedReason.trim().length >= 2 && selectedReason.trim().length <= PRACTICE_REASON_MAX_LENGTH;
+        const showReasonInput = canSelect && selected[poll.id] !== undefined && selected[poll.id] !== ownCandidate && (!isVoted || selected[poll.id] !== myChoice);
         const statistics = admin[poll.id];
         const published = winners[poll.id] ?? [];
         return <article className="pr-poll-card" key={poll.id}>
@@ -285,12 +310,27 @@ export function PracticePolls({ sessionNumber }: { sessionNumber: number }) {
                       return;
                     }
                     setSelected(current => ({ ...current, [poll.id]: value }));
+                    setReasonDrafts(current => ({ ...current, [poll.id]: "" }));
                   }}
                   disabled={!!busy} /> : <span className="pr-poll-bullet" aria-hidden>{String(value).padStart(2,"0")}</span>}
                 <span>{label}</span>
               </label>;
             })}
           </div>
+          {showReasonInput && <div className="pr-polls-reason-editor">
+            <label htmlFor={"poll-reason-" + poll.id}>선정 이유 <span>필수</span></label>
+            <textarea id={"poll-reason-" + poll.id} rows={3}
+              aria-describedby={"poll-reason-hint-" + poll.id}
+              maxLength={PRACTICE_REASON_MAX_LENGTH}
+              value={selectedReason}
+              disabled={!!busy}
+              onChange={event => setReasonDrafts(current => ({ ...current, [poll.id]: event.target.value }))}
+              placeholder="이 친구를 선택한 이유를 간단히 적어주세요. 예: 발표가 명확하고 친구들을 잘 도와줬어요." />
+            <div id={"poll-reason-hint-" + poll.id} className="pr-polls-reason-hint">
+              <span>2~200자 · 선정 이유는 다른 수강생에게 공개되지 않습니다.</span>
+              <span>{selectedReason.length}/{PRACTICE_REASON_MAX_LENGTH}</span>
+            </div>
+          </div>}
           {completed && <p className="pr-polls-all-done" role="status">
             <CheckCircle2 size={17} aria-hidden />
             <strong>투표 완료</strong>
@@ -302,7 +342,7 @@ export function PracticePolls({ sessionNumber }: { sessionNumber: number }) {
           {!instructor && !isClosed && !isVoted && canParticipate && <div className="pr-polls-vote-footer">
             <p>수강생 이름 중 한 명만 선택하세요. 수업 종료 전까지 변경할 수 있어요.</p>
             <button type="button" className="pr-polls-action pr-polls-primary"
-              disabled={!!busy || selected[poll.id]===undefined}
+              disabled={!!busy || selected[poll.id]===undefined || !reasonReady}
               onClick={()=>void submitVote(poll)}>{busy===poll.id?"저장 중…":"선택한 1명에게 투표"}</button>
           </div>}
           {!instructor && isVoted && <div className="pr-polls-my-vote">
@@ -318,10 +358,14 @@ export function PracticePolls({ sessionNumber }: { sessionNumber: number }) {
               onClick={() => {
                 setChangingPollId(poll.id);
                 setSelected(current => ({ ...current, [poll.id]: myChoice! }));
+                setReasonDrafts(current => ({ ...current, [poll.id]: "" }));
                 setError("");
               }}>투표 변경</button>}
             {isClosed && <span className="pr-polls-closed-note">수업 종료로 마감되어 변경할 수 없습니다.</span>}
           </div>}
+          {!instructor && isVoted && myReasons[poll.id] && <p className="pr-polls-saved-reason">
+            <strong>내 선정 이유</strong><span>{myReasons[poll.id]}</span>
+          </p>}
           {!instructor && isChanging && <div className="pr-polls-change-footer">
             <p>변경할 수강생 한 명을 선택하세요. 확인한 후에만 변경됩니다.</p>
             <div className="pr-polls-change-actions">
@@ -333,9 +377,10 @@ export function PracticePolls({ sessionNumber }: { sessionNumber: number }) {
                     delete next[poll.id];
                     return next;
                   });
+                  setReasonDrafts(current => { const next = { ...current }; delete next[poll.id]; return next; });
                 }}>변경 취소</button>
               <button type="button" className="pr-polls-action pr-polls-primary"
-                disabled={!!busy || selected[poll.id]===undefined || selected[poll.id]===myChoice}
+                disabled={!!busy || selected[poll.id]===undefined || selected[poll.id]===myChoice || !reasonReady}
                 onClick={() => void submitVoteChange(poll)}>
                 {busy===poll.id?"변경 중…":"선택한 1명으로 변경"}
               </button>
@@ -358,6 +403,16 @@ export function PracticePolls({ sessionNumber }: { sessionNumber: number }) {
                 </div>)}
               </div>}
               {!isClosed && <p className="pr-polls-admin-note">진행 중에는 선택 항목별 득표수를 숨깁니다. 마감 후 확인할 수 있습니다.</p>}
+              {poll.status === "closed" && (adminReasons[poll.id] ?? []).some(item => item.reasons.length > 0) && <details className="pr-polls-admin-reasons">
+                <summary>선정 이유 확인 · 익명 <ChevronDown size={13} aria-hidden /></summary>
+                <div>
+                  {(adminReasons[poll.id] ?? []).filter(item => item.reasons.length > 0).map(item => <section key={item.label}>
+                    <h5>{item.label}</h5>
+                    <ul>{item.reasons.map((reason, index) => <li key={index}>{reason}</li>)}</ul>
+                  </section>)}
+                  <p>선정 이유는 후보별로 표시하며, 작성자와 연결하지 않습니다. 수강생에게는 공개되지 않습니다.</p>
+                </div>
+              </details>}
               <details className="pr-polls-participants">
                 <summary>참여자 목록 · {statistics.participants.length}명 <ChevronDown size={13} aria-hidden /></summary>
                 {statistics.participants.length ? <ul>{statistics.participants.map(participant=>

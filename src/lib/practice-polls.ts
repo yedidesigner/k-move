@@ -28,6 +28,16 @@ export type PracticePollWinner = {
   poll_id: string;
   winners: string[];
 };
+export type PracticePollAnonymousReasons = { label: string; reasons: string[] };
+
+export const PRACTICE_REASON_MAX_LENGTH = 200;
+
+export function validatePracticeVoteReason(reason: string) {
+  const value = reason.trim();
+  if (value.length < 2 || value.length > PRACTICE_REASON_MAX_LENGTH)
+    throw new Error("선정 이유를 2~200자로 작성해 주세요.");
+  return value;
+}
 
 function problem(error: { message: string } | null, fallback: string): Error {
   return new Error(error?.message || fallback);
@@ -74,12 +84,14 @@ export async function didVoteInPracticePoll(pollId: string): Promise<boolean> {
   return data === true;
 }
 
-export async function voteInPracticePoll(pollId: string, selectedIndex: number): Promise<boolean> {
+export async function voteInPracticePoll(pollId: string, selectedIndex: number, reason: string): Promise<boolean> {
   if (!Number.isInteger(selectedIndex) || selectedIndex < 1 || selectedIndex > 100)
     throw new Error("올바른 항목을 선택해 주세요.");
-  const { data, error } = await getSupabase().rpc("kmove_practice_cast_vote", {
+  const selectedReason = validatePracticeVoteReason(reason);
+  const { data, error } = await getSupabase().rpc("kmove_practice_cast_vote_with_reason", {
     p_poll: pollId,
     p_option: selectedIndex,
+    p_reason: selectedReason,
   });
   if (error) throw problem(error, "투표를 완료하지 못했습니다.");
   return data === true;
@@ -106,6 +118,27 @@ export async function isPracticePollComplete(pollId: string): Promise<boolean> {
   return data === true;
 }
 
+/** Only the signed-in student can read their own saved reason. */
+export async function getMyPracticePollReason(pollId: string): Promise<string | null> {
+  const { data, error } = await getSupabase().rpc("kmove_practice_my_vote_reason", {
+    p_poll: pollId,
+  });
+  if (error) throw problem(error, "내 선정 이유를 불러오지 못했습니다.");
+  if (data === null) return null;
+  if (typeof data !== "string") throw new Error("선정 이유의 형식이 올바르지 않습니다.");
+  return data;
+}
+
+/** Instructor-only anonymous reasons by candidate, after the poll is closed. */
+export async function getPracticePollAdminReasons(pollId: string): Promise<PracticePollAnonymousReasons[]> {
+  const { data, error } = await getSupabase().rpc("kmove_practice_admin_reasons", {
+    p_poll: pollId,
+  });
+  if (error) throw problem(error, "강사용 선정 이유를 불러오지 못했습니다.");
+  if (!Array.isArray(data)) throw new Error("강사용 선정 이유 형식이 올바르지 않습니다.");
+  return data as PracticePollAnonymousReasons[];
+}
+
 /** Candidate names are always snapshotted by the server from enrolled students. */
 
 /** Returns only the signed-in student's own selection. Never lists other voters. */
@@ -123,7 +156,7 @@ export async function getMyPracticePollVote(pollId: string): Promise<number | nu
 
 /** Replace an existing ballot without adding a second vote; only before close. */
 export async function changePracticePollVote(
-  pollId: string, selectedIndex: number, previousIndex: number,
+  pollId: string, selectedIndex: number, previousIndex: number, reason: string,
 ): Promise<boolean> {
   if (!Number.isInteger(selectedIndex) || !Number.isInteger(previousIndex)
       || selectedIndex < 1 || selectedIndex > 100
@@ -133,8 +166,9 @@ export async function changePracticePollVote(
   if (selectedIndex === previousIndex) {
     throw new Error("기존과 다른 수강생을 선택해 주세요.");
   }
-  const { data, error } = await getSupabase().rpc("kmove_practice_change_vote", {
-    p_poll: pollId, p_option: selectedIndex, p_previous: previousIndex,
+  const selectedReason = validatePracticeVoteReason(reason);
+  const { data, error } = await getSupabase().rpc("kmove_practice_change_vote_with_reason", {
+    p_poll: pollId, p_option: selectedIndex, p_previous: previousIndex, p_reason: selectedReason,
   });
   if (error) throw problem(error, "투표를 변경하지 못했습니다.");
   return data === true;

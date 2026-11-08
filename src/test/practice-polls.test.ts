@@ -1,7 +1,8 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import {
   closePracticePoll, createPracticePoll, changePracticePollVote, didVoteInPracticePoll,
-  getMyPracticePollVote, getPracticePollAdminResults, getMyPracticePollCandidateIndex,
+  getMyPracticePollVote, getMyPracticePollReason, getPracticePollAdminResults,
+  getPracticePollAdminReasons, getMyPracticePollCandidateIndex, validatePracticeVoteReason,
   isPracticePollComplete,
   getPracticePollCandidates,
   getPracticePolls, getPracticePollWinnerList, publishPracticePollWinner,
@@ -61,14 +62,14 @@ describe("Practice polls member-safe API", () => {
   });
 
   it("issues one vote through a restricted RPC and handles duplicate vote response", async () => {
-    expect(await voteInPracticePoll("poll-a",15)).toBe(true);
-    expect(mocks.rpc).toHaveBeenCalledWith("kmove_practice_cast_vote", {
-      p_poll:"poll-a", p_option:15,
+    expect(await voteInPracticePoll("poll-a",15,"발표가 명확하고 친절해요.")).toBe(true);
+    expect(mocks.rpc).toHaveBeenCalledWith("kmove_practice_cast_vote_with_reason", {
+      p_poll:"poll-a", p_option:15, p_reason:"발표가 명확하고 친절해요.",
     });
     mocks.rpc.mockResolvedValueOnce({ data:false,error:null });
-    expect(await voteInPracticePoll("poll-a",2)).toBe(false);
-    await expect(voteInPracticePoll("poll-a",0)).rejects.toThrow();
-    await expect(voteInPracticePoll("poll-a",101)).rejects.toThrow();
+    expect(await voteInPracticePoll("poll-a",2,"분석을 꼼꼼하게 했어요.")).toBe(false);
+    await expect(voteInPracticePoll("poll-a",0,"좋아요.")).rejects.toThrow();
+    await expect(voteInPracticePoll("poll-a",101,"좋아요.")).rejects.toThrow();
   });
 
 
@@ -82,21 +83,21 @@ describe("Practice polls member-safe API", () => {
   });
 
   it("replaces an existing vote with exactly one other candidate", async () => {
-    expect(await changePracticePollVote("poll-a", 15, 2)).toBe(true);
-    expect(mocks.rpc).toHaveBeenCalledWith("kmove_practice_change_vote", {
-      p_poll: "poll-a", p_option: 15, p_previous: 2,
+    expect(await changePracticePollVote("poll-a", 15, 2, "새로운 친구가 발표를 잘했어요.")).toBe(true);
+    expect(mocks.rpc).toHaveBeenCalledWith("kmove_practice_change_vote_with_reason", {
+      p_poll: "poll-a", p_option: 15, p_previous: 2, p_reason:"새로운 친구가 발표를 잘했어요.",
     });
-    await expect(changePracticePollVote("poll-a", 2, 2)).rejects.toThrow(/다른 수강생/);
-    await expect(changePracticePollVote("poll-a", 0, 1)).rejects.toThrow();
-    await expect(changePracticePollVote("poll-a", 101, 1)).rejects.toThrow();
+    await expect(changePracticePollVote("poll-a", 2, 2, "좋아요.")).rejects.toThrow(/다른 수강생/);
+    await expect(changePracticePollVote("poll-a", 0, 1,"좋아요.")).rejects.toThrow();
+    await expect(changePracticePollVote("poll-a", 101, 1,"좋아요.")).rejects.toThrow();
     expect(mocks.rpc).toHaveBeenCalledTimes(1);
   });
 
   it("surfaces a closed poll or stale ballot instead of reporting a successful change", async () => {
     mocks.rpc.mockResolvedValueOnce({ data: null, error: { message: "수업 시간이 종료되어 투표를 변경할 수 없습니다." } });
-    await expect(changePracticePollVote("poll-a", 2, 1)).rejects.toThrow(/수업 시간이 종료/);
+    await expect(changePracticePollVote("poll-a", 2, 1, "발표가 인상적이에요.")).rejects.toThrow(/수업 시간이 종료/);
     mocks.rpc.mockResolvedValueOnce({ data: false, error: null });
-    expect(await changePracticePollVote("poll-a", 3, 1)).toBe(false);
+    expect(await changePracticePollVote("poll-a", 3, 1,"분석을 잘했어요.")).toBe(false);
   });
 
 
@@ -120,6 +121,34 @@ describe("Practice polls member-safe API", () => {
     expect(mocks.rpc).toHaveBeenCalledWith("kmove_practice_poll_complete", {
       p_poll: "poll-a",
     });
+    expect(mocks.from).not.toHaveBeenCalledWith("kmove_practice_ballots");
+  });
+
+
+  it("requires 2–200 characters for a selection reason before making any RPC", async () => {
+    expect(validatePracticeVoteReason("  친절하고 설명이 명확했어요.  ")).toBe("친절하고 설명이 명확했어요.");
+    expect(() => validatePracticeVoteReason("")).toThrow(/선정 이유/);
+    expect(() => validatePracticeVoteReason(" ")).toThrow(/선정 이유/);
+    expect(() => validatePracticeVoteReason("가".repeat(201))).toThrow(/2~200자/);
+    await expect(voteInPracticePoll("poll-a",2," ")).rejects.toThrow(/선정 이유/);
+    await expect(changePracticePollVote("poll-a",3,2," ")).rejects.toThrow(/선정 이유/);
+    expect(mocks.rpc).not.toHaveBeenCalled();
+  });
+
+  it("returns the current student's saved reason without exposing other ballots", async () => {
+    mocks.rpc.mockResolvedValueOnce({ data:"디자인 설명이 정교했어요.",error:null });
+    expect(await getMyPracticePollReason("poll-a")).toBe("디자인 설명이 정교했어요.");
+    expect(mocks.rpc).toHaveBeenCalledWith("kmove_practice_my_vote_reason",{p_poll:"poll-a"});
+    mocks.rpc.mockResolvedValueOnce({ data:null,error:null });
+    expect(await getMyPracticePollReason("poll-a")).toBeNull();
+    expect(mocks.from).not.toHaveBeenCalledWith("kmove_practice_ballots");
+  });
+
+  it("fetches anonymous candidate-grouped reasons through an instructor-only endpoint", async () => {
+    const example=[{label:"수강생나",reasons:["도움을 잘 주었어요.","발표가 명확했어요."]}];
+    mocks.rpc.mockResolvedValueOnce({data:example,error:null});
+    expect(await getPracticePollAdminReasons("poll-a")).toEqual(example);
+    expect(mocks.rpc).toHaveBeenCalledWith("kmove_practice_admin_reasons",{p_poll:"poll-a"});
     expect(mocks.from).not.toHaveBeenCalledWith("kmove_practice_ballots");
   });
 
