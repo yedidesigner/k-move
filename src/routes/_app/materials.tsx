@@ -9,7 +9,7 @@ export const Route = createFileRoute("/_app/materials")({
       : {},
   head: () => ({
     meta: [
-      { title: "디자인 학습자료 | K-Move LMS" },
+      { title: "RESOURCES | K-Move LMS" },
       {
         name: "description",
         content: "디자인 이론을 주제별로 연결하고 설계 판단과 자신의 작업에 적용하는 학습자료",

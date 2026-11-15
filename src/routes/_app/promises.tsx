@@ -3,7 +3,7 @@ import { OurPromises } from "@/components/OurPromises";
 
 export const Route = createFileRoute("/_app/promises")({
   head: () => ({
-    meta: [{ title: "우리의 약속 | K-Move LMS" }, { name: "robots", content: "noindex" }],
+    meta: [{ title: "OUR PROMISE | K-Move LMS" }, { name: "robots", content: "noindex" }],
   }),
   component: OurPromises,
 });

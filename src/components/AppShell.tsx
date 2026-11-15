@@ -22,27 +22,27 @@ import { useAuth } from "@/lib/auth";
 import { requestEditorExit } from "@/lib/editor-exit-guard";
 
 const STUDENT_NAV = [
-  { to: "/", label: "홈", icon: Home },
-  { to: "/sessions", label: "전체 수업", icon: CalendarDays },
-  { to: "/practice", label: "채팅", icon: MessagesSquare },
-  { to: "/glossary", label: "용어집", icon: BookOpen },
-  { to: "/materials", label: "학습자료", icon: Library },
-  { to: "/portfolio", label: "내 포트폴리오", icon: Briefcase },
-  { to: "/feedback", label: "과제&피드백", icon: MessageSquareText },
-  { to: "/tools", label: "실습 도구", icon: Wrench },
-  { to: "/promises", label: "우리의 약속", icon: Handshake },
+  { to: "/", label: "HOME", icon: Home },
+  { to: "/sessions", label: "CLASSES", icon: CalendarDays },
+  { to: "/practice", label: "CHAT", icon: MessagesSquare },
+  { to: "/glossary", label: "GLOSSARY", icon: BookOpen },
+  { to: "/materials", label: "RESOURCES", icon: Library },
+  { to: "/portfolio", label: "PORTFOLIO", icon: Briefcase },
+  { to: "/feedback", label: "FEEDBACK", icon: MessageSquareText },
+  { to: "/tools", label: "TOOLS", icon: Wrench },
+  { to: "/promises", label: "OUR PROMISE", icon: Handshake },
 ] as const;
 const INSTRUCTOR_NAV = [
-  { to: "/", label: "강사 홈", icon: Home, group: "수업 운영" },
-  { to: "/sessions", label: "수업 관리", icon: CalendarDays, group: "수업 운영" },
-  { to: "/practice", label: "채팅", icon: MessagesSquare, group: "수업 운영" },
-  { to: "/feedback", label: "과제&피드백", icon: MessageSquareText, group: "수업 운영" },
-  { to: "/admin", label: "학생 관리", icon: Users, group: "수업 운영" },
-  { to: "/portfolio", label: "학생 포트폴리오", icon: Briefcase, group: "수업 운영" },
-  { to: "/glossary", label: "용어집", icon: BookOpen, group: "학습 콘텐츠" },
-  { to: "/materials", label: "학습자료", icon: Library, group: "학습 콘텐츠" },
-  { to: "/tools", label: "실습 도구", icon: Wrench, group: "보조 메뉴" },
-  { to: "/promises", label: "우리의 약속", icon: Handshake, group: "보조 메뉴" },
+  { to: "/", label: "HOME", icon: Home, group: "수업 운영" },
+  { to: "/sessions", label: "CLASSES", icon: CalendarDays, group: "수업 운영" },
+  { to: "/practice", label: "CHAT", icon: MessagesSquare, group: "수업 운영" },
+  { to: "/feedback", label: "FEEDBACK", icon: MessageSquareText, group: "수업 운영" },
+  { to: "/admin", label: "STUDENTS", icon: Users, group: "수업 운영" },
+  { to: "/portfolio", label: "PORTFOLIO", icon: Briefcase, group: "수업 운영" },
+  { to: "/glossary", label: "GLOSSARY", icon: BookOpen, group: "학습 콘텐츠" },
+  { to: "/materials", label: "RESOURCES", icon: Library, group: "학습 콘텐츠" },
+  { to: "/tools", label: "TOOLS", icon: Wrench, group: "보조 메뉴" },
+  { to: "/promises", label: "OUR PROMISE", icon: Handshake, group: "보조 메뉴" },
 ] as const;
 
 export function AppShell({ children }: { children: ReactNode }) {
@@ -161,10 +161,10 @@ export function AppShell({ children }: { children: ReactNode }) {
               search={{ tab: "settings" }}
               data-nav-active={location.pathname === "/admin" && activeTab === "settings"}
               className={`${linkCls} mt-3`}
-              title={collapsed ? "운영 설정" : undefined}
+              title={collapsed ? "SETTINGS" : undefined}
             >
               <Settings className="size-4 shrink-0" aria-hidden />
-              <span className={collapsed ? "sr-only" : ""}>운영 설정</span>
+              <span className={collapsed ? "sr-only" : ""}>SETTINGS</span>
             </Link>
           )}
         </nav>
@@ -230,7 +230,7 @@ export function AppShell({ children }: { children: ReactNode }) {
                   search={{ tab: "settings" }}
                   className="min-h-10 border border-border px-3 py-2 text-xs"
                 >
-                  운영 설정
+                  SETTINGS
                 </Link>
               )}
               <Link to="/password" className="min-h-10 border border-border px-3 py-2 text-xs">
@@ -288,15 +288,15 @@ export function AppShell({ children }: { children: ReactNode }) {
                 {instructor
                   ? (
                       {
-                        "/": "홈",
-                        "/feedback": "과제&피드백",
-                        "/practice": "채팅",
-                        "/admin": "학생",
-                        "/sessions": "수업",
-                        "/portfolio": "포트폴리오",
+                        "/": "HOME",
+                        "/feedback": "FEEDBACK",
+                        "/practice": "CHAT",
+                        "/admin": "STUDENTS",
+                        "/sessions": "CLASSES",
+                        "/portfolio": "PORTFOLIO",
                       } as Record<string, string>
                     )[item.to]
-                  : item.label.replace("내 ", "")}
+                  : item.label}
               </Link>
             );
           })}

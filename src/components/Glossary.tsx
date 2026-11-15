@@ -210,12 +210,10 @@ export function Glossary({ initialQuery = "" }: { initialQuery?: string } = {}) 
     <GlossaryNavigationContext.Provider value={openRelatedTerm}>
       <section aria-labelledby="glossary-title">
         <header className="mb-7 border-b border-foreground pb-6">
-          <p className="mb-3 text-[11px] font-medium tracking-[0.18em] text-muted-foreground">
-            DESIGN GLOSSARY
-          </p>
+          <p className="mb-2 text-xs font-semibold tracking-[0.12em] text-muted-foreground">용어집</p>
           <div className="flex items-end justify-between gap-4">
             <h1 id="glossary-title" className="text-3xl font-bold tracking-tight md:text-4xl">
-              용어집
+              GLOSSARY
             </h1>
             <span className="text-xs tracking-[0.1em] text-muted-foreground">
               <strong className="mr-1.5 text-xl font-medium tracking-tight text-foreground">
@@ -225,7 +223,7 @@ export function Glossary({ initialQuery = "" }: { initialQuery?: string } = {}) 
             </span>
           </div>
           <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
-            하나의 용어를, 정의부터 실제 예시까지. 필요한 개념을 찾아 차근히 살펴보세요.
+            디자인·AI·UX/UI 실무에서 사용하는 핵심 용어를 정의, 예시, 실습과 함께 찾아봅니다.
           </p>
         </header>
 

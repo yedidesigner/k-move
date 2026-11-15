@@ -422,9 +422,9 @@ export function StudyMaterials({ guideId, onGuideChange }: StudyMaterialsProps =
   return (
     <section className="study-shared study-page" aria-labelledby={titleId}>
       <header className={`study-page-header${selectedGuide ? " study-page-header-reading" : ""}`}>
-        <p className="study-kicker">DESIGN / STUDY LIBRARY</p>
+        <p className="study-kicker">자료실</p>
         <div className="study-page-title-row">
-          <h1 id={titleId}>학습자료</h1>
+          <h1 id={titleId}>RESOURCES</h1>
           <span>
             {guides.length}
             <small>GUIDES</small>
@@ -432,7 +432,7 @@ export function StudyMaterials({ guideId, onGuideChange }: StudyMaterialsProps =
         </div>
         {!selectedGuide && (
           <p className="study-page-intro">
-            하나의 주제를 골라 개념을 연결하고, 설계의 이유를 자신의 작업에 적용해 보세요.
+            수업 자료와 디자인 학습 콘텐츠를 주제별로 연결해 보고, 자신의 작업에 적용합니다.
           </p>
         )}
       </header>

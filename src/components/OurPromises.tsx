@@ -259,11 +259,9 @@ export function OurPromises() {
   return (
     <div className="mx-auto max-w-3xl">
       <header className="mb-3 border-b border-foreground pb-6 sm:pb-8">
-        <p className="mb-3 text-xs font-semibold tracking-[0.2em] text-muted-foreground">OUR PROMISES</p>
-        <h1 className="text-3xl font-bold tracking-tight sm:text-4xl">우리의 약속</h1>
-        <p className="mt-3 text-sm leading-relaxed text-muted-foreground break-keep sm:text-base">
-          함께 배우고 성장하는 시간을 위해, 서로와 나에게 약속합니다.
-        </p>
+        <p className="mb-2 text-xs font-semibold tracking-[0.12em] text-muted-foreground">우리의 약속</p>
+        <h1 className="text-3xl font-bold tracking-tight sm:text-4xl">OUR PROMISE</h1>
+        <p className="mt-3 text-sm leading-relaxed text-muted-foreground break-keep sm:text-base">함께 배우고 성장하기 위한 수업 원칙과 서로에게 지킬 약속을 확인합니다.</p>
       </header>
 
       <ol role="list" aria-label="우리의 열 가지 약속" className="list-none">

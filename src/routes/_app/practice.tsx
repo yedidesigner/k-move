@@ -11,7 +11,7 @@ export const Route = createFileRoute("/_app/practice")({
     const session = Number(search["session"]);
     return Number.isInteger(session) && session >= 1 && session <= 24 ? { session } : {};
   },
-  head: () => ({ meta: [{ title: "채팅 | K-Move LMS" }, { name: "robots", content: "noindex" }] }),
+  head: () => ({ meta: [{ title: "CHAT | K-Move LMS" }, { name: "robots", content: "noindex" }] }),
   component: PracticePage,
 });
 
@@ -32,11 +32,11 @@ function PracticePage() {
     <div className="mx-auto max-w-6xl">
       <header className="mb-6 flex flex-wrap items-end justify-between gap-4">
         <div>
-          <p className="mb-2 flex items-center gap-2 text-xs font-medium uppercase tracking-[0.14em] text-neutral-500">
-            <MessageSquare className="size-4" aria-hidden /> CLASSROOM
+          <p className="mb-2 flex items-center gap-2 text-xs font-semibold tracking-[0.12em] text-neutral-500">
+            <MessageSquare className="size-4" aria-hidden /> 채팅
           </p>
-          <h1 className="text-3xl font-semibold tracking-tight">채팅</h1>
-          <p className="mt-2 text-sm leading-6 text-neutral-600">수업에서 만든 결과물과 질문을 채팅으로 나누고, 회차별로 다시 찾아보세요.</p>
+          <h1 className="text-4xl font-semibold tracking-tight">CHAT</h1>
+          <p className="mt-2 text-sm leading-7 text-neutral-600">수업별 대화, 자료 공유, 투표를 한곳에서 확인하고 회차별 기록을 다시 찾아봅니다.</p>
         </div>
         <Link to="/sessions/$id" params={{ id: selected.id }} className="inline-flex min-h-11 items-center gap-2 border border-neutral-300 px-4 text-sm font-medium hover:bg-neutral-50">
           {selected.number}회차 수업 보기 <ArrowUpRight className="size-4" aria-hidden />

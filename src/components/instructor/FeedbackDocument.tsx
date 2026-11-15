@@ -43,7 +43,11 @@ export function FeedbackDocument({
 
   return (
     <div className="feedback-document">
-      <h1 className="feedback-document-title">과제&amp;피드백</h1>
+      <header className="mb-5 text-center">
+        <p className="text-xs font-semibold tracking-[0.12em] text-neutral-500">피드백</p>
+        <h1 className="feedback-document-title mt-2">FEEDBACK</h1>
+        <p className="mt-2 text-sm leading-7 text-neutral-600">과제 자료를 제출하고 강사의 피드백과 수정 기록을 확인합니다.</p>
+      </header>
       <section className="feedback-paper-stack" aria-label="주차별 피드백 문서">
         <div className="feedback-paper-layer feedback-paper-layer-back" aria-hidden="true" />
         <div className="feedback-paper-layer feedback-paper-layer-front" aria-hidden="true" />

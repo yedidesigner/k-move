@@ -13,7 +13,7 @@ import {
   sessionStatusLabel,
   weekdayKo,
 } from "@/data/schedule";
-import { CURRICULUM_OVERVIEW } from "@/data/curriculum";
+import { CLASSES_OVERVIEW } from "@/data/curriculum";
 import { SessionCalendar } from "@/components/SessionCalendar";
 import { defaultCalendarMonth } from "@/lib/session-calendar";
 import { cn } from "@/lib/utils";
@@ -21,9 +21,9 @@ import { cn } from "@/lib/utils";
 export const Route = createFileRoute("/_app/sessions/")({
   head: () => ({
     meta: [
-      { title: "CURRICULUM | K-Move 미국 디자인 실무 취업 연수과정" },
+      { title: "CLASSES | K-Move 미국 디자인 실무 취업 연수과정" },
       { name: "description", content: "Gemini 바이브코딩 24회차 커리큘럼과 전체 수업 일정" },
-      { property: "og:title", content: "CURRICULUM" },
+      { property: "og:title", content: "CLASSES" },
       {
         property: "og:description",
         content: "Gemini 바이브코딩 24회차 커리큘럼과 전체 수업 일정",
@@ -86,11 +86,10 @@ export function StudentSessionSchedule() {
     <>
       <header className="mb-6 flex flex-wrap items-start justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight text-foreground md:text-3xl">
-            CURRICULUM
-          </h1>
-          <p className="mt-1.5 text-base text-muted-foreground">
-            총 {sessions.length}회차 · 회차별 일정 확인 (한국 시간)
+          <p className="text-xs font-semibold tracking-[0.12em] text-muted-foreground">수업</p>
+          <h1 className="mt-2 text-3xl font-bold tracking-tight text-foreground md:text-4xl">CLASSES</h1>
+          <p className="mt-2 max-w-3xl text-sm leading-7 text-muted-foreground">
+            전체 수업 일정과 총 {sessions.length}회차의 커리큘럼을 확인합니다. 시간은 한국 시간을 기준으로 합니다.
           </p>
         </div>
         <div role="group" aria-label="수업 보기 방식" className="inline-flex border border-border">
@@ -129,13 +128,13 @@ export function StudentSessionSchedule() {
           id="curriculum-overview-title"
           className="mt-2 text-lg font-bold tracking-tight sm:text-xl"
         >
-          {CURRICULUM_OVERVIEW.title}
+          {CLASSES_OVERVIEW.title}
         </h2>
         <p className="mt-2 max-w-3xl text-sm leading-relaxed text-muted-foreground">
-          {CURRICULUM_OVERVIEW.subtitle}
+          {CLASSES_OVERVIEW.subtitle}
         </p>
         <p className="mt-3 text-xs leading-relaxed text-muted-foreground">
-          {CURRICULUM_OVERVIEW.phases.map((phase) => `${phase.range} ${phase.label}`).join(" · ")}
+          {CLASSES_OVERVIEW.phases.map((phase) => `${phase.range} ${phase.label}`).join(" · ")}
         </p>
       </section>
       {view === "calendar" ? (

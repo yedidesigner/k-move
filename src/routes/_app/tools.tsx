@@ -1,13 +1,12 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { ExternalLink } from "lucide-react";
-import { PageHeader } from "@/components/lms";
 
 export const Route = createFileRoute("/_app/tools")({
   head: () => ({
     meta: [
-      { title: "실습 도구 | K-Move LMS" },
+      { title: "TOOLS | K-Move LMS" },
       { name: "description", content: "Gemini와 Google AI Studio 바로가기" },
-      { property: "og:title", content: "실습 도구" },
+      { property: "og:title", content: "TOOLS" },
       { property: "og:description", content: "Gemini와 Google AI Studio 바로가기" },
     ],
   }),
@@ -26,7 +25,11 @@ const TOOLS = [
 function Tools() {
   return (
     <>
-      <PageHeader title="실습 도구" description="새 탭에서 열립니다." />
+      <header className="mb-7 border-b border-border pb-5">
+        <p className="text-xs font-semibold tracking-[0.12em] text-muted-foreground">도구</p>
+        <h1 className="mt-2 text-3xl font-bold tracking-tight md:text-4xl">TOOLS</h1>
+        <p className="mt-2 max-w-3xl text-sm leading-7 text-muted-foreground">수업과 실습에 사용하는 AI·디자인 도구를 빠르게 열고 활용합니다.</p>
+      </header>
       <div className="divide-y divide-border border-y border-border bg-card">
         {TOOLS.map((t) => (
           <a

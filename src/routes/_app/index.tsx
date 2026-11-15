@@ -9,7 +9,7 @@ import { CLASS_END, CLASS_START, COURSE_NAME, formatDateKo } from "@/data/schedu
 export const Route = createFileRoute("/_app/")({
   head: () => ({
     meta: [
-      { title: "홈 | K-Move 미국 디자인 실무 취업 연수과정" },
+      { title: "HOME | K-Move 미국 디자인 실무 취업 연수과정" },
       { name: "description", content: "오늘의 수업, 공지, 디자인 용어와 학습자료를 확인하세요." },
       { property: "og:title", content: "K-Move 미국 디자인 실무 취업 연수과정" },
       { property: "og:description", content: "Google AI를 활용한 포트폴리오 제작 수강생 포털" },
@@ -79,11 +79,12 @@ function StudentHome() {
   const cur = next ? { session: next, isToday: next.date === today } : null;
   return (
     <>
-      <header className="mb-6 flex items-baseline gap-4">
-        <h1 className="shrink-0 text-2xl font-bold tracking-tight text-foreground md:text-3xl">
-          HOME
-        </h1>
-        <p className="min-w-0 text-base text-muted-foreground">{COURSE_NAME}</p>
+      <header className="mb-7 border-b border-border pb-5">
+        <p className="text-xs font-semibold tracking-[0.12em] text-muted-foreground">홈</p>
+        <h1 className="mt-2 text-3xl font-bold tracking-tight text-foreground md:text-4xl">HOME</h1>
+        <p className="mt-2 max-w-3xl text-sm leading-7 text-muted-foreground">
+          Google AI를 활용한 포트폴리오 제작과 K-MOVE 학습 현황을 한눈에 확인합니다.
+        </p>
       </header>
       <PublishedAnnouncements />
       <div className="grid gap-5 lg:grid-cols-[minmax(0,2fr)_minmax(0,1fr)]">
@@ -129,8 +130,8 @@ function StudentHome() {
             className="group flex min-h-28 items-center justify-between gap-4 px-6 py-6 transition-colors hover:bg-muted"
           >
             <span>
-              <span className="block text-xs text-muted-foreground">개념·예시·실습</span>
-              <span className="mt-2 block text-lg font-semibold">용어집</span>
+              <span className="block text-xs text-muted-foreground">용어집 · 개념·예시·실습</span>
+              <span className="mt-2 block text-lg font-semibold">GLOSSARY</span>
             </span>
             <ArrowUpRight aria-hidden className="size-5 shrink-0" />
           </Link>
@@ -139,8 +140,8 @@ function StudentHome() {
             className="group flex min-h-28 items-center justify-between gap-4 px-6 py-6 transition-colors hover:bg-muted"
           >
             <span>
-              <span className="block text-xs text-muted-foreground">주제별로 이어 배우기</span>
-              <span className="mt-2 block text-lg font-semibold">학습자료</span>
+              <span className="block text-xs text-muted-foreground">자료실 · 주제별 학습 콘텐츠</span>
+              <span className="mt-2 block text-lg font-semibold">RESOURCES</span>
             </span>
             <ArrowUpRight aria-hidden className="size-5 shrink-0" />
           </Link>
@@ -149,8 +150,8 @@ function StudentHome() {
             className="group flex min-h-28 items-center justify-between gap-4 px-6 py-6 transition-colors hover:bg-muted"
           >
             <span>
-              <span className="block text-xs text-muted-foreground">과제&피드백 바로가기</span>
-              <span className="mt-2 block text-lg font-semibold">과제&피드백</span>
+              <span className="block text-xs text-muted-foreground">피드백 · 과제 제출과 확인</span>
+              <span className="mt-2 block text-lg font-semibold">FEEDBACK</span>
             </span>
             <ArrowUpRight aria-hidden className="size-5 shrink-0" />
           </Link>

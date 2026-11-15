@@ -9,7 +9,7 @@ export const Route = createFileRoute("/_app/glossary")({
       : {},
   head: () => ({
     meta: [
-      { title: "디자인 용어집 | K-Move LMS" },
+      { title: "GLOSSARY | K-Move LMS" },
       {
         name: "description",
         content:
