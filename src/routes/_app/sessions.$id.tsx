@@ -6,6 +6,7 @@ import { usePublishedContent, PublishedAnnouncements } from "@/lib/published-con
 import { useAuth } from "@/lib/auth";
 import { WeekTwoResources } from "@/components/WeekTwoResources";
 import { WeekThreeResources } from "@/components/WeekThreeResources";
+import { WeekFourResources, WEEK_FOUR_DOWNLOADS } from "@/components/WeekFourResources";
 
 export const Route = createFileRoute("/_app/sessions/$id")({
   loader: ({ params }) => {
@@ -45,6 +46,14 @@ function Detail() {
   const lesson = s.detailsPublished ? s.curriculum : null;
   const previous = sessions.find((session) => session.number === s.number - 1);
   const next = sessions.find((session) => session.number === s.number + 1);
+  // Session 04 has a slide-only viewer; published PPTX/PDF/ZIP items must not
+  // reintroduce presentation downloads. Avoid duplicating the two handouts.
+  const materials = (s.materials ?? []).filter((material) =>
+    s.id !== "S04" || (
+      /\.(html?|txt)$/i.test(material.fileName) &&
+      !WEEK_FOUR_DOWNLOADS.some((file) => file.fileName === material.fileName)
+    ),
+  );
   return (
     <div className="mx-auto max-w-4xl">
       <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
@@ -101,13 +110,14 @@ function Detail() {
       <div className="mt-5">
         <PublishedAnnouncements sessionNumber={s.number} />
       </div>
-      {!!s.materials?.length && (
+      {s.detailsPublished && <WeekFourResources sessionId={s.id} />}
+      {!!materials.length && (
         <section className="mt-6" aria-labelledby="session-materials-title">
           <h2 id="session-materials-title" className="mb-3 text-lg font-semibold">
             수업 자료
           </h2>
           <ul className="divide-y divide-neutral-200 border border-neutral-200 bg-white">
-            {s.materials.map((material) => (
+            {materials.map((material) => (
               <li
                 key={material.id}
                 className="flex flex-wrap items-center justify-between gap-4 px-5 py-4"
