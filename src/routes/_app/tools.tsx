@@ -5,9 +5,9 @@ export const Route = createFileRoute("/_app/tools")({
   head: () => ({
     meta: [
       { title: "TOOLS | K-Move LMS" },
-      { name: "description", content: "Gemini와 Google AI Studio 바로가기" },
+      { name: "description", content: "Gemini, Google AI Studio, AI ATLAS 등 수업·실습용 AI 도구 모음" },
       { property: "og:title", content: "TOOLS" },
-      { property: "og:description", content: "Gemini와 Google AI Studio 바로가기" },
+      { property: "og:description", content: "Gemini, Google AI Studio, AI ATLAS 등 수업·실습용 AI 도구 모음" },
     ],
   }),
   component: Tools,
@@ -19,6 +19,11 @@ const TOOLS = [
     name: "Google AI Studio",
     url: "https://aistudio.google.com/",
     desc: "프롬프트 실험과 웹 포트폴리오 제작",
+  },
+  {
+    name: "AI ATLAS",
+    url: "https://ai-atlas-yedi3.vercel.app",
+    desc: "AI 플랫폼별 특징·요금·용도를 비교하고 필요한 도구를 탐색",
   },
 ];
 
