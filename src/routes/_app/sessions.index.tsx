@@ -13,7 +13,7 @@ import {
   sessionStatusLabel,
   weekdayKo,
 } from "@/data/schedule";
-import { CLASSES_OVERVIEW } from "@/data/curriculum";
+import { CURRICULUM_OVERVIEW } from "@/data/curriculum";
 import { SessionCalendar } from "@/components/SessionCalendar";
 import { defaultCalendarMonth } from "@/lib/session-calendar";
 import { cn } from "@/lib/utils";
@@ -128,13 +128,13 @@ export function StudentSessionSchedule() {
           id="curriculum-overview-title"
           className="mt-2 text-lg font-bold tracking-tight sm:text-xl"
         >
-          {CLASSES_OVERVIEW.title}
+          {CURRICULUM_OVERVIEW.title}
         </h2>
         <p className="mt-2 max-w-3xl text-sm leading-relaxed text-muted-foreground">
-          {CLASSES_OVERVIEW.subtitle}
+          {CURRICULUM_OVERVIEW.subtitle}
         </p>
         <p className="mt-3 text-xs leading-relaxed text-muted-foreground">
-          {CLASSES_OVERVIEW.phases.map((phase) => `${phase.range} ${phase.label}`).join(" · ")}
+          {CURRICULUM_OVERVIEW.phases.map((phase) => `${phase.range} ${phase.label}`).join(" · ")}
         </p>
       </section>
       {view === "calendar" ? (
