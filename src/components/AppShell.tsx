@@ -24,7 +24,7 @@ import { requestEditorExit } from "@/lib/editor-exit-guard";
 const STUDENT_NAV = [
   { to: "/", label: "홈", icon: Home },
   { to: "/sessions", label: "전체 수업", icon: CalendarDays },
-  { to: "/practice", label: "실습 공유", icon: MessagesSquare },
+  { to: "/practice", label: "채팅", icon: MessagesSquare },
   { to: "/glossary", label: "용어집", icon: BookOpen },
   { to: "/materials", label: "학습자료", icon: Library },
   { to: "/portfolio", label: "내 포트폴리오", icon: Briefcase },
@@ -35,7 +35,7 @@ const STUDENT_NAV = [
 const INSTRUCTOR_NAV = [
   { to: "/", label: "강사 홈", icon: Home, group: "수업 운영" },
   { to: "/sessions", label: "수업 관리", icon: CalendarDays, group: "수업 운영" },
-  { to: "/practice", label: "실습 공유", icon: MessagesSquare, group: "수업 운영" },
+  { to: "/practice", label: "채팅", icon: MessagesSquare, group: "수업 운영" },
   { to: "/feedback", label: "과제&피드백", icon: MessageSquareText, group: "수업 운영" },
   { to: "/admin", label: "학생 관리", icon: Users, group: "수업 운영" },
   { to: "/portfolio", label: "학생 포트폴리오", icon: Briefcase, group: "수업 운영" },
@@ -290,7 +290,7 @@ export function AppShell({ children }: { children: ReactNode }) {
                       {
                         "/": "홈",
                         "/feedback": "과제&피드백",
-                        "/practice": "실습 공유",
+                        "/practice": "채팅",
                         "/admin": "학생",
                         "/sessions": "수업",
                         "/portfolio": "포트폴리오",

@@ -11,7 +11,7 @@ export const Route = createFileRoute("/_app/practice")({
     const session = Number(search["session"]);
     return Number.isInteger(session) && session >= 1 && session <= 24 ? { session } : {};
   },
-  head: () => ({ meta: [{ title: "실습 공유 | K-Move LMS" }, { name: "robots", content: "noindex" }] }),
+  head: () => ({ meta: [{ title: "채팅 | K-Move LMS" }, { name: "robots", content: "noindex" }] }),
   component: PracticePage,
 });
 
@@ -35,8 +35,8 @@ function PracticePage() {
           <p className="mb-2 flex items-center gap-2 text-xs font-medium uppercase tracking-[0.14em] text-neutral-500">
             <MessageSquare className="size-4" aria-hidden /> CLASSROOM
           </p>
-          <h1 className="text-3xl font-semibold tracking-tight">실습 공유</h1>
-          <p className="mt-2 text-sm leading-6 text-neutral-600">수업에서 만든 결과물과 질문을 나누고, 회차별로 다시 찾아보세요.</p>
+          <h1 className="text-3xl font-semibold tracking-tight">채팅</h1>
+          <p className="mt-2 text-sm leading-6 text-neutral-600">수업에서 만든 결과물과 질문을 채팅으로 나누고, 회차별로 다시 찾아보세요.</p>
         </div>
         <Link to="/sessions/$id" params={{ id: selected.id }} className="inline-flex min-h-11 items-center gap-2 border border-neutral-300 px-4 text-sm font-medium hover:bg-neutral-50">
           {selected.number}회차 수업 보기 <ArrowUpRight className="size-4" aria-hidden />
