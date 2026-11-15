@@ -40,12 +40,12 @@ export function WeekThreeResources({ sessionId }: { sessionId: string }) {
                 Google AI Studio · 인터랙티브 한국어 튜토리얼
               </h2>
               <p className="mt-2 max-w-2xl break-keep text-sm leading-7 text-neutral-600">
-                Build와 Playground의 영어 메뉴를 직접 눌러 한국어 해석과 사용법을 확인하세요.
-                Default·Plan·Max 모드, Run settings, 프롬프트와 도구 설정을 익힐 수 있습니다.
+                개인 프로젝트명과 프롬프트가 없는 중립 화면에서 Model selection, System instructions,
+                Thinking level, Tools, Advanced settings를 직접 눌러 기능·활용 상황·주의사항을 확인합니다.
               </p>
             </div>
             <span className="border border-neutral-200 px-3 py-1.5 text-xs font-medium text-neutral-600">
-              V5 · 학습용 데모
+              V6 · 옵션 가이드
             </span>
           </div>
           <div className="flex flex-wrap gap-3">
@@ -76,7 +76,7 @@ export function WeekThreeResources({ sessionId }: { sessionId: string }) {
               </p>
               <iframe
                 src={TUTORIAL_URL}
-                title="Google AI Studio Build와 Playground 인터랙티브 튜토리얼"
+                title="Google AI Studio 옵션 인터랙티브 한국어 튜토리얼"
                 className="h-[660px] w-full border border-neutral-200 bg-white sm:h-[760px]"
                 loading="lazy"
                 sandbox="allow-scripts allow-popups allow-popups-to-escape-sandbox"
