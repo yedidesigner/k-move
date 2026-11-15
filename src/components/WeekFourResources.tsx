@@ -1,7 +1,9 @@
 import { useEffect, useRef, useState } from "react";
 import { useAuth } from "@/lib/auth";
 
-const DECK_ID = "1fQLp_YuQbnfIS-CvRa5-op6yI21aB5vMtmNC-SyxkWM";
+// Fixed-font viewing derivative; editable instructor PPTX is retained privately.
+// Every slide was rendered with the actual Pretendard Regular/Bold fonts.
+const DECK_ID = "1HuAQfzdPM8CyeJoQpTNDkt_0ndfDK-oVsvnAQVgDntk";
 const VIEWER_URL = `https://docs.google.com/presentation/d/${DECK_ID}/embed?start=false&loop=false&delayms=3000&rm=minimal`;
 export const WEEK_FOUR_DOWNLOADS = [
   {
