@@ -56,7 +56,7 @@ function Detail() {
         !WEEK_FOUR_DOWNLOADS.some((file) => file.fileName === material.fileName)),
   );
   return (
-    <div className="mx-auto max-w-4xl">
+    <div className={`mx-auto ${s.id === "S07" ? "max-w-5xl" : "max-w-4xl"}`}>
       <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
         <Link to="/sessions" className="inline-block text-sm text-primary">
           ← 전체 수업
@@ -72,9 +72,9 @@ function Detail() {
         )}
       </div>
       {lesson ? (
-        <header className="mb-6">
+        <header className={s.id === "S07" ? "mb-3" : "mb-6"}>
           <p className="text-xs font-semibold leading-relaxed text-muted-foreground">
-            {s.number}회차 · {lesson.cycle}
+            {s.id === "S07" ? "CLASS 07 · 단계별 실습 워크북" : `${s.number}회차 · ${lesson.cycle}`}
           </p>
           <h1 className="mt-2 break-keep text-2xl font-bold leading-tight tracking-tight [overflow-wrap:anywhere] sm:text-3xl">
             {s.id === "S07" ? "7회차 · " : ""}
@@ -94,10 +94,14 @@ function Detail() {
       ) : (
         <PageHeader title={`${s.number}회차`} description={s.title} />
       )}
-      <Panel className="flex flex-wrap items-center justify-between gap-4">
-        <div>
-          <p className="text-lg">{formatDateKo(s.date)}</p>
-          <p className="mt-1 text-sm text-muted-foreground">
+      <Panel
+        className={`flex flex-wrap items-center justify-between gap-4 ${s.id === "S07" ? "border-0 bg-transparent p-0 sm:p-0" : ""}`}
+      >
+        <div className={s.id === "S07" ? "flex flex-wrap items-center gap-x-4 gap-y-1" : undefined}>
+          <p className={s.id === "S07" ? "text-sm text-muted-foreground" : "text-lg"}>
+            {formatDateKo(s.date)}
+          </p>
+          <p className={`${s.id === "S07" ? "" : "mt-1 "}text-sm text-muted-foreground`}>
             {s.startTime} ~ {s.endTime} (한국 시간)
           </p>
         </div>
