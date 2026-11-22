@@ -1,15 +1,15 @@
 import { useId, useRef, useState } from "react";
 import { Link } from "@tanstack/react-router";
 import {
-  WEEK_SIX_CHECKLIST,
-  WEEK_SIX_ERROR_PROMPT,
-  WEEK_SIX_PREPARATION,
-  WEEK_SIX_PROMPT_DOWNLOAD,
-  WEEK_SIX_START_RULES,
-  WEEK_SIX_STEPS,
-  WEEK_SIX_SUBMISSIONS,
-  type WeekSixPracticeStep,
-} from "@/data/week-six-practice";
+  WEEK_SEVEN_CHECKLIST,
+  WEEK_SEVEN_ERROR_PROMPT,
+  WEEK_SEVEN_PREPARATION,
+  WEEK_SEVEN_PROMPT_DOWNLOAD,
+  WEEK_SEVEN_START_RULES,
+  WEEK_SEVEN_STEPS,
+  WEEK_SEVEN_SUBMISSIONS,
+  type WeekSevenPracticeStep,
+} from "@/data/week-seven-practice";
 
 const buttonClass =
   "inline-flex min-h-11 items-center justify-center border border-neutral-300 bg-white px-4 py-2 text-sm font-semibold text-black hover:bg-neutral-100 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-black";
@@ -17,24 +17,24 @@ const primaryButtonClass =
   "inline-flex min-h-11 items-center justify-center border border-black bg-black px-5 py-2 text-sm font-semibold text-white hover:bg-neutral-800 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-black";
 
 /** Rendered within the existing authenticated session route. */
-export function WeekSixResources({ sessionId }: { sessionId: string }) {
-  if (sessionId !== "S06") return null;
-  return <WeekSixResourceContent />;
+export function WeekSevenResources({ sessionId }: { sessionId: string }) {
+  if (sessionId !== "S07") return null;
+  return <WeekSevenResourceContent />;
 }
 
-function WeekSixResourceContent() {
+function WeekSevenResourceContent() {
   return (
     <section
-      id="s06-practice"
-      aria-labelledby="s06-practice-title"
+      id="s07-practice"
+      aria-labelledby="s07-practice-title"
       className="mt-8 space-y-10 border-t border-neutral-200 pt-8"
     >
       <header>
         <p className="text-xs font-semibold tracking-wide text-neutral-500">
-          CLASS 06 · 순서대로 따라 하는 실습
+          CLASS 07 · 순서대로 따라 하는 실습
         </p>
         <h2
-          id="s06-practice-title"
+          id="s07-practice-title"
           className="mt-2 break-keep text-xl font-bold leading-relaxed sm:text-2xl"
         >
           K-MOVE English Lab
@@ -49,13 +49,13 @@ function WeekSixResourceContent() {
         </p>
         <div className="mt-5 flex flex-wrap gap-2">
           <a
-            href={WEEK_SIX_PROMPT_DOWNLOAD.url}
-            download={WEEK_SIX_PROMPT_DOWNLOAD.fileName}
+            href={WEEK_SEVEN_PROMPT_DOWNLOAD.url}
+            download={WEEK_SEVEN_PROMPT_DOWNLOAD.fileName}
             className={primaryButtonClass}
           >
             전체 프롬프트 TXT 다운로드
           </a>
-          <a href="#s06-submission" className={buttonClass}>
+          <a href="#s07-submission" className={buttonClass}>
             최종 제출 안내
           </a>
         </div>
@@ -65,9 +65,9 @@ function WeekSixResourceContent() {
         </p>
       </header>
 
-      <section aria-labelledby="s06-preparation-title" className="border border-neutral-200">
+      <section aria-labelledby="s07-preparation-title" className="border border-neutral-200">
         <div className="border-b border-neutral-200 px-5 py-4 sm:px-6">
-          <h3 id="s06-preparation-title" className="text-base font-bold">
+          <h3 id="s07-preparation-title" className="text-base font-bold">
             실습 시작 전
           </h3>
         </div>
@@ -75,7 +75,7 @@ function WeekSixResourceContent() {
           <div>
             <h4 className="text-sm font-semibold">준비물</h4>
             <ul className="mt-3 list-disc space-y-2 pl-5 text-sm leading-7 text-neutral-600">
-              {WEEK_SIX_PREPARATION.map((item) => (
+              {WEEK_SEVEN_PREPARATION.map((item) => (
                 <li key={item} className="break-keep">
                   {item}
                 </li>
@@ -105,7 +105,7 @@ function WeekSixResourceContent() {
           <div>
             <h4 className="text-sm font-semibold">이 순서로 진행하세요</h4>
             <ol className="mt-3 list-decimal space-y-2 pl-5 text-sm leading-7 text-neutral-600">
-              {WEEK_SIX_START_RULES.map((item) => (
+              {WEEK_SEVEN_START_RULES.map((item) => (
                 <li key={item} className="break-keep">
                   {item}
                 </li>
@@ -119,13 +119,13 @@ function WeekSixResourceContent() {
         </p>
       </section>
 
-      <nav aria-label="6차시 실습 단계 바로가기">
+      <nav aria-label="7회차 실습 단계 바로가기">
         <h3 className="text-sm font-bold">실습 순서</h3>
         <ol className="mt-3 grid grid-cols-2 gap-2 sm:grid-cols-5">
-          {WEEK_SIX_STEPS.map((step) => (
+          {WEEK_SEVEN_STEPS.map((step) => (
             <li key={step.number}>
               <a
-                href={`#s06-step-${step.number}`}
+                href={`#s07-step-${step.number}`}
                 className="block h-full border border-neutral-300 px-4 py-3 hover:border-black hover:bg-neutral-50 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-black"
               >
                 <span className="block text-xs font-medium text-neutral-500">
@@ -139,17 +139,17 @@ function WeekSixResourceContent() {
       </nav>
 
       <div className="space-y-10">
-        {WEEK_SIX_STEPS.map((step) => (
+        {WEEK_SEVEN_STEPS.map((step) => (
           <PracticeStep key={step.number} step={step} />
         ))}
       </div>
 
       <section
-        id="s06-troubleshooting"
-        aria-labelledby="s06-troubleshooting-title"
+        id="s07-troubleshooting"
+        aria-labelledby="s07-troubleshooting-title"
         className="scroll-mt-24 border-t border-neutral-200 pt-8"
       >
-        <h3 id="s06-troubleshooting-title" className="text-lg font-bold">
+        <h3 id="s07-troubleshooting-title" className="text-lg font-bold">
           오류가 생겼을 때
         </h3>
         <p className="mt-3 break-keep text-sm leading-7 text-neutral-600">
@@ -164,28 +164,28 @@ function WeekSixResourceContent() {
           </p>
         </div>
         <div className="mt-5">
-          <CopyablePrompt title="오류 수정 프롬프트" prompt={WEEK_SIX_ERROR_PROMPT} />
+          <CopyablePrompt title="오류 수정 프롬프트" prompt={WEEK_SEVEN_ERROR_PROMPT} />
         </div>
       </section>
 
       <section
-        id="s06-submission"
-        aria-labelledby="s06-submission-title"
+        id="s07-submission"
+        aria-labelledby="s07-submission-title"
         className="scroll-mt-24 border-t border-neutral-200 pt-8"
       >
-        <h3 id="s06-submission-title" className="text-lg font-bold">
+        <h3 id="s07-submission-title" className="text-lg font-bold">
           최종 점검과 제출
         </h3>
         <p className="mt-3 text-sm leading-7 text-neutral-600">
           아래 항목을 직접 확인하고, 결과와 아직 확인하지 못한 항목을 제출 자료에 정리하세요.
         </p>
         <ul className="mt-4 divide-y divide-neutral-200 border-y border-neutral-200">
-          {WEEK_SIX_CHECKLIST.map((item, index) => (
+          {WEEK_SEVEN_CHECKLIST.map((item, index) => (
             <li key={item}>
               <label className="flex cursor-pointer items-start gap-3 px-2 py-3 hover:bg-neutral-50">
                 <input
                   type="checkbox"
-                  name={`s06-check-${index + 1}`}
+                  name={`s07-check-${index + 1}`}
                   className="mt-1 h-4 w-4 shrink-0 accent-black focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-black"
                 />
                 <span className="min-w-0 break-keep text-sm leading-7">{item}</span>
@@ -196,7 +196,7 @@ function WeekSixResourceContent() {
         <div className="mt-6 border border-neutral-200 px-5 py-5 sm:px-6">
           <h4 className="text-base font-bold">제출물</h4>
           <ol className="mt-3 list-decimal space-y-2 pl-5 text-sm leading-7 text-neutral-600">
-            {WEEK_SIX_SUBMISSIONS.map((item) => (
+            {WEEK_SEVEN_SUBMISSIONS.map((item) => (
               <li key={item} className="break-keep">
                 {item}
               </li>
@@ -207,7 +207,7 @@ function WeekSixResourceContent() {
             어떤 학습상의 불편을 발견했고 어떻게 바꿨는지 설명합니다.
           </p>
           <p className="mt-4 break-keep text-sm leading-7 text-neutral-600">
-            과제&amp;피드백 상단에서 <strong className="text-black">6회차</strong>를 선택한 뒤,
+            과제&amp;피드백 상단에서 <strong className="text-black">7회차</strong>를 선택한 뒤,
             ‘과제와 피드백 자료 업로드’에 결과물을 등록하세요.
           </p>
           <Link to="/feedback" className={`${primaryButtonClass} mt-5`}>
@@ -219,18 +219,18 @@ function WeekSixResourceContent() {
   );
 }
 
-function PracticeStep({ step }: { step: WeekSixPracticeStep }) {
-  const nextStep = WEEK_SIX_STEPS.find((item) => item.number === step.number + 1);
+function PracticeStep({ step }: { step: WeekSevenPracticeStep }) {
+  const nextStep = WEEK_SEVEN_STEPS.find((item) => item.number === step.number + 1);
   return (
     <article
-      id={`s06-step-${step.number}`}
-      aria-labelledby={`s06-step-${step.number}-title`}
+      id={`s07-step-${step.number}`}
+      aria-labelledby={`s07-step-${step.number}-title`}
       className="scroll-mt-24 border border-neutral-200"
     >
       <header className="border-b border-neutral-200 px-5 py-5 sm:px-6">
         <p className="text-xs font-semibold tracking-wide text-neutral-500">STEP {step.number}</p>
         <h3
-          id={`s06-step-${step.number}-title`}
+          id={`s07-step-${step.number}-title`}
           className="mt-2 break-keep text-lg font-bold leading-relaxed"
         >
           {step.title}
@@ -273,11 +273,11 @@ function PracticeStep({ step }: { step: WeekSixPracticeStep }) {
           </div>
         </div>
         <div className="flex flex-wrap items-center justify-between gap-3">
-          <a href="#s06-troubleshooting" className={`${buttonClass} text-neutral-600`}>
+          <a href="#s07-troubleshooting" className={`${buttonClass} text-neutral-600`}>
             오류 해결 도움말
           </a>
           <a
-            href={nextStep ? `#s06-step-${nextStep.number}` : "#s06-submission"}
+            href={nextStep ? `#s07-step-${nextStep.number}` : "#s07-submission"}
             className={primaryButtonClass}
           >
             {nextStep ? `다음 · STEP ${nextStep.number}` : "최종 점검과 제출"}

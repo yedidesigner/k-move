@@ -1,4 +1,4 @@
-export type WeekSixPracticeStep = {
+export type WeekSevenPracticeStep = {
   number: number;
   title: string;
   shortTitle: string;
@@ -11,27 +11,27 @@ export type WeekSixPracticeStep = {
 };
 
 // Prompt bodies are preserved verbatim from the instructor-provided TXT.
-export const WEEK_SIX_PROMPT_DOWNLOAD = {
+export const WEEK_SEVEN_PROMPT_DOWNLOAD = {
   title: "STEP 1~5 전체 프롬프트",
   fileName: "K_MOVE_English_Lab_STEP1_5_Prompts.txt",
-  url: "/materials/week-06/K_MOVE_English_Lab_STEP1_5_Prompts.txt",
+  url: "/materials/week-07/K_MOVE_English_Lab_STEP1_5_Prompts.txt",
 } as const;
 
-export const WEEK_SIX_PREPARATION = [
+export const WEEK_SEVEN_PREPARATION = [
   "Google 계정으로 로그인한 Gemini와 Google AI Studio",
   "PC 또는 노트북과 마이크·이어폰",
   "모바일 화면 확인용 스마트폰",
   "기획안과 결과물을 저장할 개인 과제 폴더",
 ];
 
-export const WEEK_SIX_START_RULES = [
+export const WEEK_SEVEN_START_RULES = [
   "STEP 1은 Gemini 일반 대화에서 기획합니다.",
   "STEP 1의 기획안과 STEP 2 프롬프트를 AI Studio의 새 Web app 프로젝트에 함께 입력합니다.",
   "STEP 3~5는 새 프로젝트를 만들지 않고 같은 프로젝트에서 이어갑니다.",
   "각 단계의 완료 기준을 직접 확인한 뒤 다음 단계로 이동합니다.",
 ];
 
-export const WEEK_SIX_STEPS: WeekSixPracticeStep[] = [
+export const WEEK_SEVEN_STEPS: WeekSevenPracticeStep[] = [
   {
     number: 1,
     title: "서비스 기획",
@@ -423,7 +423,7 @@ export const WEEK_SIX_STEPS: WeekSixPracticeStep[] = [
   },
 ];
 
-export const WEEK_SIX_CHECKLIST = [
+export const WEEK_SEVEN_CHECKLIST = [
   "메뉴 이동과 강의 검색·필터가 작동한다.",
   "토익 6문항의 정답·해설과 오답 재풀이를 확인했다.",
   "오픽 답변 작성·녹음·재생·다운로드를 확인했다.",
@@ -435,7 +435,7 @@ export const WEEK_SIX_CHECKLIST = [
   "직접 확인하지 못한 항목과 이유를 기록했다.",
 ];
 
-export const WEEK_SIX_SUBMISSIONS = [
+export const WEEK_SEVEN_SUBMISSIONS = [
   "서비스 기획안",
   "실행 가능한 앱 주소 또는 현재 환경에서 내보낸 소스 파일",
   "PC·모바일 대표 화면 각 1장",
@@ -443,7 +443,7 @@ export const WEEK_SIX_SUBMISSIONS = [
   "UX 개선 5개: 문제 → 수정 → 기대 효과",
 ];
 
-export const WEEK_SIX_ERROR_PROMPT = [
+export const WEEK_SEVEN_ERROR_PROMPT = [
   "현재 프로젝트의 아래 문제를 수정해 줘.",
   "문제가 발생한 화면:",
   "재현 순서:",

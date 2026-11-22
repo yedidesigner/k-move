@@ -7,7 +7,7 @@ import { useAuth } from "@/lib/auth";
 import { WeekTwoResources } from "@/components/WeekTwoResources";
 import { WeekThreeResources } from "@/components/WeekThreeResources";
 import { WeekFourResources, WEEK_FOUR_DOWNLOADS } from "@/components/WeekFourResources";
-import { WeekSixResources } from "@/components/WeekSixResources";
+import { WeekSevenResources } from "@/components/WeekSevenResources";
 
 export const Route = createFileRoute("/_app/sessions/$id")({
   loader: ({ params }) => {
@@ -77,6 +77,7 @@ function Detail() {
             {s.number}회차 · {lesson.cycle}
           </p>
           <h1 className="mt-2 break-keep text-2xl font-bold leading-tight tracking-tight [overflow-wrap:anywhere] sm:text-3xl">
+            {s.id === "S07" ? "7회차 · " : ""}
             {s.managed ? s.title : lesson.project}
           </h1>
           {s.managed && lesson.project.trim() && lesson.project.trim() !== s.title.trim() && (
@@ -112,7 +113,7 @@ function Detail() {
         <PublishedAnnouncements sessionNumber={s.number} />
       </div>
       {s.detailsPublished && <WeekFourResources sessionId={s.id} />}
-      {s.detailsPublished && <WeekSixResources sessionId={s.id} />}
+      {s.detailsPublished && <WeekSevenResources sessionId={s.id} />}
       {!!materials.length && (
         <section className="mt-6" aria-labelledby="session-materials-title">
           <h2 id="session-materials-title" className="mb-3 text-lg font-semibold">
@@ -214,7 +215,26 @@ function Detail() {
           </div>
         </section>
       )}
-      {lesson && s.id !== "S06" ? (
+      {lesson && s.id === "S06" && !s.managed ? (
+        <section
+          className="mt-6 border border-neutral-200 px-5 py-6"
+          aria-labelledby="session-moved-title"
+        >
+          <h2 id="session-moved-title" className="text-lg font-semibold">
+            실습 자료 이동 안내
+          </h2>
+          <p className="mt-3 text-sm leading-7 text-neutral-600">
+            OPIc·TOEIC 학습 서비스 제작 실습과 STEP 1~5 프롬프트는 7회차로 이동했습니다.
+          </p>
+          <Link
+            to="/sessions/$id"
+            params={{ id: "S07" }}
+            className="mt-4 inline-flex min-h-11 items-center justify-center border border-black bg-black px-5 text-sm font-semibold text-white hover:bg-neutral-800 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-black"
+          >
+            7회차 실습 바로가기
+          </Link>
+        </section>
+      ) : lesson && s.id !== "S07" ? (
         <SessionCurriculum lesson={lesson} />
       ) : !s.detailsPublished ? (
         <div className="mt-5">
