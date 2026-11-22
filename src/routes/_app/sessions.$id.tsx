@@ -7,6 +7,7 @@ import { useAuth } from "@/lib/auth";
 import { WeekTwoResources } from "@/components/WeekTwoResources";
 import { WeekThreeResources } from "@/components/WeekThreeResources";
 import { WeekFourResources, WEEK_FOUR_DOWNLOADS } from "@/components/WeekFourResources";
+import { WeekSixResources } from "@/components/WeekSixResources";
 
 export const Route = createFileRoute("/_app/sessions/$id")({
   loader: ({ params }) => {
@@ -48,11 +49,11 @@ function Detail() {
   const next = sessions.find((session) => session.number === s.number + 1);
   // Session 04 has a slide-only viewer; published PPTX/PDF/ZIP items must not
   // reintroduce presentation downloads. Avoid duplicating the two handouts.
-  const materials = (s.materials ?? []).filter((material) =>
-    s.id !== "S04" || (
-      /\.(html?|txt)$/i.test(material.fileName) &&
-      !WEEK_FOUR_DOWNLOADS.some((file) => file.fileName === material.fileName)
-    ),
+  const materials = (s.materials ?? []).filter(
+    (material) =>
+      s.id !== "S04" ||
+      (/\.(html?|txt)$/i.test(material.fileName) &&
+        !WEEK_FOUR_DOWNLOADS.some((file) => file.fileName === material.fileName)),
   );
   return (
     <div className="mx-auto max-w-4xl">
@@ -111,6 +112,7 @@ function Detail() {
         <PublishedAnnouncements sessionNumber={s.number} />
       </div>
       {s.detailsPublished && <WeekFourResources sessionId={s.id} />}
+      {s.detailsPublished && <WeekSixResources sessionId={s.id} />}
       {!!materials.length && (
         <section className="mt-6" aria-labelledby="session-materials-title">
           <h2 id="session-materials-title" className="mb-3 text-lg font-semibold">
@@ -212,7 +214,7 @@ function Detail() {
           </div>
         </section>
       )}
-      {lesson ? (
+      {lesson && s.id !== "S06" ? (
         <SessionCurriculum lesson={lesson} />
       ) : !s.detailsPublished ? (
         <div className="mt-5">
