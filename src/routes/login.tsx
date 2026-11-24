@@ -3,7 +3,7 @@ import { FormEvent, useState } from "react";
 import { SITE_NAME, COURSE_NAME } from "@/data/schedule";
 import { useAuth } from "@/lib/auth";
 import { getSupabase } from "@/lib/supabase";
-import { isStudentPin, normalizePinInput, studentPinPassword } from "@/lib/student-pin";
+import { isStudentPin, normalizePinInput } from "@/lib/student-pin";
 import { Spinner, StatusBadge } from "@/components/lms";
 
 export const Route = createFileRoute("/login")({
@@ -40,18 +40,18 @@ function errorCode(error: unknown) {
 }
 
 function Login() {
-  const { status, signIn } = useAuth();
+  const { status, signIn, needsPinSetup } = useAuth();
   const [loginId, setLoginId] = useState("");
   const [password, setPassword] = useState("");
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [externalEmail, setExternalEmail] = useState("");
-  const [externalPassword, setExternalPassword] = useState("");
+  const [recovery, setRecovery] = useState(false);
   const [emailBusy, setEmailBusy] = useState(false);
   const [emailNotice, setEmailNotice] = useState("");
   const [emailError, setEmailError] = useState("");
 
-  if (status === "student" || status === "instructor") return <Navigate to="/" />;
+  if (status === "student" || status === "instructor") return <Navigate to={needsPinSetup ? "/password" : "/"} replace />;
 
   async function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -68,7 +68,8 @@ function Login() {
     }
   }
 
-  async function requestExternalLink() {
+  async function requestExternalLink(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
     if (emailBusy) return;
     setEmailBusy(true); setEmailNotice(""); setEmailError("");
     try {
@@ -79,32 +80,13 @@ function Login() {
       if (failure) {
         setEmailError("로그인 링크를 요청하지 못했습니다. 초대받은 이메일인지 확인하고 잠시 후 다시 시도해 주세요.");
       } else {
-        setEmailNotice("등록된 이메일로 로그인 링크를 요청했습니다. 받은 편지함을 확인해 주세요.");
+        setEmailNotice("등록된 이메일이라면 로그인 링크를 받을 수 있습니다. 받은 편지함과 스팸함을 확인해 주세요. 접속 후 비밀번호를 설정하거나 변경할 수 있습니다.");
       }
     } catch {
       setEmailError("네트워크 연결을 확인해 주세요.");
     } finally { setEmailBusy(false); }
   }
 
-  async function submitExternal(event: FormEvent<HTMLFormElement>) {
-    event.preventDefault();
-    if (emailBusy) return;
-    if (!externalPassword) { await requestExternalLink(); return; }
-    if (!isStudentPin(externalPassword)) {
-      setEmailNotice(""); setEmailError("비밀번호는 숫자 4자리로 입력해 주세요."); return;
-    }
-    setEmailBusy(true); setEmailNotice(""); setEmailError("");
-    try {
-      const { error: failure } = await getSupabase().auth.signInWithPassword({
-        email: externalEmail.trim().toLowerCase(), password: studentPinPassword(externalPassword),
-      });
-      if (failure) setEmailError(failure.status === 429 || failure.code === "over_request_rate_limit"
-        ? "로그인 시도가 너무 많습니다. 잠시 후 다시 시도해 주세요."
-        : "이메일 또는 비밀번호를 확인해 주세요.");
-    } catch {
-      setEmailError("로그인하지 못했습니다. 다시 시도해 주세요.");
-    } finally { setEmailBusy(false); }
-  }
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-background px-4 py-10">
@@ -119,8 +101,8 @@ function Login() {
         <p className="mt-1 text-sm text-muted-foreground">{COURSE_NAME}</p>
 
         <div className="mt-7 border-b border-border pb-4">
-          <h2 className="text-base font-semibold">로그인</h2>
-          <p className="mt-1 text-sm text-muted-foreground">본명으로 로그인</p>
+          <h2 className="text-base font-semibold">{recovery ? "처음 로그인 · 비밀번호 재설정" : "로그인"}</h2>
+          <p className="mt-1 text-sm text-muted-foreground">{recovery ? "등록된 이메일로 인증 링크를 요청하세요." : "본명과 숫자 4자리 비밀번호로 로그인"}</p>
         </div>
 
         <div className="mt-6">
@@ -134,6 +116,23 @@ function Login() {
                 운영자 설정 안내
               </Link>
             </div>
+          ) : recovery ? (
+            <form className="space-y-4" onSubmit={requestExternalLink}>
+              <label htmlFor="recovery-email" className="block text-sm font-medium">이메일</label>
+              <input id="recovery-email" type="email" autoComplete="email" maxLength={254} required
+                value={externalEmail} onChange={e => setExternalEmail(e.target.value)}
+                className="min-h-12 w-full border border-input bg-card px-3 text-base" disabled={emailBusy}
+                placeholder="초대받은 이메일" />
+              <button type="submit" disabled={emailBusy || !externalEmail.trim()}
+                className="min-h-12 w-full bg-primary px-4 text-sm font-semibold text-primary-foreground disabled:opacity-60">
+                {emailBusy ? "요청 중…" : "이메일 인증 링크 받기"}
+              </button>
+              {emailNotice && <p role="status" className="text-sm">{emailNotice}</p>}
+              {emailError && <p role="alert" className="text-sm">{emailError}</p>}
+              <p className="text-xs leading-relaxed text-muted-foreground">TUTORING 학생은 이메일 인증 후 비밀번호를 설정할 수 있습니다. 기존 K-MOVE 학생은 비밀번호를 잊은 경우 강사에게 문의해 주세요.</p>
+              <button type="button" className="min-h-10 text-xs underline underline-offset-4" disabled={emailBusy}
+                onClick={() => { setRecovery(false); setEmailNotice(""); setEmailError(""); }}>로그인으로 돌아가기</button>
+            </form>
           ) : (
             <form className="space-y-4" onSubmit={submit}>
               <div>
@@ -171,7 +170,7 @@ function Login() {
                   inputMode="numeric"
                   pattern="[0-9]{4}"
                   value={password}
-                  onChange={(event) => setPassword(event.target.value.replace(/\D/g, "").slice(0, 4))}
+                  onChange={(event) => setPassword(normalizePinInput(event.target.value))}
                   autoComplete="current-password"
                   disabled={busy}
                   required
@@ -180,7 +179,7 @@ function Login() {
                 />
               </div>
               <button
-                disabled={busy || !/^\d{4}$/.test(password)}
+                disabled={busy || !isStudentPin(password) || !loginId.trim()}
                 className="flex min-h-12 w-full items-center justify-center bg-primary px-4 text-base font-semibold text-primary-foreground hover:bg-primary/90 disabled:opacity-60"
               >
                 {busy ? "로그인 중…" : "로그인"}
@@ -194,37 +193,15 @@ function Login() {
                 </p>
               )}
               <p className="text-xs leading-relaxed text-muted-foreground">
-                배부된 임시 비밀번호 또는 직접 변경한 숫자 4자리 비밀번호를 입력하세요.
-                로그인 후 메뉴의 ‘비밀번호 변경’에서 바꿀 수 있습니다.
+                로그인 후 메뉴의 ‘비밀번호 변경’에서 비밀번호를 변경할 수 있습니다.
               </p>
+              <button type="button" disabled={busy} onClick={() => { setRecovery(true); setError(null); }}
+                className="min-h-9 text-xs text-muted-foreground underline underline-offset-4 hover:text-foreground">
+                처음 로그인 · 비밀번호 재설정
+              </button>
             </form>
           )}
         </div>
-        {(status === "signedOut" || status === "error") && (
-          <section className="mt-7 border-t border-border pt-5" aria-labelledby="external-login-title">
-            <h2 id="external-login-title" className="text-base font-semibold">TUTORING 로그인</h2>
-            <p className="mt-1 text-xs leading-5 text-muted-foreground">초대받은 이메일과 숫자 4자리 비밀번호로 로그인하세요. 처음 접속하거나 비밀번호를 잊었다면 이메일 로그인 링크를 요청할 수 있습니다.</p>
-            <form onSubmit={submitExternal} className="mt-3 space-y-3">
-              <label htmlFor="external-email" className="block text-sm font-medium">이메일</label>
-              <input id="external-email" type="email" autoComplete="email" maxLength={254} required
-                value={externalEmail} onChange={e => setExternalEmail(e.target.value)}
-                className="min-h-12 w-full border border-input bg-card px-3 text-base" disabled={emailBusy} />
-              <label htmlFor="external-password" className="block text-sm font-medium">비밀번호 (숫자 4자리)</label>
-              <input id="external-password" type="password" autoComplete="current-password" minLength={4} maxLength={4} inputMode="numeric" pattern="[0-9]{4}"
-                value={externalPassword} onChange={e => setExternalPassword(normalizePinInput(e.target.value))}
-                placeholder="처음 로그인 시 비워 두세요"
-                className="min-h-12 w-full border border-input bg-card px-3 text-base" disabled={emailBusy} />
-              <button type="submit" disabled={emailBusy || !externalEmail.trim()}
-                className="min-h-12 w-full border border-foreground px-4 text-sm font-semibold disabled:opacity-50">
-                {emailBusy ? "처리 중…" : externalPassword ? "이메일 계정 로그인" : "이메일 로그인 링크 받기"}
-              </button>
-              {externalPassword && <button type="button" disabled={emailBusy || !externalEmail.trim()}
-                className="min-h-10 text-sm underline disabled:opacity-50" onClick={() => void requestExternalLink()}>이메일 로그인 링크 받기</button>}
-              {emailNotice && <p role="status" className="text-sm">{emailNotice}</p>}
-              {emailError && <p role="alert" className="text-sm">{emailError}</p>}
-            </form>
-          </section>
-        )}
       </div>
     </div>
   );
