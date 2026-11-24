@@ -1,6 +1,7 @@
 import { createContext, useCallback, useContext, useEffect, useState, type ReactNode } from "react";
 import type { User } from "@supabase/supabase-js";
 import { getSupabase, isSupabaseConfigured, signOutSupabase } from "./supabase";
+import { requiresTemporaryPinVerification, isTemporaryStudentPin } from "./student-pin";
 
 export type AuthStatus = "loading" | "notConfigured" | "signedOut" | "student" | "instructor" | "error";
 
@@ -151,6 +152,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       password: credentials.password,
     });
     if (!error) return;
+    // 1234 is a public onboarding code, not a credential for an unclaimed
+    // tutoring account. Existing regular accounts retain their login path.
+    if (requiresTemporaryPinVerification(password, error.code)) {
+      throw new Error("auth/temporary-pin-verification-required");
+    }
     // Preserve existing K-MOVE / instructor authentication. Only on invalid
     // credentials, check the confirmed tutoring account on the server.
     if (error.code !== "invalid_credentials") throw error;
@@ -179,6 +185,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       throw new Error("auth/invalid-pin");
     }
     if (newPassword === currentPassword) throw new Error("auth/password-unchanged");
+    if (isTemporaryStudentPin(newPassword)) throw new Error("auth/reserved-temporary-pin");
     const db = getSupabase();
     const { error: verifyError } = await db.auth.signInWithPassword({
       email: user.email,
