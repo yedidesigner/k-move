@@ -62,7 +62,18 @@ Deno.serve(async (req: Request) => {
     const { error: mailError } = await mail.auth.signInWithOtp({
       email, options: { shouldCreateUser: false, emailRedirectTo: redirect },
     });
-    return reply(200, { created: true, email_sent: !mailError });
+    if (!mailError) return reply(200, { created: true, email_sent: true });
+    // The built-in SMTP service may restrict external recipients. Only an
+    // authenticated instructor may receive a replacement one-time access link.
+    const { data: fallback, error: linkError } = await admin.auth.admin.generateLink({
+      type: "magiclink", email, options: { redirectTo: redirect },
+    });
+    const inviteLink = fallback?.properties?.action_link;
+    return reply(200, {
+      created: true, email_sent: false,
+      ...(linkError || typeof inviteLink !== "string" || !inviteLink.startsWith("https://")
+        ? {} : { invite_link: inviteLink }),
+    });
   } catch {
     return reply(500, { error: "초대 처리에 실패했습니다. 입력 내용과 서버 설정을 확인해 주세요." });
   }
