@@ -3,6 +3,7 @@ import { FormEvent, useState } from "react";
 import { SITE_NAME, COURSE_NAME } from "@/data/schedule";
 import { useAuth } from "@/lib/auth";
 import { getSupabase } from "@/lib/supabase";
+import { isStudentPin, normalizePinInput, studentPinPassword } from "@/lib/student-pin";
 import { Spinner, StatusBadge } from "@/components/lms";
 
 export const Route = createFileRoute("/login")({
@@ -89,12 +90,17 @@ function Login() {
     event.preventDefault();
     if (emailBusy) return;
     if (!externalPassword) { await requestExternalLink(); return; }
+    if (!isStudentPin(externalPassword)) {
+      setEmailNotice(""); setEmailError("비밀번호는 숫자 4자리로 입력해 주세요."); return;
+    }
     setEmailBusy(true); setEmailNotice(""); setEmailError("");
     try {
       const { error: failure } = await getSupabase().auth.signInWithPassword({
-        email: externalEmail.trim().toLowerCase(), password: externalPassword,
+        email: externalEmail.trim().toLowerCase(), password: studentPinPassword(externalPassword),
       });
-      if (failure) setEmailError("이메일 또는 비밀번호를 확인해 주세요.");
+      if (failure) setEmailError(failure.status === 429 || failure.code === "over_request_rate_limit"
+        ? "로그인 시도가 너무 많습니다. 잠시 후 다시 시도해 주세요."
+        : "이메일 또는 비밀번호를 확인해 주세요.");
     } catch {
       setEmailError("로그인하지 못했습니다. 다시 시도해 주세요.");
     } finally { setEmailBusy(false); }
@@ -197,15 +203,15 @@ function Login() {
         {(status === "signedOut" || status === "error") && (
           <section className="mt-7 border-t border-border pt-5" aria-labelledby="external-login-title">
             <h2 id="external-login-title" className="text-base font-semibold">외부 학생 이메일 로그인</h2>
-            <p className="mt-1 text-xs leading-5 text-muted-foreground">초대받은 이메일과 설정한 비밀번호로 로그인하세요. 처음 접속하거나 비밀번호를 잊었다면 이메일 로그인 링크를 요청할 수 있습니다.</p>
+            <p className="mt-1 text-xs leading-5 text-muted-foreground">초대받은 이메일과 숫자 4자리 비밀번호로 로그인하세요. 처음 접속하거나 비밀번호를 잊었다면 이메일 로그인 링크를 요청할 수 있습니다.</p>
             <form onSubmit={submitExternal} className="mt-3 space-y-3">
               <label htmlFor="external-email" className="block text-sm font-medium">이메일</label>
               <input id="external-email" type="email" autoComplete="email" maxLength={254} required
                 value={externalEmail} onChange={e => setExternalEmail(e.target.value)}
                 className="min-h-12 w-full border border-input bg-card px-3 text-base" disabled={emailBusy} />
-              <label htmlFor="external-password" className="block text-sm font-medium">비밀번호 (설정한 경우)</label>
-              <input id="external-password" type="password" autoComplete="current-password" maxLength={72}
-                value={externalPassword} onChange={e => setExternalPassword(e.target.value)}
+              <label htmlFor="external-password" className="block text-sm font-medium">비밀번호 (숫자 4자리)</label>
+              <input id="external-password" type="password" autoComplete="current-password" minLength={4} maxLength={4} inputMode="numeric" pattern="[0-9]{4}"
+                value={externalPassword} onChange={e => setExternalPassword(normalizePinInput(e.target.value))}
                 placeholder="처음 로그인 시 비워 두세요"
                 className="min-h-12 w-full border border-input bg-card px-3 text-base" disabled={emailBusy} />
               <button type="submit" disabled={emailBusy || !externalEmail.trim()}
