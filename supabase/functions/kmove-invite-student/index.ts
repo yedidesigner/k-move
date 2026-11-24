@@ -29,11 +29,11 @@ Deno.serve(async (req: Request) => {
     const body = await req.json();
     const name = typeof body.name === "string" ? body.name.normalize("NFKC").trim() : "";
     const email = typeof body.email === "string" ? body.email.trim().toLowerCase() : "";
-    const type = body.student_type;
+    const type = "private";
     if (name.length < 2 || name.length > 30 || ["강예지", "tomset", "홍길동", "홍길순"].includes(name)
       || email.length > 254 || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)
-      || email.endsWith("@login.kmove.local") || !["guest", "private"].includes(type)) {
-      return reply(400, { error: "이름, 실제 이메일, 학생 유형을 확인해 주세요." });
+      || email.endsWith("@login.kmove.local") || (body.student_type !== undefined && !["guest", "private"].includes(body.student_type))) {
+      return reply(400, { error: "이름과 실제 이메일을 확인해 주세요." });
     }
     // The redirect must be the same browser origin and also pass Supabase's Auth allow-list.
     const origin = req.headers.get("Origin");

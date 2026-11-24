@@ -29,7 +29,7 @@ import {
 } from "@/lib/student-directory";
 import { koreanRecordDate, matchesStudentSearch, safeExternalUrl } from "@/lib/student-operations";
 import { PageHeader, Spinner } from "@/components/lms";
-import { ExternalStudentInvite, ExternalStudentTypeEditor, studentTypeLabel } from "./ExternalStudentInvite";
+import { ExternalStudentInvite, studentGroup, studentTypeLabel } from "./ExternalStudentInvite";
 
 const inputClass =
   "min-h-11 w-full border border-neutral-300 bg-white px-3 py-2 text-sm text-neutral-950 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-black";
@@ -181,7 +181,7 @@ function InstructorStudents() {
   const visible = data.enrollments.filter(
     (row) =>
       matchesStudentSearch(row, query) && (statusFilter === "all" || row.status === statusFilter)
-      && (typeFilter === "all" || (row.student_type ?? "regular") === typeFilter),
+      && (typeFilter === "all" || studentGroup(row.student_type) === typeFilter),
   );
   const selected = data.enrollments.find((row) => row.user_id === selectedId);
   const candidates = data.profiles.filter(
@@ -199,14 +199,14 @@ function InstructorStudents() {
         description="현재 과정의 수강생과 학생별 제출 기록을 관리합니다."
       />
       <ExternalStudentInvite onCreated={() => setReload(value => value + 1)} />
-      <div className="grid grid-cols-3 gap-2 border-y border-neutral-200 py-4 text-xs sm:text-sm">
-        {(["regular", "guest", "private"] as const).map(type => (
+      <div className="grid grid-cols-2 gap-2 border-y border-neutral-200 py-4 text-xs sm:text-sm">
+        {(["regular", "private"] as const).map(type => (
           <button key={type} type="button" aria-pressed={typeFilter === type}
             onClick={() => setTypeFilter(previous => previous === type ? "all" : type)}
             className={`border p-3 text-left ${typeFilter === type ? "border-black bg-neutral-100" : "border-neutral-200"}`}>
             <span className="block text-neutral-600">{studentTypeLabel(type)}</span>
-            <strong className="mt-1 block text-xl">{data.enrollments.filter(row => row.status === "active" && (row.student_type ?? "regular") === type && !["강예지","tomset","홍길동","홍길순"].includes(row.name)).length}명</strong>
-            <span className="mt-1 block text-neutral-500">{type === "regular" ? "투표 가능" : "투표 불가"}</span>
+            <strong className="mt-1 block text-xl">{data.enrollments.filter(row => row.status === "active" && studentGroup(row.student_type) === type).length}명</strong>
+            <span className="mt-1 block text-neutral-500">{type === "regular" ? "정규 학생 및 테스트 계정 포함 · 테스트 계정 투표 제외" : "투표 불가 · 공식 정원 제외"}</span>
           </button>
         ))}
       </div>
@@ -267,8 +267,7 @@ function InstructorStudents() {
             <span className="sr-only">학생 유형 필터</span>
             <select value={typeFilter} onChange={event => setTypeFilter(event.target.value)} className={inputClass}>
               <option value="all">전체 학생 유형</option>
-              <option value="regular">정규 수강생</option>
-              <option value="guest">외부 초대생</option>
+              <option value="regular">K-MOVE 학생</option>
               <option value="private">개인 과외생</option>
             </select>
           </label>
@@ -308,10 +307,10 @@ function InstructorStudents() {
           </div>
           <details className="mt-5 border border-neutral-200 p-3 text-sm">
             <summary className="min-h-9 cursor-pointer font-medium">
-              기존 계정에서 수강생 추가
+              기존 계정에서 개인 과외생 추가
             </summary>
             <p className="my-3 text-xs leading-5 text-neutral-600">
-              학생 계정과 개인 Drive 폴더가 연결된 계정을 현재 과정에 등록합니다.
+              학생 계정과 개인 Drive 폴더가 연결된 신규 계정을 개인 과외생으로 등록합니다.
             </p>
             <label className="block">
               <span className="sr-only">추가할 학생 계정</span>
@@ -536,11 +535,13 @@ function StudentDetail({
           포트폴리오 <ArrowUpRight className="size-4" aria-hidden />
         </a>
       </div>
-      {student.student_type === "guest" || student.student_type === "private" ? (
-        <ExternalStudentTypeEditor key={student.student_type} userId={student.user_id} studentType={student.student_type} onSaved={onReload} />
-      ) : (
-        <p className="mt-4 text-xs text-neutral-500">정규 수강생 · 기존 투표 및 공식 등록 권한 유지</p>
-      )}
+      <p className="mt-4 text-xs text-neutral-500">
+        {studentGroup(student.student_type) === "private"
+          ? "개인 과외생 · 투표 및 공식 정원 제외"
+          : ["홍길동", "홍길순"].includes(student.name)
+            ? "K-MOVE 테스트 계정 · 투표 제외"
+            : "K-MOVE 학생 · 기존 투표 및 공식 등록 권한 유지"}
+      </p>
       {notice && (
         <p role="status" className="mt-4 flex items-center gap-2 text-sm">
           <Check className="size-4" aria-hidden />
