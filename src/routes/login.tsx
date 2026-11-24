@@ -202,7 +202,7 @@ function Login() {
         </div>
         {(status === "signedOut" || status === "error") && (
           <section className="mt-7 border-t border-border pt-5" aria-labelledby="external-login-title">
-            <h2 id="external-login-title" className="text-base font-semibold">외부 학생 이메일 로그인</h2>
+            <h2 id="external-login-title" className="text-base font-semibold">TUTORING 로그인</h2>
             <p className="mt-1 text-xs leading-5 text-muted-foreground">초대받은 이메일과 숫자 4자리 비밀번호로 로그인하세요. 처음 접속하거나 비밀번호를 잊었다면 이메일 로그인 링크를 요청할 수 있습니다.</p>
             <form onSubmit={submitExternal} className="mt-3 space-y-3">
               <label htmlFor="external-email" className="block text-sm font-medium">이메일</label>
