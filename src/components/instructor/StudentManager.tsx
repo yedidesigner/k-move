@@ -29,6 +29,7 @@ import {
 } from "@/lib/student-directory";
 import { koreanRecordDate, matchesStudentSearch, safeExternalUrl } from "@/lib/student-operations";
 import { PageHeader, Spinner } from "@/components/lms";
+import { ExternalStudentInvite, ExternalStudentTypeEditor, studentTypeLabel } from "./ExternalStudentInvite";
 
 const inputClass =
   "min-h-11 w-full border border-neutral-300 bg-white px-3 py-2 text-sm text-neutral-950 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-black";
@@ -59,6 +60,7 @@ function InstructorStudents() {
   const [reload, setReload] = useState(0);
   const [query, setQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState("active");
+  const [typeFilter, setTypeFilter] = useState("all");
   const [selectedId, setSelectedId] = useState("");
   const [noteDirty, setNoteDirty] = useState(false);
   const [newUserId, setNewUserId] = useState("");
@@ -178,7 +180,8 @@ function InstructorStudents() {
     );
   const visible = data.enrollments.filter(
     (row) =>
-      matchesStudentSearch(row, query) && (statusFilter === "all" || row.status === statusFilter),
+      matchesStudentSearch(row, query) && (statusFilter === "all" || row.status === statusFilter)
+      && (typeFilter === "all" || (row.student_type ?? "regular") === typeFilter),
   );
   const selected = data.enrollments.find((row) => row.user_id === selectedId);
   const candidates = data.profiles.filter(
@@ -195,10 +198,22 @@ function InstructorStudents() {
         title="학생 관리"
         description="현재 과정의 수강생과 학생별 제출 기록을 관리합니다."
       />
+      <ExternalStudentInvite onCreated={() => setReload(value => value + 1)} />
+      <div className="grid grid-cols-3 gap-2 border-y border-neutral-200 py-4 text-xs sm:text-sm">
+        {(["regular", "guest", "private"] as const).map(type => (
+          <button key={type} type="button" aria-pressed={typeFilter === type}
+            onClick={() => setTypeFilter(previous => previous === type ? "all" : type)}
+            className={`border p-3 text-left ${typeFilter === type ? "border-black bg-neutral-100" : "border-neutral-200"}`}>
+            <span className="block text-neutral-600">{studentTypeLabel(type)}</span>
+            <strong className="mt-1 block text-xl">{data.enrollments.filter(row => row.status === "active" && (row.student_type ?? "regular") === type && !["강예지","tomset","홍길동","홍길순"].includes(row.name)).length}명</strong>
+            <span className="mt-1 block text-neutral-500">{type === "regular" ? "투표 가능" : "투표 불가"}</span>
+          </button>
+        ))}
+      </div>
       <div className="flex flex-wrap items-center gap-x-6 gap-y-2 border-y border-neutral-200 py-4 text-sm">
         <span className="inline-flex items-center gap-2">
           <Users className="size-4" aria-hidden />
-          수강 중{" "}
+          전체 등록 중{" "}
           <strong>{data.enrollments.filter((row) => row.status === "active").length}명</strong>
         </span>
         <span className="text-neutral-600">
@@ -248,6 +263,15 @@ function InstructorStudents() {
               <option value="all">전체</option>
             </select>
           </label>
+          <label className="mb-3 block">
+            <span className="sr-only">학생 유형 필터</span>
+            <select value={typeFilter} onChange={event => setTypeFilter(event.target.value)} className={inputClass}>
+              <option value="all">전체 학생 유형</option>
+              <option value="regular">정규 수강생</option>
+              <option value="guest">외부 초대생</option>
+              <option value="private">개인 과외생</option>
+            </select>
+          </label>
           <div className="max-h-[28rem] overflow-y-auto border-y border-neutral-200">
             {visible.map((student) => {
               const submissions = data.submissions.filter(
@@ -266,6 +290,7 @@ function InstructorStudents() {
                 >
                   <span>
                     <span className="block text-sm font-semibold">{student.name}</span>
+                    <span className={`mt-1 block text-xs ${selectedId === student.user_id ? "text-neutral-300" : "text-neutral-500"}`}>{studentTypeLabel(student.student_type)}</span>
                     <span
                       className={`mt-1 block text-xs ${selectedId === student.user_id ? "text-neutral-300" : "text-neutral-500"}`}
                     >
@@ -498,7 +523,7 @@ function StudentDetail({
       <div className="flex flex-wrap items-start justify-between gap-3 border-b border-neutral-200 pb-5">
         <div>
           <p className="text-xs text-neutral-500">
-            학생 상세 · {student.status === "active" ? "수강 중" : "수강 종료"}
+            {studentTypeLabel(student.student_type)} · {student.status === "active" ? "수강 중" : "수강 종료"}
           </p>
           <h2 id="student-detail-title" className="mt-2 text-2xl font-semibold tracking-tight">
             {student.name}
@@ -511,6 +536,11 @@ function StudentDetail({
           포트폴리오 <ArrowUpRight className="size-4" aria-hidden />
         </a>
       </div>
+      {student.student_type === "guest" || student.student_type === "private" ? (
+        <ExternalStudentTypeEditor key={student.student_type} userId={student.user_id} studentType={student.student_type} onSaved={onReload} />
+      ) : (
+        <p className="mt-4 text-xs text-neutral-500">정규 수강생 · 기존 투표 및 공식 등록 권한 유지</p>
+      )}
       {notice && (
         <p role="status" className="mt-4 flex items-center gap-2 text-sm">
           <Check className="size-4" aria-hidden />
