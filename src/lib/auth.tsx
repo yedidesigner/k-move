@@ -1,6 +1,6 @@
 import { createContext, useCallback, useContext, useEffect, useState, type ReactNode } from "react";
 import type { User } from "@supabase/supabase-js";
-import { getSupabase, isSupabaseConfigured } from "./supabase";
+import { getSupabase, isSupabaseConfigured, signOutSupabase } from "./supabase";
 
 export type AuthStatus = "loading" | "notConfigured" | "signedOut" | "student" | "instructor" | "error";
 
@@ -158,8 +158,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, [user]);
 
   const signOut = useCallback(async () => {
-    const { error } = await getSupabase().auth.signOut();
-    if (error) throw error;
+    await signOutSupabase();
+    setUser(null);
+    setErrorDetail(null);
+    setStatus("signedOut");
+    // Full navigation also discards account-specific in-memory queries and
+    // prevents a stale asynchronous role lookup from restoring the old UI.
+    window.location.replace("/login");
   }, []);
 
   return <Ctx.Provider value={{ status, user, errorDetail, signIn, signOut, changePassword }}>{children}</Ctx.Provider>;
