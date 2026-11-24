@@ -8,6 +8,7 @@ interface AuthState {
   status: AuthStatus;
   user: User | null;
   errorDetail: string | null;
+  needsPinSetup: boolean;
   signIn: (loginId: string, password: string) => Promise<void>;
   signOut: () => Promise<void>;
   changePassword: (currentPassword: string, newPassword: string) => Promise<void>;
@@ -39,6 +40,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [status, setStatus] = useState<AuthStatus>("loading");
   const [user, setUser] = useState<User | null>(null);
   const [errorDetail, setErrorDetail] = useState<string | null>(null);
+  const [needsPinSetup, setNeedsPinSetup] = useState(false);
 
   useEffect(() => {
     if (!isSupabaseConfigured()) {
@@ -58,6 +60,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       setUser(nextUser);
       setErrorDetail(null);
       if (!nextUser) {
+        setNeedsPinSetup(false);
         verifiedUserId = null;
         verifiedRole = null;
         setStatus("signedOut");
@@ -68,6 +71,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       if (verifiedUserId === nextUser.id && verifiedRole) {
         setStatus(verifiedRole);
       } else {
+        setNeedsPinSetup(false);
         verifiedUserId = null;
         verifiedRole = null;
         setStatus("loading");
@@ -91,6 +95,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
               setStatus("error");
               return;
             }
+            const externalType = nextUser.app_metadata?.["kmove_external_type"];
+            let setupRequired = false;
+            if (data.role === "student" && (externalType === "guest" || externalType === "private")) {
+              const { data: needsSetup, error: setupError } = await supabase.rpc("kmove_tutoring_needs_pin");
+              if (!active || request !== generation) return;
+              // Email verification is already valid authentication. A temporary
+              // setup-check failure must not lock the student out of recovery.
+              setupRequired = !setupError && needsSetup === true;
+            }
+            setNeedsPinSetup(setupRequired);
             verifiedUserId = nextUser.id;
             verifiedRole = data.role === "instructor" ? "instructor" : "student";
             setStatus(verifiedRole);
@@ -131,11 +145,32 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const signIn = useCallback(async (loginId: string, password: string) => {
     const credentials = await internalCredentials(loginId, password);
-    const { error } = await getSupabase().auth.signInWithPassword({
+    const db = getSupabase();
+    const { error } = await db.auth.signInWithPassword({
       email: credentials.email,
       password: credentials.password,
     });
-    if (error) throw error;
+    if (!error) return;
+    // Preserve existing K-MOVE / instructor authentication. Only on invalid
+    // credentials, check the confirmed tutoring account on the server.
+    if (error.code !== "invalid_credentials") throw error;
+    const { data, error: tutoringError } = await db.functions.invoke("kmove-tutoring-login", {
+      body: { name: credentials.normalizedId, pin: password },
+    });
+    if (tutoringError) {
+      const status = tutoringError.context?.status;
+      if (status === 429) throw new Error("auth/too-many-requests");
+      if (status === 401) throw new Error("auth/invalid-credential");
+      throw new Error("auth/network-request-failed");
+    }
+    if (typeof data?.access_token !== "string" || typeof data?.refresh_token !== "string") {
+      throw new Error("auth/invalid-credential");
+    }
+    const { error: sessionError } = await db.auth.setSession({
+      access_token: data.access_token,
+      refresh_token: data.refresh_token,
+    });
+    if (sessionError) throw sessionError;
   }, []);
 
   const changePassword = useCallback(async (currentPassword: string, newPassword: string) => {
@@ -160,6 +195,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const signOut = useCallback(async () => {
     await signOutSupabase();
     setUser(null);
+    setNeedsPinSetup(false);
     setErrorDetail(null);
     setStatus("signedOut");
     // Full navigation also discards account-specific in-memory queries and
@@ -167,7 +203,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     window.location.replace("/login");
   }, []);
 
-  return <Ctx.Provider value={{ status, user, errorDetail, signIn, signOut, changePassword }}>{children}</Ctx.Provider>;
+  return <Ctx.Provider value={{ status, user, errorDetail, needsPinSetup, signIn, signOut, changePassword }}>{children}</Ctx.Provider>;
 }
 
 export function useAuth() {
