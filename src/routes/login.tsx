@@ -2,6 +2,7 @@ import { createFileRoute, Link, Navigate } from "@tanstack/react-router";
 import { FormEvent, useState } from "react";
 import { SITE_NAME, COURSE_NAME } from "@/data/schedule";
 import { useAuth } from "@/lib/auth";
+import { getSupabase } from "@/lib/supabase";
 import { Spinner, StatusBadge } from "@/components/lms";
 
 export const Route = createFileRoute("/login")({
@@ -43,6 +44,11 @@ function Login() {
   const [password, setPassword] = useState("");
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [externalEmail, setExternalEmail] = useState("");
+  const [externalPassword, setExternalPassword] = useState("");
+  const [emailBusy, setEmailBusy] = useState(false);
+  const [emailNotice, setEmailNotice] = useState("");
+  const [emailError, setEmailError] = useState("");
 
   if (status === "student" || status === "instructor") return <Navigate to="/" />;
 
@@ -59,6 +65,39 @@ function Login() {
     } finally {
       setBusy(false);
     }
+  }
+
+  async function requestExternalLink() {
+    if (emailBusy) return;
+    setEmailBusy(true); setEmailNotice(""); setEmailError("");
+    try {
+      const { error: failure } = await getSupabase().auth.signInWithOtp({
+        email: externalEmail.trim().toLowerCase(),
+        options: { shouldCreateUser: false, emailRedirectTo: new URL("/login", window.location.origin).href },
+      });
+      if (failure) {
+        setEmailError("로그인 링크를 요청하지 못했습니다. 초대받은 이메일인지 확인하고 잠시 후 다시 시도해 주세요.");
+      } else {
+        setEmailNotice("등록된 이메일로 로그인 링크를 요청했습니다. 받은 편지함을 확인해 주세요.");
+      }
+    } catch {
+      setEmailError("네트워크 연결을 확인해 주세요.");
+    } finally { setEmailBusy(false); }
+  }
+
+  async function submitExternal(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    if (emailBusy) return;
+    if (!externalPassword) { await requestExternalLink(); return; }
+    setEmailBusy(true); setEmailNotice(""); setEmailError("");
+    try {
+      const { error: failure } = await getSupabase().auth.signInWithPassword({
+        email: externalEmail.trim().toLowerCase(), password: externalPassword,
+      });
+      if (failure) setEmailError("이메일 또는 비밀번호를 확인해 주세요.");
+    } catch {
+      setEmailError("로그인하지 못했습니다. 다시 시도해 주세요.");
+    } finally { setEmailBusy(false); }
   }
 
   return (
@@ -155,6 +194,31 @@ function Login() {
             </form>
           )}
         </div>
+        {(status === "signedOut" || status === "error") && (
+          <section className="mt-7 border-t border-border pt-5" aria-labelledby="external-login-title">
+            <h2 id="external-login-title" className="text-base font-semibold">외부 학생 이메일 로그인</h2>
+            <p className="mt-1 text-xs leading-5 text-muted-foreground">초대받은 이메일과 설정한 비밀번호로 로그인하세요. 처음 접속하거나 비밀번호를 잊었다면 이메일 로그인 링크를 요청할 수 있습니다.</p>
+            <form onSubmit={submitExternal} className="mt-3 space-y-3">
+              <label htmlFor="external-email" className="block text-sm font-medium">이메일</label>
+              <input id="external-email" type="email" autoComplete="email" maxLength={254} required
+                value={externalEmail} onChange={e => setExternalEmail(e.target.value)}
+                className="min-h-12 w-full border border-input bg-card px-3 text-base" disabled={emailBusy} />
+              <label htmlFor="external-password" className="block text-sm font-medium">비밀번호 (설정한 경우)</label>
+              <input id="external-password" type="password" autoComplete="current-password" maxLength={72}
+                value={externalPassword} onChange={e => setExternalPassword(e.target.value)}
+                placeholder="처음 로그인 시 비워 두세요"
+                className="min-h-12 w-full border border-input bg-card px-3 text-base" disabled={emailBusy} />
+              <button type="submit" disabled={emailBusy || !externalEmail.trim()}
+                className="min-h-12 w-full border border-foreground px-4 text-sm font-semibold disabled:opacity-50">
+                {emailBusy ? "처리 중…" : externalPassword ? "이메일 계정 로그인" : "이메일 로그인 링크 받기"}
+              </button>
+              {externalPassword && <button type="button" disabled={emailBusy || !externalEmail.trim()}
+                className="min-h-10 text-sm underline disabled:opacity-50" onClick={() => void requestExternalLink()}>이메일 로그인 링크 받기</button>}
+              {emailNotice && <p role="status" className="text-sm">{emailNotice}</p>}
+              {emailError && <p role="alert" className="text-sm">{emailError}</p>}
+            </form>
+          </section>
+        )}
       </div>
     </div>
   );

@@ -351,7 +351,7 @@ export function PracticePolls({ sessionNumber }: { sessionNumber: number }) {
             <span>수강생 전원이 참여했습니다. {isClosed ? "마감된 투표입니다." : "수업 종료 전까지 선택을 변경할 수 있습니다."} 이 정보는 강사에게만 표시됩니다.</span>
           </p>}
           {!instructor && !canParticipate && <p className="pr-polls-hold">
-            <LockKeyhole size={13} aria-hidden /> 투표 후보 명단에 포함된 실제 수강생만 참여할 수 있습니다.
+            <LockKeyhole size={13} aria-hidden /> 정규 수강생 중 이 투표의 후보 명단에 포함된 학생만 참여할 수 있습니다. 외부 초대생과 개인 과외생은 결과 열람만 가능합니다.
           </p>}
           {!instructor && !isClosed && !isVoted && canParticipate && <div className="pr-polls-vote-footer">
             <p>수강생 이름 중 한 명만 선택하세요. 수업 종료 전까지 변경할 수 있어요.</p>
@@ -475,6 +475,6 @@ export function PracticePolls({ sessionNumber }: { sessionNumber: number }) {
           </div>}
         </article>;
       })}</div>}
-    <p className="pr-polls-footer"><LockKeyhole size={13} aria-hidden /> 실습 공유방 투표는 해당 과정의 등록 수강생만 참여할 수 있습니다. 투표는 비공개로 저장되며, 강사는 참여자·집계만 확인합니다.</p>
+    <p className="pr-polls-footer"><LockKeyhole size={13} aria-hidden /> 실습 공유방 투표는 해당 과정의 정규 수강생만 참여할 수 있습니다. 투표는 비공개로 저장되며, 강사는 참여자·집계만 확인합니다.</p>
   </section>;
 }
