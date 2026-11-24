@@ -7,7 +7,7 @@ export type StudentGroup = "regular" | "private";
 export const studentGroup = (type?: string): StudentGroup =>
   type === "guest" || type === "private" ? "private" : "regular";
 export const studentTypeLabel = (type?: string) =>
-  studentGroup(type) === "private" ? "개인 과외생" : "K-MOVE 학생";
+  studentGroup(type) === "private" ? "TUTORING" : "K-MOVE";
 
 const input = "min-h-11 w-full border border-neutral-300 bg-white px-3 py-2 text-sm";
 const action = "min-h-11 border border-neutral-950 bg-neutral-950 px-4 py-2 text-sm font-medium text-white disabled:opacity-50";
@@ -42,7 +42,7 @@ export function ExternalStudentInvite({ onCreated }: { onCreated: () => void }) 
       if (!data?.created) throw new Error("수강 등록을 확인하지 못했습니다.");
       if (typeof data.invite_link === "string") setInviteLink(data.invite_link);
       setNotice(data.already_registered
-        ? "이미 등록된 개인 과외생입니다. 학생은 기존 계정으로 로그인하거나 로그인 링크를 직접 요청할 수 있습니다."
+        ? "이미 등록된 TUTORING 학생입니다. 학생은 기존 계정으로 로그인하거나 로그인 링크를 직접 요청할 수 있습니다."
         : data.email_sent
           ? "수강 등록 완료 · 이메일 로그인 링크 발송을 요청했습니다."
           : "수강 등록 완료 · 이메일 발송 실패. 아래 일회용 링크가 표시되면 학생에게 개별 전달해 주세요. 링크가 없으면 이메일 발송 설정을 확인해야 합니다.");
@@ -52,8 +52,8 @@ export function ExternalStudentInvite({ onCreated }: { onCreated: () => void }) 
     } finally { setBusy(false); }
   }
   return <section className="border border-neutral-200 bg-white p-4 sm:p-5" aria-labelledby="external-invite-title">
-    <h2 id="external-invite-title" className="text-base font-semibold">개인 과외생 초대</h2>
-    <p className="mt-1 text-xs leading-5 text-neutral-600">초대한 학생은 개인 과외생으로 자동 등록됩니다. 최초 접속 전에는 같은 이름과 이메일로 다시 초대할 수 있습니다. 수업·자료·실습·과제·피드백을 이용할 수 있으며 투표에는 참여할 수 없습니다.</p>
+    <h2 id="external-invite-title" className="text-base font-semibold">TUTORING 초대</h2>
+    <p className="mt-1 text-xs leading-5 text-neutral-600">초대한 학생은 TUTORING으로 자동 등록됩니다. 최초 접속 전에는 같은 이름과 이메일로 다시 초대할 수 있습니다. 수업·자료·실습·과제·피드백을 이용할 수 있으며 투표에는 참여할 수 없습니다.</p>
     <form className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)_auto] lg:items-end" onSubmit={submit}>
       <label className="block text-xs font-medium">학생 이름
         <input className={input + " mt-1"} value={name} onChange={e => setName(e.target.value)} required minLength={2} maxLength={30} disabled={busy} placeholder="본명" />
@@ -61,7 +61,7 @@ export function ExternalStudentInvite({ onCreated }: { onCreated: () => void }) 
       <label className="block text-xs font-medium">이메일
         <input className={input + " mt-1"} type="email" value={email} onChange={e => setEmail(e.target.value)} required maxLength={254} disabled={busy} placeholder="student@example.com" />
       </label>
-      <button type="submit" className={action + " lg:min-w-44"} disabled={busy || !name.trim() || !email.trim()}>{busy ? "등록 중…" : "개인 과외생 초대"}</button>
+      <button type="submit" className={action + " lg:min-w-44"} disabled={busy || !name.trim() || !email.trim()}>{busy ? "등록 중…" : "TUTORING 초대"}</button>
     </form>
     <p className="mt-3 text-xs text-neutral-500">투표 권한 없음 · 공식 정원 제외 · 개인 Google Drive 폴더는 별도로 연결해야 합니다.</p>
     {notice && <p className="mt-3 border border-neutral-200 p-3 text-sm" role="status">{notice}</p>}

@@ -206,7 +206,7 @@ function InstructorStudents() {
             className={`border p-3 text-left ${typeFilter === type ? "border-black bg-neutral-100" : "border-neutral-200"}`}>
             <span className="block text-neutral-600">{studentTypeLabel(type)}</span>
             <strong className="mt-1 block text-xl">{data.enrollments.filter(row => row.status === "active" && studentGroup(row.student_type) === type).length}명</strong>
-            <span className="mt-1 block text-neutral-500">{type === "regular" ? "정규 학생 및 테스트 계정 포함 · 테스트 계정 투표 제외" : "투표 불가 · 공식 정원 제외"}</span>
+            <span className="mt-1 block text-neutral-500">{type === "regular" ? "기존 수강생 및 테스트 계정 포함 · 테스트 계정 투표 제외" : "투표 불가 · 공식 정원 제외"}</span>
           </button>
         ))}
       </div>
@@ -264,11 +264,11 @@ function InstructorStudents() {
             </select>
           </label>
           <label className="mb-3 block">
-            <span className="sr-only">학생 유형 필터</span>
+            <span className="sr-only">학생 그룹 필터</span>
             <select value={typeFilter} onChange={event => setTypeFilter(event.target.value)} className={inputClass}>
-              <option value="all">전체 학생 유형</option>
-              <option value="regular">K-MOVE 학생</option>
-              <option value="private">개인 과외생</option>
+              <option value="all">전체</option>
+              <option value="regular">K-MOVE</option>
+              <option value="private">TUTORING</option>
             </select>
           </label>
           <div className="max-h-[28rem] overflow-y-auto border-y border-neutral-200">
@@ -307,10 +307,10 @@ function InstructorStudents() {
           </div>
           <details className="mt-5 border border-neutral-200 p-3 text-sm">
             <summary className="min-h-9 cursor-pointer font-medium">
-              기존 계정에서 개인 과외생 추가
+              기존 계정에서 TUTORING 추가
             </summary>
             <p className="my-3 text-xs leading-5 text-neutral-600">
-              학생 계정과 개인 Drive 폴더가 연결된 신규 계정을 개인 과외생으로 등록합니다.
+              학생 계정과 개인 Drive 폴더가 연결된 신규 계정을 TUTORING으로 등록합니다.
             </p>
             <label className="block">
               <span className="sr-only">추가할 학생 계정</span>
@@ -537,10 +537,10 @@ function StudentDetail({
       </div>
       <p className="mt-4 text-xs text-neutral-500">
         {studentGroup(student.student_type) === "private"
-          ? "개인 과외생 · 투표 및 공식 정원 제외"
+          ? "TUTORING · 투표 및 공식 정원 제외"
           : ["홍길동", "홍길순"].includes(student.name)
             ? "K-MOVE 테스트 계정 · 투표 제외"
-            : "K-MOVE 학생 · 기존 투표 및 공식 등록 권한 유지"}
+            : "K-MOVE · 기존 투표 및 공식 등록 권한 유지"}
       </p>
       {notice && (
         <p role="status" className="mt-4 flex items-center gap-2 text-sm">
