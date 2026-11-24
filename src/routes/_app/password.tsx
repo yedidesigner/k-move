@@ -3,7 +3,7 @@ import { useState, type FormEvent } from "react";
 import { KeyRound } from "lucide-react";
 import { useAuth } from "@/lib/auth";
 import { getSupabase } from "@/lib/supabase";
-import { isStudentPin, normalizePinInput, studentPinPassword } from "@/lib/student-pin";
+import { isStudentPin, normalizePinInput, studentPinPassword, isTemporaryStudentPin } from "@/lib/student-pin";
 
 export const Route = createFileRoute("/_app/password")({
   head: () => ({
@@ -32,6 +32,10 @@ function PasswordPage() {
     }
     if (!/^[0-9]{4}$/.test(current) || !/^[0-9]{4}$/.test(next)) {
       setError("현재 및 새 비밀번호는 숫자 4자리로 입력해 주세요.");
+      return;
+    }
+    if (isTemporaryStudentPin(next)) {
+      setError("임시 비밀번호 1234는 새 비밀번호로 사용할 수 없습니다.");
       return;
     }
     if (current === next) {
@@ -69,6 +73,10 @@ function PasswordPage() {
       setError("숫자 4자리 비밀번호를 입력하고 확인란을 일치시켜 주세요.");
       return;
     }
+    if (isTemporaryStudentPin(next)) {
+      setError("임시 비밀번호 1234와 다른 숫자 4자리를 입력해 주세요.");
+      return;
+    }
     setBusy(true);
     try {
       const { error: failure } = await getSupabase().auth.updateUser({ password: studentPinPassword(next) });
@@ -82,7 +90,7 @@ function PasswordPage() {
   if (user?.app_metadata?.["kmove_external_type"] === "guest" || user?.app_metadata?.["kmove_external_type"] === "private") {
     return <div className="mx-auto max-w-xl border border-border bg-card p-5">
       <h1 className="text-xl font-semibold">{needsPinSetup ? "최초 비밀번호 설정" : "비밀번호 설정"}</h1>
-      <p className="mt-3 text-sm text-muted-foreground">본명과 숫자 4자리 비밀번호로 로그인할 수 있도록 설정해 주세요. 생일이나 연속된 숫자처럼 추측하기 쉬운 번호는 피하세요.</p>
+      <p className="mt-3 text-sm text-muted-foreground">임시 비밀번호 1234와 다른 숫자 4자리를 설정해 주세요. 설정 후에는 본명과 새 비밀번호로 로그인합니다.</p>
       <form className="mt-5 space-y-4" onSubmit={submitExternal}>
         <label className="block text-sm font-medium">새 비밀번호
           <input className="mt-2 min-h-12 w-full border border-input bg-card px-3" type="password" autoComplete="new-password"
