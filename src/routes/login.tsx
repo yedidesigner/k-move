@@ -3,7 +3,7 @@ import { FormEvent, useState } from "react";
 import { SITE_NAME, COURSE_NAME } from "@/data/schedule";
 import { useAuth } from "@/lib/auth";
 import { getSupabase } from "@/lib/supabase";
-import { isStudentPin, normalizePinInput } from "@/lib/student-pin";
+import { isStudentPin, normalizePinInput, TEMPORARY_STUDENT_PIN } from "@/lib/student-pin";
 import { Spinner, StatusBadge } from "@/components/lms";
 
 export const Route = createFileRoute("/login")({
@@ -47,6 +47,7 @@ function Login() {
   const [error, setError] = useState<string | null>(null);
   const [externalEmail, setExternalEmail] = useState("");
   const [recovery, setRecovery] = useState(false);
+  const [initialAccess, setInitialAccess] = useState(false);
   const [emailBusy, setEmailBusy] = useState(false);
   const [emailNotice, setEmailNotice] = useState("");
   const [emailError, setEmailError] = useState("");
@@ -62,7 +63,15 @@ function Login() {
       await signIn(loginId, password);
     } catch (err) {
       const code = errorCode(err);
-      setError(ERROR_MESSAGES[code] ?? "처리하지 못했습니다. 잠시 후 다시 시도해 주세요.");
+      if (code === "auth/temporary-pin-verification-required") {
+        setInitialAccess(true);
+        setRecovery(true);
+        setPassword("");
+        setEmailNotice("");
+        setEmailError("");
+      } else {
+        setError(ERROR_MESSAGES[code] ?? "처리하지 못했습니다. 잠시 후 다시 시도해 주세요.");
+      }
     } finally {
       setBusy(false);
     }
@@ -101,8 +110,8 @@ function Login() {
         <p className="mt-1 text-sm text-muted-foreground">{COURSE_NAME}</p>
 
         <div className="mt-7 border-b border-border pb-4">
-          <h2 className="text-base font-semibold">{recovery ? "처음 로그인 · 비밀번호 재설정" : "로그인"}</h2>
-          <p className="mt-1 text-sm text-muted-foreground">{recovery ? "등록된 이메일로 인증 링크를 요청하세요." : "본명과 숫자 4자리 비밀번호로 로그인"}</p>
+          <h2 className="text-base font-semibold">{recovery ? (initialAccess ? "최초 로그인" : "처음 로그인 · 비밀번호 재설정") : "로그인"}</h2>
+          <p className="mt-1 text-sm text-muted-foreground">{recovery ? (initialAccess ? "임시번호를 확인했습니다. 본인 이메일 인증 후 새 비밀번호를 설정하세요." : "등록된 이메일로 인증 링크를 요청하세요.") : "본명과 숫자 4자리 비밀번호로 로그인"}</p>
         </div>
 
         <div className="mt-6">
@@ -131,7 +140,7 @@ function Login() {
               {emailError && <p role="alert" className="text-sm">{emailError}</p>}
               <p className="text-xs leading-relaxed text-muted-foreground">TUTORING 학생은 이메일 인증 후 비밀번호를 설정할 수 있습니다. 기존 K-MOVE 학생은 비밀번호를 잊은 경우 강사에게 문의해 주세요.</p>
               <button type="button" className="min-h-10 text-xs underline underline-offset-4" disabled={emailBusy}
-                onClick={() => { setRecovery(false); setEmailNotice(""); setEmailError(""); }}>로그인으로 돌아가기</button>
+                onClick={() => { setRecovery(false); setInitialAccess(false); setEmailNotice(""); setEmailError(""); }}>로그인으로 돌아가기</button>
             </form>
           ) : (
             <form className="space-y-4" onSubmit={submit}>
@@ -193,9 +202,10 @@ function Login() {
                 </p>
               )}
               <p className="text-xs leading-relaxed text-muted-foreground">
-                로그인 후 메뉴의 ‘비밀번호 변경’에서 비밀번호를 변경할 수 있습니다.
+                신규 TUTORING 학생 임시 비밀번호: <strong>{TEMPORARY_STUDENT_PIN}</strong><br />
+                최초 접속 시 이메일 본인 확인 후 새 비밀번호를 설정해 주세요.
               </p>
-              <button type="button" disabled={busy} onClick={() => { setRecovery(true); setError(null); }}
+              <button type="button" disabled={busy} onClick={() => { setRecovery(true); setInitialAccess(false); setError(null); }}
                 className="min-h-9 text-xs text-muted-foreground underline underline-offset-4 hover:text-foreground">
                 처음 로그인 · 비밀번호 재설정
               </button>
