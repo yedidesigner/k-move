@@ -53,7 +53,7 @@ export function ExternalStudentInvite({ onCreated }: { onCreated: () => void }) 
   }
   return <section className="border border-neutral-200 bg-white p-4 sm:p-5" aria-labelledby="external-invite-title">
     <h2 id="external-invite-title" className="text-base font-semibold">TUTORING 초대</h2>
-    <p className="mt-1 text-xs leading-5 text-neutral-600">초대한 학생은 TUTORING으로 자동 등록됩니다. 최초 접속 전에는 같은 이름과 이메일로 다시 초대할 수 있습니다. 수업·자료·실습·과제·피드백을 이용할 수 있으며 투표에는 참여할 수 없습니다.</p>
+    <p className="mt-1 text-xs leading-5 text-neutral-600">초대한 학생은 TUTORING으로 자동 등록됩니다. 최초 접속용 임시번호는 1234이며 이메일 본인 확인 후 새 비밀번호를 설정합니다. 최초 접속 전에는 같은 이름과 이메일로 다시 초대할 수 있습니다. 수업·자료·실습·과제·피드백을 이용할 수 있으며 투표에는 참여할 수 없습니다.</p>
     <form className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)_auto] lg:items-end" onSubmit={submit}>
       <label className="block text-xs font-medium">학생 이름
         <input className={input + " mt-1"} value={name} onChange={e => setName(e.target.value)} required minLength={2} maxLength={30} disabled={busy} placeholder="본명" />
