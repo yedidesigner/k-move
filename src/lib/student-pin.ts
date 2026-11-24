@@ -7,3 +7,9 @@ export function studentPinPassword(pin: string): string {
   if (!isStudentPin(pin)) throw new Error("auth/invalid-pin");
   return `Kmove:${pin}`;
 }
+
+/** Public first-access code, never stored as a new user's Auth credential. */
+export const TEMPORARY_STUDENT_PIN = "1234";
+export const isTemporaryStudentPin = (pin: string) => pin === TEMPORARY_STUDENT_PIN;
+export const requiresTemporaryPinVerification = (pin: string, code?: string) =>
+  isTemporaryStudentPin(pin) && code === "invalid_credentials";
