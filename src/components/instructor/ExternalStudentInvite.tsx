@@ -1,0 +1,100 @@
+import { useState, type FormEvent } from "react";
+import { getSupabase } from "@/lib/supabase";
+import { useAuth } from "@/lib/auth";
+
+export type ExternalStudentType = "guest" | "private";
+export const studentTypeLabel = (type?: string) =>
+  type === "guest" ? "외부 초대생" : type === "private" ? "개인 과외생" : "정규 수강생";
+
+const input = "min-h-11 w-full border border-neutral-300 bg-white px-3 py-2 text-sm";
+const action = "min-h-11 border border-neutral-950 bg-neutral-950 px-4 py-2 text-sm font-medium text-white disabled:opacity-50";
+
+export function ExternalStudentInvite({ onCreated }: { onCreated: () => void }) {
+  const { status } = useAuth();
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [type, setType] = useState<ExternalStudentType>("guest");
+  const [busy, setBusy] = useState(false);
+  const [notice, setNotice] = useState("");
+  const [error, setError] = useState("");
+  if (status !== "instructor") return null;
+
+  async function submit(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    if (busy) return;
+    setBusy(true); setNotice(""); setError("");
+    try {
+      const { data, error: failure } = await getSupabase().functions.invoke("kmove-invite-student", {
+        body: { name, email, student_type: type },
+      });
+      if (failure) {
+        let message = "초대하지 못했습니다. 이름과 이메일 및 서버 설정을 확인해 주세요.";
+        try {
+          const detail = await failure.context?.json();
+          if (typeof detail?.error === "string") message = detail.error;
+        } catch { /* use generic message */ }
+        throw new Error(message);
+      }
+      if (!data?.created) throw new Error("수강 등록을 확인하지 못했습니다.");
+      setNotice(data.email_sent
+        ? "수강 등록 완료 · 이메일 로그인 링크 발송을 요청했습니다."
+        : "수강 등록 완료 · 이메일 발송은 실패했습니다. 학생에게 LMS 주소를 전달하고 외부 학생 이메일 로그인을 안내해 주세요.");
+      setName(""); setEmail(""); onCreated();
+    } catch (cause) {
+      setError(cause instanceof Error ? cause.message : "초대에 실패했습니다.");
+    } finally { setBusy(false); }
+  }
+  return <section className="border border-neutral-200 bg-white p-4 sm:p-5" aria-labelledby="external-invite-title">
+    <h2 id="external-invite-title" className="text-base font-semibold">외부 학생 초대</h2>
+    <p className="mt-1 text-xs leading-5 text-neutral-600">정규 인원과 분리하여 등록합니다. 수업·자료·실습·과제·피드백을 이용할 수 있으며 투표에는 참여할 수 없습니다.</p>
+    <form className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-4 lg:items-end" onSubmit={submit}>
+      <label className="block text-xs font-medium">학생 이름
+        <input className={input + " mt-1"} value={name} onChange={e => setName(e.target.value)} required minLength={2} maxLength={30} disabled={busy} placeholder="본명" />
+      </label>
+      <label className="block text-xs font-medium">이메일
+        <input className={input + " mt-1"} type="email" value={email} onChange={e => setEmail(e.target.value)} required maxLength={254} disabled={busy} placeholder="student@example.com" />
+      </label>
+      <label className="block text-xs font-medium">학생 유형
+        <select className={input + " mt-1"} value={type} onChange={e => setType(e.target.value as ExternalStudentType)} disabled={busy}>
+          <option value="guest">외부 초대생</option><option value="private">개인 과외생</option>
+        </select>
+      </label>
+      <button type="submit" className={action} disabled={busy || !name.trim() || !email.trim()}>{busy ? "등록 중…" : "학생 초대"}</button>
+    </form>
+    <p className="mt-3 text-xs text-neutral-500">투표 권한 없음 · 공식 정원 제외 · 개인 Google Drive 폴더는 별도로 연결해야 합니다.</p>
+    {notice && <p className="mt-3 border border-neutral-200 p-3 text-sm" role="status">{notice}</p>}
+    {error && <p className="mt-3 border border-neutral-400 p-3 text-sm" role="alert">{error}</p>}
+  </section>;
+}
+
+export function ExternalStudentTypeEditor({ userId, studentType, onSaved }: {
+  userId: string; studentType: ExternalStudentType; onSaved: () => void;
+}) {
+  const { status } = useAuth();
+  const [next, setNext] = useState<ExternalStudentType>(studentType);
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState("");
+  if (status !== "instructor") return null;
+  async function save() {
+    if (busy || next === studentType) return;
+    setBusy(true); setError("");
+    try {
+      const { error: failure } = await getSupabase().rpc("kmove_set_external_student_type", {
+        p_user_id: userId, p_student_type: next,
+      });
+      if (failure) throw failure;
+      onSaved();
+    } catch { setError("학생 유형을 변경하지 못했습니다."); }
+    finally { setBusy(false); }
+  }
+  return <div className="mt-4 flex flex-wrap items-end gap-2 border-b border-neutral-200 pb-4">
+    <label className="block text-xs font-medium">학생 유형
+      <select className={input + " mt-1"} value={next} onChange={e => setNext(e.target.value as ExternalStudentType)} disabled={busy}>
+        <option value="guest">외부 초대생</option><option value="private">개인 과외생</option>
+      </select>
+    </label>
+    <button type="button" className={action} onClick={() => void save()} disabled={busy || next === studentType}>유형 저장</button>
+    <span className="pb-2 text-xs text-neutral-500">투표 권한 없음</span>
+    {error && <p className="w-full text-sm" role="alert">{error}</p>}
+  </div>;
+}
