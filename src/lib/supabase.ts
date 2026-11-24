@@ -1,4 +1,5 @@
 import { createClient, type SupabaseClient } from "@supabase/supabase-js";
+import { authStorageKey, clearStoredAuth, signOutCurrentSession } from "./session-logout";
 
 export const supabaseConfig = {
   url: import.meta.env["VITE_SUPABASE_URL"] as string | undefined,
@@ -22,8 +23,14 @@ export function getSupabase() {
   if (!isSupabaseConfigured()) throw new Error("supabase/not-configured");
   if (!client) {
     client = createClient(supabaseConfig.url!, supabaseConfig.publishableKey!, {
-      auth: { persistSession: true, autoRefreshToken: true, detectSessionInUrl: true },
+      auth: { persistSession: true, autoRefreshToken: true, detectSessionInUrl: true, storageKey: authStorageKey(supabaseConfig.url!) },
     });
   }
   return client;
+}
+
+/** Recover a stale browser session only after the Auth server reports it gone. */
+export async function signOutSupabase() {
+  const db = getSupabase();
+  await signOutCurrentSession(db.auth, () => clearStoredAuth(window.localStorage, authStorageKey(supabaseConfig.url!)));
 }
