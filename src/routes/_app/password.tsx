@@ -59,7 +59,7 @@ function PasswordPage() {
     }
   }
 
-  if (user?.app_metadata?.kmove_external_type === "guest" || user?.app_metadata?.kmove_external_type === "private") {
+  if (user?.app_metadata?.["kmove_external_type"] === "guest" || user?.app_metadata?.["kmove_external_type"] === "private") {
     return <div className="mx-auto max-w-xl border border-border bg-card p-5">
       <h1 className="text-xl font-semibold">이메일 로그인 계정</h1>
       <p className="mt-3 text-sm">외부 학생은 별도의 숫자 PIN 없이 이메일 로그인 링크를 사용합니다.</p>
