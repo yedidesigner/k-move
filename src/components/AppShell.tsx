@@ -1,5 +1,5 @@
 import { Link, useLocation } from "@tanstack/react-router";
-import { useState, type ReactNode } from "react";
+import { useRef, useState, type ReactNode } from "react";
 import {
   Home,
   CalendarDays,
@@ -51,6 +51,8 @@ export function AppShell({ children }: { children: ReactNode }) {
   const location = useLocation();
   const [collapsed, setCollapsed] = useState(false);
   const [logoutError, setLogoutError] = useState(false);
+  const [loggingOut, setLoggingOut] = useState(false);
+  const logoutInFlight = useRef(false);
   const feedback = location.pathname.replace(/\/+$/, "") === "/feedback";
   const practice = location.pathname.replace(/\/+$/, "") === "/practice";
   const nav = instructor ? INSTRUCTOR_NAV : STUDENT_NAV;
@@ -68,12 +70,18 @@ export function AppShell({ children }: { children: ReactNode }) {
         : location.pathname.startsWith(path);
   const accountName = user?.user_metadata?.["username"] ?? user?.email;
   async function logout() {
+    if (logoutInFlight.current) return;
+    logoutInFlight.current = true;
+    setLoggingOut(true);
     setLogoutError(false);
     try {
       if (!(await requestEditorExit())) return;
       await signOut();
     } catch {
       setLogoutError(true);
+    } finally {
+      logoutInFlight.current = false;
+      setLoggingOut(false);
     }
   }
   return (
@@ -190,11 +198,13 @@ export function AppShell({ children }: { children: ReactNode }) {
           <button
             type="button"
             onClick={() => void logout()}
+            disabled={loggingOut}
+            aria-busy={loggingOut}
             title="로그아웃"
             className="flex min-h-10 items-center gap-2 text-xs text-muted-foreground hover:text-foreground"
           >
             <LogOut className="size-4 shrink-0" aria-hidden />
-            <span className={collapsed && instructor ? "sr-only" : ""}>로그아웃</span>
+            <span className={collapsed && instructor ? "sr-only" : ""}>{loggingOut ? "로그아웃 중…" : "로그아웃"}</span>
           </button>
           {logoutError && (
             <p role="alert" className="text-xs text-destructive">
@@ -239,9 +249,11 @@ export function AppShell({ children }: { children: ReactNode }) {
               <button
                 type="button"
                 onClick={() => void logout()}
+            disabled={loggingOut}
+            aria-busy={loggingOut}
                 className="min-h-10 border border-border px-3 py-2 text-xs"
               >
-                로그아웃
+                {loggingOut ? "로그아웃 중…" : "로그아웃"}
               </button>
             </nav>
             {logoutError && (
