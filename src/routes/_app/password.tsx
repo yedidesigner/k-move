@@ -3,6 +3,7 @@ import { useState, type FormEvent } from "react";
 import { KeyRound } from "lucide-react";
 import { useAuth } from "@/lib/auth";
 import { getSupabase } from "@/lib/supabase";
+import { isStudentPin, normalizePinInput, studentPinPassword } from "@/lib/student-pin";
 
 export const Route = createFileRoute("/_app/password")({
   head: () => ({
@@ -64,13 +65,13 @@ function PasswordPage() {
     event.preventDefault();
     if (busy) return;
     setError(""); setSuccess(false);
-    if (next !== confirm || next.length < 12 || new TextEncoder().encode(next).length > 72) {
-      setError("12자 이상의 비밀번호를 입력하고 확인란을 일치시켜 주세요. 최대 72바이트입니다.");
+    if (!isStudentPin(next) || !isStudentPin(confirm) || next !== confirm) {
+      setError("숫자 4자리 비밀번호를 입력하고 확인란을 일치시켜 주세요.");
       return;
     }
     setBusy(true);
     try {
-      const { error: failure } = await getSupabase().auth.updateUser({ password: next });
+      const { error: failure } = await getSupabase().auth.updateUser({ password: studentPinPassword(next) });
       if (failure) throw failure;
       setNext(""); setConfirm(""); setSuccess(true);
     } catch {
@@ -81,18 +82,18 @@ function PasswordPage() {
   if (user?.app_metadata?.["kmove_external_type"] === "guest" || user?.app_metadata?.["kmove_external_type"] === "private") {
     return <div className="mx-auto max-w-xl border border-border bg-card p-5">
       <h1 className="text-xl font-semibold">이메일 계정 비밀번호 설정</h1>
-      <p className="mt-3 text-sm text-muted-foreground">외부 학생은 이메일 로그인 링크 또는 설정한 비밀번호로 접속할 수 있습니다. 12자 이상으로 다른 서비스와 중복되지 않는 비밀번호를 사용해 주세요.</p>
+      <p className="mt-3 text-sm text-muted-foreground">외부 학생은 이메일 로그인 링크 또는 설정한 비밀번호로 접속할 수 있습니다. 숫자 4자리로 설정해 주세요. 생일이나 연속된 숫자처럼 추측하기 쉬운 번호는 피하세요.</p>
       <form className="mt-5 space-y-4" onSubmit={submitExternal}>
         <label className="block text-sm font-medium">새 비밀번호
           <input className="mt-2 min-h-12 w-full border border-input bg-card px-3" type="password" autoComplete="new-password"
-            value={next} onChange={e=>setNext(e.target.value)} required minLength={12} maxLength={72} disabled={busy} />
+            value={next} onChange={e=>setNext(normalizePinInput(e.target.value))} required minLength={4} maxLength={4} inputMode="numeric" pattern="[0-9]{4}" placeholder="숫자 4자리" disabled={busy} />
         </label>
         <label className="block text-sm font-medium">새 비밀번호 확인
           <input className="mt-2 min-h-12 w-full border border-input bg-card px-3" type="password" autoComplete="new-password"
-            value={confirm} onChange={e=>setConfirm(e.target.value)} required minLength={12} maxLength={72} disabled={busy} />
+            value={confirm} onChange={e=>setConfirm(normalizePinInput(e.target.value))} required minLength={4} maxLength={4} inputMode="numeric" pattern="[0-9]{4}" placeholder="숫자 4자리 확인" disabled={busy} />
         </label>
         {error && <p role="alert" className="text-sm">{error}</p>}
-        {success && <p role="status" className="text-sm">비밀번호를 설정했습니다. 다음부터 이메일과 비밀번호로 로그인할 수 있습니다.</p>}
+        {success && <p role="status" className="text-sm">비밀번호를 설정했습니다. 다음부터 이메일과 숫자 4자리 비밀번호로 로그인할 수 있습니다.</p>}
         <button type="submit" className="min-h-12 w-full bg-primary px-4 font-semibold text-primary-foreground disabled:opacity-50"
           disabled={busy}>{busy ? "설정 중…" : "비밀번호 설정"}</button>
       </form>
