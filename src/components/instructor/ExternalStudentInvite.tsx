@@ -17,12 +17,14 @@ export function ExternalStudentInvite({ onCreated }: { onCreated: () => void }) 
   const [busy, setBusy] = useState(false);
   const [notice, setNotice] = useState("");
   const [error, setError] = useState("");
+  const [inviteLink, setInviteLink] = useState("");
+  const [copied, setCopied] = useState(false);
   if (status !== "instructor") return null;
 
   async function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     if (busy) return;
-    setBusy(true); setNotice(""); setError("");
+    setBusy(true); setNotice(""); setError(""); setInviteLink(""); setCopied(false);
     try {
       const { data, error: failure } = await getSupabase().functions.invoke("kmove-invite-student", {
         body: { name, email, student_type: type },
@@ -36,9 +38,10 @@ export function ExternalStudentInvite({ onCreated }: { onCreated: () => void }) 
         throw new Error(message);
       }
       if (!data?.created) throw new Error("수강 등록을 확인하지 못했습니다.");
+      if (typeof data.invite_link === "string") setInviteLink(data.invite_link);
       setNotice(data.email_sent
         ? "수강 등록 완료 · 이메일 로그인 링크 발송을 요청했습니다."
-        : "수강 등록 완료 · 이메일 발송은 실패했습니다. 학생에게 LMS 주소를 전달하고 외부 학생 이메일 로그인을 안내해 주세요.");
+        : "수강 등록 완료 · 이메일 발송 실패. 아래 일회용 링크가 표시되면 학생에게 개별 전달해 주세요. 링크가 없으면 이메일 발송 설정을 확인해야 합니다.");
       setName(""); setEmail(""); onCreated();
     } catch (cause) {
       setError(cause instanceof Error ? cause.message : "초대에 실패했습니다.");
@@ -63,6 +66,15 @@ export function ExternalStudentInvite({ onCreated }: { onCreated: () => void }) 
     </form>
     <p className="mt-3 text-xs text-neutral-500">투표 권한 없음 · 공식 정원 제외 · 개인 Google Drive 폴더는 별도로 연결해야 합니다.</p>
     {notice && <p className="mt-3 border border-neutral-200 p-3 text-sm" role="status">{notice}</p>}
+    {inviteLink && <div className="mt-3 space-y-3 border border-neutral-300 p-3">
+      <p className="text-xs leading-5 text-neutral-600">일회용 로그인 링크입니다. 해당 학생에게만 개인 메시지로 보내세요. 링크가 만료되거나 사용된 뒤에는 다시 사용할 수 없습니다. 학생은 로그인 후 비밀번호 메뉴에서 이메일 계정의 비밀번호를 설정할 수 있습니다.</p>
+      <button type="button" className={action} onClick={async () => {
+        try { await navigator.clipboard.writeText(inviteLink); setCopied(true); }
+        catch { setError("클립보드 복사에 실패했습니다."); }
+      }}>{copied ? "복사 완료" : "일회용 로그인 링크 복사"}</button>
+      <button type="button" className="ml-2 min-h-11 border border-neutral-300 px-3 text-sm"
+        onClick={() => { setInviteLink(""); setCopied(false); }}>링크 닫기</button>
+    </div>}
     {error && <p className="mt-3 border border-neutral-400 p-3 text-sm" role="alert">{error}</p>}
   </section>;
 }
