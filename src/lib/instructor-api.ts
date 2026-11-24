@@ -4,7 +4,7 @@ export type AssignmentStatus = "draft" | "published" | "archived";
 export type ReviewDecision = "changes_requested" | "accepted";
 export type ContentKind = "session" | "announcement" | "glossary" | "guide" | "path";
 export type PortfolioStage = "planning" | "structure" | "visual" | "prototype" | "case-study" | "ready";
-export interface Enrollment { user_id:string; student_id:string; name:string; status:"active"|"completed"; joined_at:string; updated_at:string }
+export interface Enrollment { student_type?:"regular"|"guest"|"private"; user_id:string; student_id:string; name:string; status:"active"|"completed"; joined_at:string; updated_at:string }
 export interface Assignment { id:string; session_number:number; title:string; description:string; requirements:string; opens_at:string|null; due_at:string|null; status:AssignmentStatus; allow_resubmit:boolean; version:number; created_at:string; updated_at:string }
 export interface AssignmentTarget { assignment_id:string; user_id:string; exempt:boolean; due_at:string|null; created_at:string }
 export interface SubmissionDraft { assignment_id:string; user_id:string; note:string; image_ids:string[]; attachment_ids:string[]; version:number; updated_at:string }
