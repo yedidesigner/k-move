@@ -623,7 +623,7 @@ function Troubleshooting() {
   );
 }
 
-function CopyablePrompt({
+export function CopyablePrompt({
   title,
   prompt,
   target,

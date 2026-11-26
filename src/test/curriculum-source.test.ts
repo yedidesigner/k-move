@@ -32,7 +32,6 @@ describe("Reviewed Sheet 2 curriculum", () => {
     expect(lesson(3).tools).toContain("Google AI Studio (Build · Playground)");
     expect(JSON.stringify(lesson(3))).not.toMatch(/포트폴리오 v1 배포|GitHub에 올리고 Vercel/);
     for (const number of [4, 5]) expect(lesson(number).cycle).toContain("브랜드 랜딩페이지");
-    expect(lesson(6).cycle).toContain("수업 자료 이동 안내");
     expect(lesson(7).cycle).toContain("K-MOVE English Lab");
     expect(lesson(8).title).toContain("Google Sheets");
     expect(lesson(9).cycle).toContain("중간 쇼케이스");
@@ -40,6 +39,15 @@ describe("Reviewed Sheet 2 curriculum", () => {
       expect(lesson(number).cycle).toBe("개별 피드백");
       expect(lesson(number).topics.join(" ")).toContain("공통 제작 주제 없이");
     }
+  });
+
+  it("lists the six-period US brand workbook at S06 and keeps English Lab at S07", () => {
+    const weekSix = SESSIONS.find((session) => session.id === "S06")!;
+    expect(weekSix.title).toContain("미국 브랜드 웹사이트 리디자인");
+    expect(weekSix.curriculum?.topics).toHaveLength(6);
+    expect(weekSix.curriculum?.goalOutput).toContain("후보 3곳");
+    expect(weekSix.curriculum?.homework).toContain("개인 시트 링크");
+    expect(SESSIONS.find((session) => session.id === "S07")?.title).toContain("OPIc·TOEIC");
   });
 
   it("provides concrete capstone work instead of the previously empty lessons 10 through 19", () => {

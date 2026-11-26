@@ -39,6 +39,23 @@ describe("scheduled feedback week", () => {
     expect(result.current.week).toBe(3);
   });
 
+  it.each([["6", 6], ["999", 2]])("opens the requested workbook week when valid (%s)", (value, expected) => {
+    vi.useFakeTimers();
+    vi.setSystemTime(new Date("2026-11-01T12:00:00+09:00"));
+    const previousUrl = window.location.href;
+    try {
+      window.history.replaceState({}, "", `/feedback?week=${value}`);
+      const { result } = renderHook(useFeedbackWeek);
+      expect(result.current.week).toBe(expected);
+      expect(result.current.currentWeek).toBe(2);
+      act(() => result.current.setWeek(4));
+      act(() => window.dispatchEvent(new Event("focus")));
+      expect(result.current.week).toBe(4);
+    } finally {
+      window.history.replaceState({}, "", previousUrl);
+    }
+  });
+
   it("refreshes the current-date shortcut without discarding a mounted workspace at midnight", () => {
     vi.useFakeTimers();
     vi.setSystemTime(new Date("2026-11-07T23:59:30+09:00"));

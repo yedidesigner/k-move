@@ -146,7 +146,9 @@ function Workspace({
     [error, setError] = useState(""),
     [notice, setNotice] = useState(""),
     [revision, setRevision] = useState(0),
-    [tab, setTab] = useState<"review" | "manage" | "legacy">("review"),
+    [tab, setTab] = useState<"review" | "manage" | "legacy">(() =>
+      feedback && instructor && params().get("view") === "materials" ? "legacy" : "review",
+    ),
     [sessionFilter, setSessionFilter] = useState(
       () =>
         params().get("session") ??

@@ -132,6 +132,13 @@ beforeEach(() => {
 afterEach(cleanup);
 
 describe("Feedback course roster", () => {
+  it("opens the student materials picker from the instructor workbook link", async () => {
+    window.history.replaceState({}, "", "/feedback?week=6&view=materials");
+    render(<FeedbackPage />);
+    await screen.findByText("수강 중 15명");
+    expect(screen.getByRole("tab", { name: "기존 등록 자료" })).toHaveAttribute("aria-selected", "true");
+    expect(await screen.findByRole("combobox", { name: "학생" })).toBeVisible();
+  });
   it("uses active enrollments rather than legacy account rows for the instructor roster", async () => {
     render(<FeedbackPage />);
     await screen.findByText("수강 중 15명");

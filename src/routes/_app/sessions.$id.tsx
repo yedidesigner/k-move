@@ -1,5 +1,5 @@
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
-import { CLASS_END, CLASS_START, SESSIONS, formatDateKo } from "@/data/schedule";
+import { SESSIONS, formatDateKo } from "@/data/schedule";
 import { EmptyState, PageHeader, Panel, StatusBadge } from "@/components/lms";
 import { SessionCurriculum } from "@/components/SessionCurriculum";
 import { usePublishedContent, PublishedAnnouncements } from "@/lib/published-content";
@@ -7,6 +7,7 @@ import { useAuth } from "@/lib/auth";
 import { WeekTwoResources } from "@/components/WeekTwoResources";
 import { WeekThreeResources } from "@/components/WeekThreeResources";
 import { WeekFourResources, WEEK_FOUR_DOWNLOADS } from "@/components/WeekFourResources";
+import { WeekSixResources } from "@/components/WeekSixResources";
 import { WeekSevenResources } from "@/components/WeekSevenResources";
 
 export const Route = createFileRoute("/_app/sessions/$id")({
@@ -45,6 +46,7 @@ function Detail() {
   const { sessions, guides, glossary } = usePublishedContent();
   const s = sessions.find((session) => session.id === base.id)!;
   const lesson = s.detailsPublished ? s.curriculum : null;
+  const hasWorkbook = s.id === "S06" || s.id === "S07";
   const previous = sessions.find((session) => session.number === s.number - 1);
   const next = sessions.find((session) => session.number === s.number + 1);
   // Session 04 has a slide-only viewer; published PPTX/PDF/ZIP items must not
@@ -56,28 +58,39 @@ function Detail() {
         !WEEK_FOUR_DOWNLOADS.some((file) => file.fileName === material.fileName)),
   );
   return (
-    <div className={`mx-auto ${s.id === "S07" ? "max-w-5xl" : "max-w-4xl"}`}>
+    <div className={`mx-auto ${hasWorkbook ? "max-w-5xl" : "max-w-4xl"}`}>
       <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
         <Link to="/sessions" className="inline-block text-sm text-primary">
           ← 전체 수업
         </Link>
         {status === "instructor" && (
-          <Link
-            to="/admin"
-            search={{ tab: "sessions", session: s.id }}
-            className="inline-flex min-h-11 items-center border border-neutral-300 px-4 text-sm font-semibold hover:bg-neutral-100"
-          >
-            이 수업 내용 편집
-          </Link>
+          <div className="flex flex-wrap gap-2">
+            {s.id === "S06" && s.detailsPublished && (
+              <Link
+                to="/feedback"
+                search={{ week: 6, view: "materials" }}
+                className="inline-flex min-h-11 items-center border border-black px-4 text-sm font-semibold hover:bg-neutral-100"
+              >
+                학생별 조사 시트 확인
+              </Link>
+            )}
+            <Link
+              to="/admin"
+              search={{ tab: "sessions", session: s.id }}
+              className="inline-flex min-h-11 items-center border border-neutral-300 px-4 text-sm font-semibold hover:bg-neutral-100"
+            >
+              이 수업 내용 편집
+            </Link>
+          </div>
         )}
       </div>
       {lesson ? (
-        <header className={s.id === "S07" ? "mb-3" : "mb-6"}>
+        <header className={hasWorkbook ? "mb-3" : "mb-6"}>
           <p className="text-xs font-semibold leading-relaxed text-muted-foreground">
-            {s.id === "S07" ? "CLASS 07 · 단계별 실습 워크북" : `${s.number}회차 · ${lesson.cycle}`}
+            {hasWorkbook ? `CLASS ${s.id.slice(1)} · 단계별 실습 워크북` : `${s.number}회차 · ${lesson.cycle}`}
           </p>
           <h1 className="mt-2 break-keep text-2xl font-bold leading-tight tracking-tight [overflow-wrap:anywhere] sm:text-3xl">
-            {s.id === "S07" ? "7회차 · " : ""}
+            {hasWorkbook ? `${s.number}회차 · ` : ""}
             {s.managed ? s.title : lesson.project}
           </h1>
           {s.managed && lesson.project.trim() && lesson.project.trim() !== s.title.trim() && (
@@ -95,13 +108,13 @@ function Detail() {
         <PageHeader title={`${s.number}회차`} description={s.title} />
       )}
       <Panel
-        className={`flex flex-wrap items-center justify-between gap-4 ${s.id === "S07" ? "border-0 bg-transparent p-0 sm:p-0" : ""}`}
+        className={`flex flex-wrap items-center justify-between gap-4 ${hasWorkbook ? "border-0 bg-transparent p-0 sm:p-0" : ""}`}
       >
-        <div className={s.id === "S07" ? "flex flex-wrap items-center gap-x-4 gap-y-1" : undefined}>
-          <p className={s.id === "S07" ? "text-sm text-muted-foreground" : "text-lg"}>
+        <div className={hasWorkbook ? "flex flex-wrap items-center gap-x-4 gap-y-1" : undefined}>
+          <p className={hasWorkbook ? "text-sm text-muted-foreground" : "text-lg"}>
             {formatDateKo(s.date)}
           </p>
-          <p className={`${s.id === "S07" ? "" : "mt-1 "}text-sm text-muted-foreground`}>
+          <p className={`${hasWorkbook ? "" : "mt-1 "}text-sm text-muted-foreground`}>
             {s.startTime} ~ {s.endTime} (한국 시간)
           </p>
         </div>
@@ -117,6 +130,7 @@ function Detail() {
         <PublishedAnnouncements sessionNumber={s.number} />
       </div>
       {s.detailsPublished && <WeekFourResources sessionId={s.id} />}
+      {s.detailsPublished && s.id === "S06" && <WeekSixResources />}
       {s.detailsPublished && <WeekSevenResources sessionId={s.id} />}
       {!!materials.length && (
         <section className="mt-6" aria-labelledby="session-materials-title">
@@ -219,26 +233,7 @@ function Detail() {
           </div>
         </section>
       )}
-      {lesson && s.id === "S06" && !s.managed ? (
-        <section
-          className="mt-6 border border-neutral-200 px-5 py-6"
-          aria-labelledby="session-moved-title"
-        >
-          <h2 id="session-moved-title" className="text-lg font-semibold">
-            실습 자료 이동 안내
-          </h2>
-          <p className="mt-3 text-sm leading-7 text-neutral-600">
-            OPIc·TOEIC 학습 서비스 제작 실습과 STEP 1~5 프롬프트는 7회차로 이동했습니다.
-          </p>
-          <Link
-            to="/sessions/$id"
-            params={{ id: "S07" }}
-            className="mt-4 inline-flex min-h-11 items-center justify-center border border-black bg-black px-5 text-sm font-semibold text-white hover:bg-neutral-800 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-black"
-          >
-            7회차 실습 바로가기
-          </Link>
-        </section>
-      ) : lesson && s.id !== "S07" ? (
+      {lesson && !hasWorkbook ? (
         <SessionCurriculum lesson={lesson} />
       ) : !s.detailsPublished ? (
         <div className="mt-5">

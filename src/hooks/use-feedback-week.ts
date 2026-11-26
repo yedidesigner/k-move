@@ -1,16 +1,22 @@
 import { useEffect, useRef, useState } from "react";
-import { currentFeedbackWeek } from "@/lib/feedback-week";
 import { currentPublishedSession } from "@/lib/content-model";
 import { usePublishedSessions } from "@/lib/published-content";
 import { seoulToday } from "@/data/schedule";
 
 export function useFeedbackWeek() {
   const sessions = usePublishedSessions();
-  const [week, setSelectedWeek] = useState(() => currentPublishedSession(sessions, seoulToday()));
+  const [linkedWeek] = useState(() => {
+    if (typeof window === "undefined") return undefined;
+    const requested = new URLSearchParams(window.location.search).get("week");
+    return sessions.find((session) => String(session.number) === requested)?.number;
+  });
+  const [week, setSelectedWeek] = useState(
+    () => linkedWeek ?? currentPublishedSession(sessions, seoulToday()),
+  );
   const [currentWeek, setCurrentWeek] = useState(() =>
     currentPublishedSession(sessions, seoulToday()),
   );
-  const chosen = useRef(false);
+  const chosen = useRef(linkedWeek !== undefined);
   const hydrated = useRef(false);
   function setWeek(value: number) {
     chosen.current = true;
