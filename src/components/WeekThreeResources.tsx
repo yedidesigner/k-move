@@ -49,7 +49,8 @@ function AiStudioTutorialFrame() {
 
 /** Session 03 keeps the brand/Notebook material; the Google AI Studio tutorial belongs to Session 04. */
 export function WeekThreeResources({ sessionId }: { sessionId: string }) {
-  const { status } = useAuth();
+  const { status, isStudentPreview } = useAuth();
+  const tutorialUrl = isStudentPreview ? TUTORIAL_URL + "&preview=1" : TUTORIAL_URL;
   const allowed = status === "student" || status === "instructor";
   const sessionThree = sessionId === "S03";
   const sessionFour = sessionId === "S04";
@@ -93,7 +94,7 @@ export function WeekThreeResources({ sessionId }: { sessionId: string }) {
           </div>
           <div className="flex flex-wrap gap-3">
             <a
-              href={TUTORIAL_URL}
+              href={tutorialUrl}
               target="_blank"
               rel="noopener noreferrer"
               className="inline-flex min-h-11 items-center justify-center border border-black bg-black px-5 py-3 text-sm font-semibold text-white hover:bg-neutral-800"
@@ -101,7 +102,7 @@ export function WeekThreeResources({ sessionId }: { sessionId: string }) {
               튜토리얼 새 창에서 열기 ↗
             </a>
             <a
-              href={`${TUTORIAL_URL}#tools`}
+              href={`${tutorialUrl}#tools`}
               target="_blank"
               rel="noopener noreferrer"
               className="inline-flex min-h-11 items-center justify-center border border-neutral-300 px-5 py-3 text-sm font-semibold hover:bg-neutral-50"

@@ -24,10 +24,10 @@ function HomePage() {
 }
 
 function RoleHome() {
-  const { status } = useAuth();
+  const { status, canChooseView } = useAuth();
   const [preview, setPreview] = useState(false);
   if (status === "instructor" && !preview)
-    return <InstructorHome onPreview={() => setPreview(true)} />;
+    return <InstructorHome onPreview={canChooseView ? undefined : () => setPreview(true)} />;
   return (
     <>
       {preview && (

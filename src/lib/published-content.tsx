@@ -9,7 +9,7 @@ import {
   type ReactNode,
 } from "react";
 import { useAuth } from "@/lib/auth";
-import { latestPublications, listContentPublications } from "@/lib/instructor-api";
+import { latestPublications, listContentPublications, listStudentPublications } from "@/lib/instructor-api";
 import {
   mergeGlossary,
   mergeGuides,
@@ -39,7 +39,7 @@ const Context = createContext<PublishedState>({ ...baseline, reload: async () =>
 
 /** Auth-keyed by the application. An unavailable publication index never exposes a hidden baseline. */
 export function PublishedContentProvider({ children }: { children: ReactNode }) {
-  const { user, status } = useAuth();
+  const { user, status, isStudentPreview } = useAuth();
   const [rows, setRows] = useState<PublishedContentRow[]>([]);
   const [loaded, setLoaded] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -48,7 +48,7 @@ export function PublishedContentProvider({ children }: { children: ReactNode }) 
   const reload = useCallback(async () => {
     const request = ++generation.current;
     try {
-      const publications = await listContentPublications();
+      const publications = isStudentPreview ? await listStudentPublications() : await listContentPublications();
       if (!mounted.current || request !== generation.current) return;
       setRows(latestPublications(publications));
       setLoaded(true);
@@ -57,7 +57,7 @@ export function PublishedContentProvider({ children }: { children: ReactNode }) 
       if (mounted.current && request === generation.current)
         setError("공개된 학습 내용을 불러오지 못했습니다. 다시 시도해 주세요.");
     }
-  }, []);
+  }, [isStudentPreview]);
   useEffect(() => {
     mounted.current = true;
     if (!user || !["student", "instructor"].includes(status)) return;

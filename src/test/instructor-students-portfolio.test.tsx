@@ -207,6 +207,18 @@ describe("instructor student management", () => {
 });
 
 describe("portfolio versions and private identity", () => {
+  it("shows the empty student portfolio without reading or writing real records in preview", () => {
+    Object.assign(state.auth, { status: "student", isStudentPreview: true });
+    render(<PortfolioManager />);
+    expect(screen.getByText("등록된 프로젝트가 없습니다.")).toBeVisible();
+    expect(screen.getByRole("button", { name: "프로젝트 추가" })).toBeDisabled();
+    expect(screen.queryByText("기존 개인 폴더")).not.toBeInTheDocument();
+    expect(state.listEnrollments).not.toHaveBeenCalled();
+    expect(state.listPortfolioVersions).not.toHaveBeenCalled();
+    expect(state.loadStudentFolders).not.toHaveBeenCalled();
+    expect(state.appendPortfolioVersion).not.toHaveBeenCalled();
+  });
+
   it("filters unexpected peer data and shows only the student's folder and project", async () => {
     state.auth = { status: "student", user: { id: "student-a" } };
     render(<PortfolioManager />);

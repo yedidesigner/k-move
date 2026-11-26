@@ -8,8 +8,8 @@ import {
 } from "@/lib/practice";
 
 export function usePracticeRoom(sessionNumber: number) {
-  const { user } = useAuth();
-  const userId = user?.id;
+  const { user, isStudentPreview } = useAuth();
+  const userId = isStudentPreview ? undefined : user?.id;
   const [messages, setMessages] = useState<PracticeMessage[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -118,14 +118,17 @@ export function usePracticeRoom(sessionNumber: number) {
   }, [userId, sessionNumber, accept, reload]);
 
   const edit = useCallback(async (id: string, body: string) => {
+    if (!userId) return;
     accept(await editPracticeMessage(id, sessionNumber, body));
-  }, [accept, sessionNumber]);
+  }, [accept, sessionNumber, userId]);
   const remove = useCallback(async (id: string) => {
+    if (!userId) return;
     accept(await deletePracticeMessage(id, sessionNumber));
-  }, [accept, sessionNumber]);
+  }, [accept, sessionNumber, userId]);
   const togglePin = useCallback(async (id: string, pinned: boolean) => {
+    if (!userId) return;
     accept(await pinPracticeMessage(id, sessionNumber, pinned));
-  }, [accept, sessionNumber]);
+  }, [accept, sessionNumber, userId]);
 
   return { messages, loading, error, connected, reload, send, edit, remove, togglePin };
 }

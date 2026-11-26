@@ -1,4 +1,5 @@
 import { createFileRoute, Outlet, useLocation } from "@tanstack/react-router";
+import { InstructorView } from "@/components/InstructorView";
 import { AppShell } from "@/components/AppShell";
 import { Spinner } from "@/components/lms";
 import { AuthRedirect } from "@/components/AuthRedirect";
@@ -11,9 +12,21 @@ export const Route = createFileRoute("/_app")({
 });
 
 function AppLayout() {
-  const { status, user, needsPinSetup } = useAuth();
+  const { status, user, canChooseView } = useAuth();
+  if (status === "loading") return <Spinner />;
+  if (canChooseView && user) {
+    const session = user.id + ":" + (user.last_sign_in_at ?? "");
+    return <InstructorView key={session} session={session}><ProtectedWorkspace /></InstructorView>;
+  }
+  return <ProtectedWorkspace />;
+}
+
+function ProtectedWorkspace() {
+  const { status, user, needsPinSetup, isStudentPreview } = useAuth();
   const location = useLocation();
   if (status === "loading") return <Spinner />;
+  if (isStudentPreview && ["/admin", "/password"].includes(location.pathname.replace(/\/+$/, "")))
+    return <AuthRedirect to="/" />;
   if (status === "student" && needsPinSetup && location.pathname.replace(/\/+$/, "") !== "/password") {
     return <AuthRedirect to="/password" />;
   }

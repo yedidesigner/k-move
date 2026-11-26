@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { latestPublications, listContentPublications, listSubmissionAssets, listAssignmentTargets, type ContentPublication } from "@/lib/instructor-api";
+import { latestPublications, listContentPublications, listStudentPublications, listSubmissionAssets, listAssignmentTargets, type ContentPublication } from "@/lib/instructor-api";
 
 const queryState = vi.hoisted(() => ({
   pages: [] as Array<{ data: unknown[] | null; error: { message: string } | null }>,
@@ -13,6 +13,8 @@ vi.mock("@/lib/supabase", () => ({
       const chain = {
         select: () => chain,
         order: (column:string) => {call.order.push(column);return chain;},
+        is: (column:string,value:null) => {call.filters.push([column,`is.${value}`]);return chain;},
+        lte: (column:string,value:string) => {call.filters.push([column,`lte.${value}`]);return chain;},
         eq: (column:string,value:string) => {call.filters.push([column,value]);return chain;},
         range: (start:number,end:number) => {call.range=[start,end];return Promise.resolve(queryState.pages.shift() ?? {data:[],error:null});},
       };
@@ -71,6 +73,19 @@ describe("Complete instructor data reads",()=>{
       expect(call.filters).toEqual([["kind","glossary"]]);
     }
   });
+  it("filters cancelled and scheduled publications on every student preview page", async () => {
+    queryState.pages = [
+      { data: Array.from({ length: 500 }, (_, i) => ({ id: String(i) })), error: null },
+      { data: [], error: null },
+    ];
+    await listStudentPublications();
+    expect(queryState.calls).toHaveLength(2);
+    for (const call of queryState.calls) {
+      expect(call.table).toBe("kmove_content_publications");
+      expect(call.filters).toEqual([["cancelled_at", "is.null"], ["published_at", "lte.now"]]);
+    }
+  });
+
   it("rejects a later-page failure instead of displaying incomplete counts",async()=>{
     queryState.pages=[{data:Array.from({length:500},(_,i)=>({id:`asset-${i}`})),error:null},{data:null,error:{message:"connection interrupted"}}];
     await expect(listSubmissionAssets()).rejects.toThrow("connection interrupted");

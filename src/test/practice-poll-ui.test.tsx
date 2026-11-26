@@ -3,7 +3,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { PracticePolls } from "@/components/PracticePolls";
 
 const mocks = vi.hoisted(() => ({
-  auth: { status: "student", user: { id: "student-a" } },
+  auth: { status: "student", isStudentPreview: false, user: { id: "student-a" } },
   polls: vi.fn(),
   winners: vi.fn(),
   myVote: vi.fn(),
@@ -59,6 +59,7 @@ const poll = {
 
 beforeEach(() => {
   mocks.auth.status = "student";
+  mocks.auth.isStudentPreview = false;
   mocks.polls.mockReset().mockResolvedValue([poll]);
   mocks.winners.mockReset().mockResolvedValue([]);
   mocks.myVote.mockReset().mockResolvedValue(null);
@@ -83,6 +84,15 @@ afterEach(() => {
 });
 
 describe("Practice poll self-vote and completion interface", () => {
+  it("previews the poll tab without reading votes, candidates or letters", () => {
+    mocks.auth.isStudentPreview = true;
+    render(<PracticePolls sessionNumber={24} />);
+    expect(screen.getByText("수강생 투표 미리보기")).toBeVisible();
+    expect(screen.getByRole("button", { name: "새로고침" })).toBeDisabled();
+    for (const read of [mocks.polls, mocks.winners, mocks.myVote, mocks.candidates, mocks.winnerLetters])
+      expect(read).not.toHaveBeenCalled();
+  });
+
   it("shows a heart popup for self-vote and only permits another student's radio selection", async () => {
     render(<PracticePolls sessionNumber={24} />);
     const self = await screen.findByRole("radio", { name: "수강생가" });

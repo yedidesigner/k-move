@@ -29,7 +29,7 @@ const savedAtFormat = new Intl.DateTimeFormat("ko-KR", {
   timeStyle: "short",
 });
 
-function PersonalPromise({ userId, displayName }: { userId: string; displayName: string }) {
+function PersonalPromise({ userId, displayName }: { userId: string | null; displayName: string }) {
   const [saved, setSaved] = useState<SavedPromise | null>(null);
   const [draft, setDraft] = useState("");
   const [loading, setLoading] = useState(true);
@@ -53,6 +53,11 @@ function PersonalPromise({ userId, displayName }: { userId: string; displayName:
   }, []);
 
   useEffect(() => {
+    if (!userId) {
+      setEditing(true);
+      setLoading(false);
+      return;
+    }
     let active = true;
     setLoading(true);
     setLoadError(false);
@@ -95,7 +100,7 @@ function PersonalPromise({ userId, displayName }: { userId: string; displayName:
 
   async function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    if (saveInFlight.current || loading || loadError) return;
+    if (!userId || saveInFlight.current || loading || loadError) return;
     setSaveError("");
     setSavedMessage("");
     const content = draft.trim();
@@ -188,7 +193,7 @@ function PersonalPromise({ userId, displayName }: { userId: string; displayName:
             }}
             rows={4}
             maxLength={MAX_PROMISE_LENGTH}
-            disabled={saving}
+            disabled={saving || !userId}
             aria-describedby={saveError ? "promise-help promise-count promise-error" : "promise-help promise-count"}
             aria-invalid={Boolean(saveError)}
             placeholder="예: 작은 도전도 꾸준히 이어 가겠습니다."
@@ -206,7 +211,7 @@ function PersonalPromise({ userId, displayName }: { userId: string; displayName:
             {saved && (
               <button
                 type="button"
-                disabled={saving}
+                disabled={saving || !userId}
                 onClick={cancelEditing}
                 className={`min-h-11 border border-border bg-background px-5 text-sm font-medium transition-colors hover:bg-muted disabled:opacity-50 ${focusStyle}`}
               >
@@ -215,7 +220,7 @@ function PersonalPromise({ userId, displayName }: { userId: string; displayName:
             )}
             <button
               type="submit"
-              disabled={saving}
+              disabled={saving || !userId}
               className={`inline-flex min-h-11 items-center justify-center gap-2 bg-primary px-5 text-sm font-semibold text-primary-foreground transition-opacity hover:opacity-85 disabled:opacity-50 ${focusStyle}`}
             >
               {saving && <RefreshCw className="size-4 animate-spin" aria-hidden="true" />}
@@ -252,7 +257,7 @@ function PersonalPromise({ userId, displayName }: { userId: string; displayName:
 }
 
 export function OurPromises() {
-  const { user } = useAuth();
+  const { user, isStudentPreview } = useAuth();
   const username = user?.user_metadata?.["username"];
   const displayName = typeof username === "string" ? username : "";
 
@@ -276,7 +281,7 @@ export function OurPromises() {
         <li className="mt-6 flex items-start gap-4 border border-foreground bg-card p-5 sm:gap-6 sm:p-6">
           <span aria-hidden="true" className="w-7 shrink-0 pt-0.5 text-sm font-semibold tabular-nums sm:w-8">10</span>
           {user ? (
-            <PersonalPromise key={user.id} userId={user.id} displayName={displayName} />
+            <PersonalPromise key={isStudentPreview ? "preview" : user.id} userId={isStudentPreview ? null : user.id} displayName={isStudentPreview ? "" : displayName} />
           ) : (
             <p className="text-sm leading-relaxed">로그인하면 나의 열 번째 약속을 작성할 수 있습니다.</p>
           )}

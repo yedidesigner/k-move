@@ -7,6 +7,8 @@ export type AuthStatus = "loading" | "notConfigured" | "signedOut" | "student" |
 
 interface AuthState {
   status: AuthStatus;
+  canChooseView: boolean;
+  isStudentPreview: boolean;
   user: User | null;
   errorDetail: string | null;
   needsPinSetup: boolean;
@@ -16,6 +18,15 @@ interface AuthState {
 }
 
 const Ctx = createContext<AuthState | null>(null);
+export const instructorViewKey = "kmove-instructor-view";
+
+function clearInstructorView() {
+  try {
+    window.sessionStorage.removeItem(instructorViewKey);
+  } catch {
+    // Storage may be disabled in the browser.
+  }
+}
 
 function normalizeLoginId(loginId: string) {
   return loginId.trim().normalize("NFKC").toLocaleLowerCase("ko-KR");
@@ -39,6 +50,7 @@ async function internalCredentials(loginId: string, password: string) {
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [status, setStatus] = useState<AuthStatus>("loading");
+  const [viewOwner, setViewOwner] = useState<string | null>(null);
   const [user, setUser] = useState<User | null>(null);
   const [errorDetail, setErrorDetail] = useState<string | null>(null);
   const [needsPinSetup, setNeedsPinSetup] = useState(false);
@@ -64,6 +76,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         setNeedsPinSetup(false);
         verifiedUserId = null;
         verifiedRole = null;
+        setViewOwner(null);
         setStatus("signedOut");
         return;
       }
@@ -85,7 +98,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           try {
             const { data, error } = await supabase
               .from("kmove_profiles")
-              .select("role")
+              .select("role,username")
               .eq("id", nextUser.id)
               .maybeSingle();
             if (!active || request !== generation) return;
@@ -105,6 +118,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
               // setup-check failure must not lock the student out of recovery.
               setupRequired = !setupError && needsSetup === true;
             }
+            setViewOwner(data.role === "instructor" && data.username === "강예지" ? nextUser.id : null);
             setNeedsPinSetup(setupRequired);
             verifiedUserId = nextUser.id;
             verifiedRole = data.role === "instructor" ? "instructor" : "student";
@@ -145,6 +159,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const signIn = useCallback(async (loginId: string, password: string) => {
+    clearInstructorView();
     const credentials = await internalCredentials(loginId, password);
     const db = getSupabase();
     const { error } = await db.auth.signInWithPassword({
@@ -201,6 +216,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const signOut = useCallback(async () => {
     await signOutSupabase();
+    clearInstructorView();
     setUser(null);
     setNeedsPinSetup(false);
     setErrorDetail(null);
@@ -210,11 +226,17 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     window.location.replace("/login");
   }, []);
 
-  return <Ctx.Provider value={{ status, user, errorDetail, needsPinSetup, signIn, signOut, changePassword }}>{children}</Ctx.Provider>;
+  return <Ctx.Provider value={{ status, canChooseView: status === "instructor" && !!user && user.id === viewOwner, isStudentPreview: false, user, errorDetail, needsPinSetup, signIn, signOut, changePassword }}>{children}</Ctx.Provider>;
 }
 
 export function useAuth() {
   const value = useContext(Ctx);
   if (!value) throw new Error("useAuth outside AuthProvider");
   return value;
+}
+
+export function StudentPreviewProvider({ children }: { children: ReactNode }) {
+  const auth = useAuth();
+  if (!auth.canChooseView) return null;
+  return <Ctx.Provider value={{ ...auth, status: "student", isStudentPreview: true }}>{children}</Ctx.Provider>;
 }

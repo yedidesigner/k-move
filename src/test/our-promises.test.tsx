@@ -22,7 +22,7 @@ interface TestUser {
   user_metadata: { username: string };
 }
 
-const auth = vi.hoisted(() => ({ user: null as TestUser | null }));
+const auth = vi.hoisted(() => ({ user: null as TestUser | null, isStudentPreview: false }));
 const database = vi.hoisted(() => ({ read: vi.fn(), write: vi.fn() }));
 
 vi.mock("@/lib/auth", () => ({ useAuth: () => auth }));
@@ -64,6 +64,7 @@ function deferred<T>() {
 }
 
 beforeEach(() => {
+  auth.isStudentPreview = false;
   auth.user = studentA;
   serverRows.clear();
   database.read.mockReset().mockImplementation(async (userId: string): Promise<DatabaseResult> => ({
@@ -83,6 +84,17 @@ function changePromise(content: string) {
 }
 
 describe("Our promises and each student's personal tenth promise", () => {
+  it("previews the form without reading or modifying the instructor's promise", () => {
+    auth.isStudentPreview = true;
+    render(<OurPromises />);
+    expect(screen.getByRole("textbox")).toBeDisabled();
+    const save = screen.getByRole("button", { name: "약속 저장" });
+    expect(save).toBeDisabled();
+    fireEvent.submit(save.closest("form")!);
+    expect(database.read).not.toHaveBeenCalled();
+    expect(database.write).not.toHaveBeenCalled();
+  });
+
   it("preserves all nine supplied statements and provides a tenth writing area", async () => {
     render(<OurPromises />);
     await screen.findByRole("textbox", { name: "첫 번째 수강생님의 약속" });

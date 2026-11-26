@@ -95,7 +95,8 @@ export function AssignmentWorkspace({
 }: {
   presentation?: "assignments" | "feedback";
 }) {
-  const { user, status } = useAuth();
+  const { user, status, isStudentPreview } = useAuth();
+  if (isStudentPreview) return <StudentFeedbackPreview />;
   if (!user || (status !== "instructor" && status !== "student"))
     return <p className="p-6 text-sm">로그인 정보를 확인하고 있습니다.</p>;
   return (
@@ -105,6 +106,27 @@ export function AssignmentWorkspace({
       instructor={status === "instructor"}
       feedback={presentation === "feedback"}
     />
+  );
+}
+
+function StudentFeedbackPreview() {
+  const sessions = usePublishedSessions();
+  const { week, currentWeek, setWeek } = useFeedbackWeek();
+  return (
+    <FeedbackDocument
+      week={week}
+      currentWeek={currentWeek}
+      sessions={sessions}
+      onWeekChange={setWeek}
+      name="내 피드백"
+      description="자료를 모아 제출하고, 강사의 피드백과 수정 이력을 확인하세요."
+    >
+      <section className="iw-section" aria-labelledby="preview-uploads">
+        <h2 id="preview-uploads" className="iw-section-title">과제와 피드백 자료 업로드</h2>
+        <p className="iw-muted my-4">학생 미리보기에서는 개인 제출물과 피드백을 표시하지 않습니다.</p>
+        <button type="button" className="iw-button" disabled>자료 업로드</button>
+      </section>
+    </FeedbackDocument>
   );
 }
 

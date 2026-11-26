@@ -1,10 +1,11 @@
 import { cleanup, fireEvent, render, screen, waitFor, within } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { AssignmentWorkspace } from "@/components/instructor/AssignmentWorkspace";
+import { listAssignments } from "@/lib/instructor-api";
 import type { Assignment, AssignmentTarget, Enrollment, Submission } from "@/lib/instructor-api";
 
 const state = vi.hoisted(() => ({
-  auth: { status: "instructor", user: { id: "teacher" } },
+  auth: { status: "instructor", user: { id: "teacher" } } as { status: string; user: { id: string }; isStudentPreview?: boolean },
   assignments: [] as Assignment[],
   targets: [] as AssignmentTarget[],
   enrollments: [] as Enrollment[],
@@ -36,7 +37,7 @@ vi.mock("@/lib/published-content", () => ({
   usePublishedSessions: () => state.sessions,
 }));
 vi.mock("@/lib/instructor-api", () => ({
-  listAssignments: async () => state.assignments,
+  listAssignments: vi.fn(async () => state.assignments),
   listAssignmentTargets: async () => state.targets,
   listEnrollments: async () => state.enrollments,
   listSubmissions: async () => state.submissions,
@@ -174,6 +175,16 @@ beforeEach(() => {
 afterEach(cleanup);
 
 describe("feedback paper presentation", () => {
+  it("lets the instructor browse preview weeks without mounting student records or upload controls", () => {
+    state.auth = { status: "student", user: { id: "teacher" }, isStudentPreview: true };
+    render(<AssignmentWorkspace presentation="feedback" />);
+    fireEvent.click(screen.getByRole("button", { name: "3주차 피드백 보기" }));
+    expect(screen.getByText("WEEK 03", { exact: true })).toBeVisible();
+    expect(screen.getByRole("button", { name: "자료 업로드" })).toBeDisabled();
+    expect(screen.queryByText("본인 Drive 폴더")).not.toBeInTheDocument();
+    expect(listAssignments).not.toHaveBeenCalled();
+  });
+
   it("keeps the ordinary assignment workspace presentation unchanged", async () => {
     render(<AssignmentWorkspace />);
     expect(await screen.findByRole("heading", { name: "과제·피드백" })).toBeVisible();

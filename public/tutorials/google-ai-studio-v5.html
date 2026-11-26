@@ -3,7 +3,10 @@
 <script>
 (async()=>{
   'use strict';
-  const storageScript=`<script>window.kmoveTutorialStorage={memory:{},getItem:function(k){try{return localStorage.getItem(k)}catch(e){return this.memory[k]||null}},setItem:function(k,v){try{localStorage.setItem(k,v)}catch(e){this.memory[k]=String(v)}},removeItem:function(k){try{localStorage.removeItem(k)}catch(e){delete this.memory[k]}}};<\/script>`;
+  const temporary = new URLSearchParams(location.search).get('preview') === '1';
+  const storageScript = temporary
+    ? '<script>window.kmoveTutorialStorage={memory:{},getItem(k){return this.memory[k]??null},setItem(k,v){this.memory[k]=String(v)},removeItem(k){delete this.memory[k]}};<\/script>'
+    : `<script>window.kmoveTutorialStorage={memory:{},getItem:function(k){try{return localStorage.getItem(k)}catch(e){return this.memory[k]||null}},setItem:function(k,v){try{localStorage.setItem(k,v)}catch(e){this.memory[k]=String(v)}},removeItem:function(k){try{localStorage.removeItem(k)}catch(e){delete this.memory[k]}}};<\/script>`;
   try{
     const response=await fetch('/tutorials/google-ai-studio-base-v6.html',{cache:'no-store'});
     if(!response.ok)throw new Error('tutorial-unavailable');

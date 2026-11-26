@@ -35,23 +35,26 @@ const actionClass =
 const primaryClass = `${actionClass} border-black bg-black text-white hover:bg-neutral-800`;
 
 export function PortfolioManager() {
-  const { user, status } = useAuth();
+  const { user, status, isStudentPreview } = useAuth();
   if (!user || (status !== "student" && status !== "instructor"))
     return <Spinner label="로그인 상태 확인 중" />;
   return (
     <PortfolioWorkspace
-      key={`${user.id}:${status}`}
+      key={`${user.id}:${isStudentPreview ? "student-preview" : status}`}
       userId={user.id}
-      instructor={status === "instructor"}
+      instructor={status === "instructor" && !isStudentPreview}
+      preview={isStudentPreview}
     />
   );
 }
 
-function PortfolioWorkspace({ userId, instructor }: { userId: string; instructor: boolean }) {
+function PortfolioWorkspace({
+  userId, instructor, preview,
+}: { userId: string; instructor: boolean; preview: boolean }) {
   const [enrollments, setEnrollments] = useState<Enrollment[]>([]);
   const [versions, setVersions] = useState<PortfolioVersion[]>([]);
   const [folders, setFolders] = useState<StudentFolder[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(!preview);
   const [error, setError] = useState("");
   const [reload, setReload] = useState(0);
   const [selectedUser, setSelectedUser] = useState(instructor ? "" : userId);
@@ -63,6 +66,7 @@ function PortfolioWorkspace({ userId, instructor }: { userId: string; instructor
   const [notice, setNotice] = useState("");
 
   useEffect(() => {
+    if (preview) return;
     let active = true;
     setError("");
     void Promise.all([
@@ -105,7 +109,7 @@ function PortfolioWorkspace({ userId, instructor }: { userId: string; instructor
     return () => {
       active = false;
     };
-  }, [instructor, userId, reload]);
+  }, [instructor, userId, reload, preview]);
 
   useBlocker({
     disabled: !dirty,
@@ -142,7 +146,9 @@ function PortfolioWorkspace({ userId, instructor }: { userId: string; instructor
     setNotice("");
   }
 
-  const selectedStudent = enrollments.find((student) => student.user_id === selectedUser);
+  const selectedStudent = preview
+    ? { name: "미리보기 학생", status: "active" }
+    : enrollments.find((student) => student.user_id === selectedUser);
   const studentVersions = versions
     .filter((version) => version.user_id === selectedUser)
     .sort((a, b) => b.version - a.version || b.created_at.localeCompare(a.created_at));
@@ -161,7 +167,7 @@ function PortfolioWorkspace({ userId, instructor }: { userId: string; instructor
     : [];
   const folder = folders.find((item) => item.user_id === selectedUser);
   const folderUrl = folder?.sharing_ready ? safeExternalUrl(folder.portfolio_folder_url) : null;
-  const canAppend = selectedStudent?.status === "active";
+  const canAppend = !preview && selectedStudent?.status === "active";
 
   return (
     <div className="space-y-6 text-neutral-950">
@@ -270,7 +276,7 @@ function PortfolioWorkspace({ userId, instructor }: { userId: string; instructor
                       </button>
                     </div>
                   </div>
-                  {!folder?.sharing_ready && (
+                  {!preview && !folder?.sharing_ready && (
                     <p className="border-l-2 border-neutral-400 pl-3 text-sm leading-6 text-neutral-600">
                       개인 Drive 공유 권한 확인이 필요합니다. 접근 가능한 Figma·웹사이트 링크로도
                       작업 버전을 기록할 수 있습니다.
@@ -282,7 +288,7 @@ function PortfolioWorkspace({ userId, instructor }: { userId: string; instructor
                       검토할 버전의 링크를 아래에 등록해 주세요.
                     </p>
                   )}
-                  {!canAppend && (
+                  {selectedStudent.status === "completed" && (
                     <p className="border border-neutral-200 p-4 text-sm text-neutral-600">
                       수강 종료된 학생의 기록입니다. 저장된 버전은 계속 확인할 수 있습니다.
                     </p>
@@ -292,7 +298,7 @@ function PortfolioWorkspace({ userId, instructor }: { userId: string; instructor
                       {notice}
                     </p>
                   )}
-                  {editorOpen && (
+                  {!preview && editorOpen && (
                     <PortfolioEditor
                       key={`${selectedUser}:${newProject ? "new" : (selectedProject?.id ?? "empty")}`}
                       userId={selectedUser}

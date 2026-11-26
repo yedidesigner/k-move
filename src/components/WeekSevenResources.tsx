@@ -37,9 +37,10 @@ const stages = [
 ];
 
 export function WeekSevenResources({ sessionId }: { sessionId: string }) {
-  const { user } = useAuth();
+  const { user, isStudentPreview } = useAuth();
+  const userId = isStudentPreview ? null : user?.id ?? null;
   if (sessionId !== "S07") return null;
-  return <WeekSevenWorkbook key={user?.id ?? "session"} userId={user?.id ?? null} />;
+  return <WeekSevenWorkbook key={userId ?? "session"} userId={userId} />;
 }
 
 /** Student-facing workbook view; the session route retains the existing auth boundary. */

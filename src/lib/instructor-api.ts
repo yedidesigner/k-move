@@ -26,12 +26,17 @@ export interface PortfolioInput { user_id:string; project_key:string; title:stri
 
 function fail(error: {message:string;code?:string}|null) { if(error) throw new Error(error.message); }
 const READ_KEYS:Record<string,string[]>={kmove_enrollments:["user_id"],kmove_assignment_targets:["assignment_id","user_id"],kmove_submission_drafts:["assignment_id","user_id"],kmove_review_drafts:["submission_id"],kmove_feedback_reads:["publication_id","user_id"],kmove_content_drafts:["kind","content_key"],kmove_student_notes:["user_id"]};
-async function rows<T>(table:string, order:string,filter?:{column:string;value:string}):Promise<T[]> {
+async function rows<T>(table:string, order:string,filter?:{column:string;value:string} | "published"):Promise<T[]> {
   const collected:T[]=[];const pageSize=500;
   for(let offset=0;;offset+=pageSize){
     let query=getSupabase().from(table).select("*").order(order);
     for(const key of READ_KEYS[table]??["id"])if(key!==order)query=query.order(key);
-    if(filter)query=query.eq(filter.column,filter.value);
+    if (filter === "published") {
+      // Match the student publication policy using the database clock.
+      query = query.is("cancelled_at", null).lte("published_at", "now");
+    } else if (filter) {
+      query = query.eq(filter.column, filter.value);
+    }
     const {data,error}=await query.range(offset,offset+pageSize-1);fail(error);
     const page=(data??[]) as T[];collected.push(...page);if(page.length<pageSize)return collected;
   }
@@ -48,6 +53,8 @@ export const listReviewPublications=()=>rows<ReviewPublication>("kmove_review_pu
 export const listFeedbackReads=()=>rows<FeedbackRead>("kmove_feedback_reads","read_at");
 export const listContentDrafts=()=>rows<ContentDraft>("kmove_content_drafts","updated_at");
 export const listContentPublications=(kind?:ContentKind)=>rows<ContentPublication>("kmove_content_publications","published_at",kind?{column:"kind",value:kind}:undefined);
+export const listStudentPublications = () =>
+  rows<ContentPublication>("kmove_content_publications", "published_at", "published");
 export const listPortfolioVersions=()=>rows<PortfolioVersion>("kmove_portfolio_versions","created_at");
 export const listStudentNotes=()=>rows<StudentNote>("kmove_student_notes","updated_at");
 export function latestPublications(items:ContentPublication[],now:Date=new Date()):ContentPublication[] { const map=new Map<string,ContentPublication>();for(const item of items){if(item.cancelled_at||new Date(item.published_at)>now)continue;const key=`${item.kind}:${item.content_key}`;const previous=map.get(key);if(!previous||item.version>previous.version||(item.version===previous.version&&item.published_at>previous.published_at))map.set(key,item);}return [...map.values()]; }

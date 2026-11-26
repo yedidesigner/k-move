@@ -46,7 +46,7 @@ const INSTRUCTOR_NAV = [
 ] as const;
 
 export function AppShell({ children }: { children: ReactNode }) {
-  const { status, user, signOut } = useAuth();
+  const { status, user, signOut, isStudentPreview } = useAuth();
   const instructor = status === "instructor";
   const location = useLocation();
   const [collapsed, setCollapsed] = useState(false);
@@ -68,7 +68,7 @@ export function AppShell({ children }: { children: ReactNode }) {
       : instructor && path === "/admin"
         ? location.pathname === "/admin" && activeTab !== "settings"
         : location.pathname.startsWith(path);
-  const accountName = user?.user_metadata?.["username"] ?? user?.email;
+  const accountName = isStudentPreview ? "미리보기 학생" : user?.user_metadata?.["username"] ?? user?.email;
   async function logout() {
     if (logoutInFlight.current) return;
     logoutInFlight.current = true;
@@ -187,14 +187,14 @@ export function AppShell({ children }: { children: ReactNode }) {
               )}
             </p>
           )}
-          <Link
+          {!isStudentPreview && <Link
             to="/password"
             title="비밀번호 변경"
             className="mt-2 flex min-h-10 items-center gap-2 text-xs text-muted-foreground hover:text-foreground"
           >
             <KeyRound className="size-4 shrink-0" aria-hidden />
             <span className={collapsed && instructor ? "sr-only" : ""}>비밀번호 변경</span>
-          </Link>
+          </Link>}
           <button
             type="button"
             onClick={() => void logout()}
@@ -243,9 +243,9 @@ export function AppShell({ children }: { children: ReactNode }) {
                   SETTINGS
                 </Link>
               )}
-              <Link to="/password" className="min-h-10 border border-border px-3 py-2 text-xs">
+              {!isStudentPreview && <Link to="/password" className="min-h-10 border border-border px-3 py-2 text-xs">
                 비밀번호 변경
-              </Link>
+              </Link>}
               <button
                 type="button"
                 onClick={() => void logout()}

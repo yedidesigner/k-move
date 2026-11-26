@@ -23,7 +23,7 @@ import { formatDateKo, seoulToday, CLASS_START, CLASS_END } from "@/data/schedul
 import { getSupabase } from "@/lib/supabase";
 import { koreanRecordDate } from "@/lib/student-operations";
 
-export function InstructorHome({ onPreview }: { onPreview: () => void }) {
+export function InstructorHome({ onPreview }: { onPreview?: () => void }) {
   const { user, status } = useAuth();
   const sessions = usePublishedSessions();
   const [today, setToday] = useState(seoulToday);
@@ -100,13 +100,13 @@ export function InstructorHome({ onPreview }: { onPreview: () => void }) {
           <h1 className="mt-2 text-3xl font-bold tracking-tight md:text-4xl">HOME</h1>
           <p className="mt-2 text-sm leading-7 text-neutral-600">오늘 수업, 제출물, 피드백 현황을 한눈에 확인하고 수업 운영을 이어갑니다.</p>
         </div>
-        <button
+        {onPreview && <button
           type="button"
           onClick={onPreview}
           className="min-h-10 border border-neutral-300 px-4 text-xs font-medium hover:bg-neutral-100"
         >
           학생 홈 미리보기
-        </button>
+        </button>}
       </header>
       <PublishedAnnouncements />
       <section

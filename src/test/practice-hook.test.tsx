@@ -15,6 +15,7 @@ type TestChannel = {
 
 const state = vi.hoisted(() => ({
   user: { id: "11111111-1111-4111-8111-111111111111" } as { id: string } | null,
+  preview: false,
   list: vi.fn(),
   save: vi.fn(),
   discard: vi.fn(),
@@ -25,7 +26,7 @@ const state = vi.hoisted(() => ({
   removeChannel: vi.fn(),
 }));
 
-vi.mock("@/lib/auth", () => ({ useAuth: () => ({ user: state.user, status: "student" }) }));
+vi.mock("@/lib/auth", () => ({ useAuth: () => ({ user: state.user, status: "student", isStudentPreview: state.preview }) }));
 vi.mock("@/lib/practice", async (importOriginal) => {
   const actual = await importOriginal<typeof import("@/lib/practice")>();
   return {
@@ -99,6 +100,7 @@ async function advance(ms = 150) {
 }
 
 beforeEach(() => {
+  state.preview = false;
   vi.useFakeTimers();
   vi.stubGlobal("crypto", webcrypto);
   state.user = { id: "11111111-1111-4111-8111-111111111111" };
@@ -130,6 +132,20 @@ afterEach(() => {
 });
 
 describe("Practice room history and connection recovery", () => {
+  it("never connects to the live room or sends mutations in student preview", async () => {
+    state.preview = true;
+    const { result } = renderHook(() => usePracticeRoom(3));
+    await flush();
+    await result.current.reload();
+    await expect(result.current.send({ body: "미리보기", files: [] })).rejects.toThrow();
+    await result.current.edit("id", "수정");
+    await result.current.remove("id");
+    await result.current.togglePin("id", true);
+    expect(state.channels).toHaveLength(0);
+    for (const operation of [state.list, state.save, state.edit, state.remove, state.pin])
+      expect(operation).not.toHaveBeenCalled();
+  });
+
   it("loads the selected session and refreshes server history when a new message arrives", async () => {
     const first = message();
     state.list.mockResolvedValueOnce([first]);

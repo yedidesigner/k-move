@@ -23,7 +23,7 @@ const messageOf = (error: unknown) =>
   error instanceof Error ? error.message : "작업을 완료하지 못했습니다. 다시 시도해 주세요.";
 
 export function PracticePolls({ sessionNumber }: { sessionNumber: number }) {
-  const { user, status } = useAuth();
+  const { user, status, isStudentPreview } = useAuth();
   const instructor = status === "instructor";
   const [polls, setPolls] = useState<PracticePoll[]>([]);
   const [myVotes, setMyVotes] = useState<MapOf<number | null>>({});
@@ -53,6 +53,7 @@ export function PracticePolls({ sessionNumber }: { sessionNumber: number }) {
   const closingLabel = session ? `${session.date.replaceAll("-", ".")} ${CLASS_END}` : "회차 일정 미확인";
 
   const refresh = useCallback(async () => {
+    if (isStudentPreview) return;
     const sequenceNumber = ++sequence.current;
     try {
       const nextPolls = await getPracticePolls(sessionNumber);
@@ -109,9 +110,10 @@ export function PracticePolls({ sessionNumber }: { sessionNumber: number }) {
     } finally {
       if (sequence.current === sequenceNumber) setLoading(false);
     }
-  }, [sessionNumber, status, instructor]);
+  }, [sessionNumber, status, instructor, isStudentPreview]);
 
   useEffect(() => {
+    if (isStudentPreview) return;
     void refresh();
     const timer = window.setInterval(() => {
       if (document.visibilityState === "visible") void refresh();
@@ -123,7 +125,7 @@ export function PracticePolls({ sessionNumber }: { sessionNumber: number }) {
       window.clearInterval(timer);
       document.removeEventListener("visibilitychange", onFocus);
     };
-  }, [refresh]);
+  }, [refresh, isStudentPreview]);
 
   useEffect(() => {
     if (!Number.isFinite(endAtMs)) return;
@@ -140,7 +142,7 @@ export function PracticePolls({ sessionNumber }: { sessionNumber: number }) {
   }, [endAtMs, refresh]);
 
   async function action(key: string, task: () => Promise<void>, success: string) {
-    if (busy) return;
+    if (busy || isStudentPreview) return;
     setBusy(key); setError(""); setNotice("");
     try {
       await task();
@@ -243,7 +245,7 @@ export function PracticePolls({ sessionNumber }: { sessionNumber: number }) {
       </div>
       <div className="pr-polls-header-actions">
         <button type="button" className="pr-polls-action pr-polls-secondary"
-          disabled={!!busy} onClick={() => void refresh()}>
+          disabled={!!busy || isStudentPreview} onClick={() => void refresh()}>
           <RefreshCw size={14} aria-hidden /> 새로고침
         </button>
         {instructor && <button type="button" className="pr-polls-action pr-polls-primary"
@@ -269,7 +271,7 @@ export function PracticePolls({ sessionNumber }: { sessionNumber: number }) {
         {!candidateNames.length && <p>등록된 수강생 명단을 확인하는 중입니다.</p>}
       </div>
       <p className="pr-polls-roster-note">
-        수강 등록 상태가 유효한 학생만 포함하며, 홍길동·홍길순은 제외합니다.
+        투표에 참여할 수 있는 수강생만 포함합니다.
         투표를 게시하는 시점의 명단으로 확정됩니다.
       </p>
       <div className="pr-polls-create-footer">
@@ -283,7 +285,11 @@ export function PracticePolls({ sessionNumber }: { sessionNumber: number }) {
     {!!notice && <p className="pr-polls-notice" role="status"><CheckCircle2 size={15} aria-hidden />{notice}</p>}
     {!!error && <p className="pr-polls-error" role="alert">{error}</p>}
 
-    {loading ? <div className="pr-polls-empty" role="status">투표를 불러오는 중입니다.</div> :
+    {isStudentPreview ? <div className="pr-polls-empty">
+      <CircleDot size={30} aria-hidden />
+      <strong>수강생 투표 미리보기</strong>
+      <p>실제 수업에서는 이곳에서 후보를 선택하고 선정 이유를 작성합니다.</p>
+    </div> : loading ? <div className="pr-polls-empty" role="status">투표를 불러오는 중입니다.</div> :
       !polls.length ? <div className="pr-polls-empty">
         <CircleDot size={30} aria-hidden />
         <strong>이 회차에는 아직 투표가 없습니다.</strong>
