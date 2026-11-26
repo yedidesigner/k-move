@@ -1,8 +1,7 @@
 import { Fragment, useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import { Link, useBlocker } from "@tanstack/react-router";
-import { ArrowDown, ArrowUpRight, Check, ChevronDown, Download, ExternalLink, FileText, ImageIcon, Link2, LoaderCircle, MessageCircle, MoreHorizontal, Paperclip, Pencil, Pin, Plus, RefreshCw, Send, Smile, Trash2, Users, Vote, WifiOff, X } from "lucide-react";
+import { ArrowDown, ArrowUpRight, Check, ChevronDown, Download, ExternalLink, FileText, ImageIcon, Link2, LoaderCircle, MessageCircle, MoreHorizontal, Paperclip, Pencil, Pin, Plus, RefreshCw, Send, Smile, Trash2, Vote, WifiOff, X } from "lucide-react";
 import { useAuth } from "@/lib/auth";
-import { usePublishedContent } from "@/lib/published-content";
 import { usePracticeRoom } from "@/hooks/use-practice-room";
 import { useEditorExitGuard } from "@/lib/editor-exit-guard";
 import { FEEDBACK_UPLOAD_ACCEPT, feedbackFileSize, normalizeFeedbackUrl, validateFeedbackUpload } from "@/lib/feedback-attachments";
@@ -31,8 +30,6 @@ function linkHost(url: string) { try { return new URL(url).hostname.replace(/^ww
 export function PracticeRoom({ sessionNumber, embedded = false }: { sessionNumber: number; embedded?: boolean }) {
   const api = usePracticeRoom(sessionNumber);
   const { user, status, isStudentPreview } = useAuth();
-  const { sessions } = usePublishedContent();
-  const session = sessions.find(item => item.number === sessionNumber);
   const [tab, setTab] = useState<"chat" | "materials" | "polls">("chat");
   const [filter, setFilter] = useState<MaterialFilter>("all");
   const [openThreads, setOpenThreads] = useState<Set<string>>(new Set());
@@ -121,7 +118,7 @@ export function PracticeRoom({ sessionNumber, embedded = false }: { sessionNumbe
 
   return <section className={`pr-room${embedded ? " pr-room--embedded" : ""}`} aria-label={`${sessionNumber}회차 채팅`}>
     <header className="pr-header">
-      <div className="pr-heading"><p className="pr-eyebrow">PRACTICE ROOM <span>/ {String(sessionNumber).padStart(2, "0")}</span></p><h2>채팅</h2><p className="pr-subtitle">{session?.title ?? `${sessionNumber}회차`}<span className="pr-scope"><Users size={12} aria-hidden /> 이 수업의 수강생과 강사가 함께 봐요</span></p></div>
+      <div className="pr-heading"><p className="pr-eyebrow">PRACTICE ROOM <span>/ {String(sessionNumber).padStart(2, "0")}</span></p><h2>채팅</h2></div>
       <div className="pr-header-side"><span className={`pr-connection${api.connected && online ? " is-connected" : ""}`}><span />{isStudentPreview ? "미리보기" : !online ? "오프라인" : api.connected ? "실시간 연결" : "연결 확인 중"}</span>{embedded && <Link className="pr-expand" to="/practice" search={{ session: sessionNumber }}>크게 보기 <ArrowUpRight size={14} aria-hidden /></Link>}</div>
     </header>
     <div className="pr-tabs" role="tablist" aria-label="채팅 보기 방식">

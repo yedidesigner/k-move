@@ -25,7 +25,7 @@ import {
   portfolioStageLabel,
   safeExternalUrl,
 } from "@/lib/student-operations";
-import { Spinner } from "@/components/lms";
+import { PageTitle, Spinner } from "@/components/lms";
 import { StudentDriveFolders } from "@/components/StudentDriveFolders";
 
 const inputClass =
@@ -172,9 +172,7 @@ function PortfolioWorkspace({
   return (
     <div className="space-y-6 text-neutral-950">
       <header className="border-b border-neutral-300 pb-5">
-        <p className="text-xs font-semibold tracking-[0.12em] text-neutral-500">{instructor ? "학생 포트폴리오" : "포트폴리오"}</p>
-        <h1 className="mt-2 text-3xl font-bold tracking-tight md:text-4xl">PORTFOLIO</h1>
-        <p className="mt-2 max-w-3xl text-sm leading-7 text-neutral-600">프로젝트별 작업 과정과 수정 이력을 기록하고 이전 버전과 비교합니다.</p>
+        <PageTitle title="PORTFOLIO" description="프로젝트별 작업 과정과 수정 이력을 기록하고 이전 버전과 비교합니다." />
       </header>
       {error && (
         <div

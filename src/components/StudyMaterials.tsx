@@ -2,6 +2,7 @@ import { lazy, Suspense, useEffect, useId, useRef, useState } from "react";
 import { ArrowLeft, ArrowRight, BookOpen, Check, ChevronDown, Search, X } from "lucide-react";
 import { TOPICS, type StudyGuide } from "@/data/study-materials";
 import { usePublishedContent } from "@/lib/published-content";
+import { PageTitle } from "@/components/lms";
 import { getGlossaryLearning } from "@/data/glossary-learning";
 import { GlossaryTermLink } from "./glossary/GlossaryTermLink";
 import "./study-materials.css";
@@ -422,19 +423,17 @@ export function StudyMaterials({ guideId, onGuideChange }: StudyMaterialsProps =
   return (
     <section className="study-shared study-page" aria-labelledby={titleId}>
       <header className={`study-page-header${selectedGuide ? " study-page-header-reading" : ""}`}>
-        <p className="study-kicker">자료실</p>
         <div className="study-page-title-row">
-          <h1 id={titleId}>RESOURCES</h1>
+          <PageTitle
+            titleId={titleId}
+            title="RESOURCES"
+            description={selectedGuide ? undefined : "수업 자료와 디자인 학습 콘텐츠를 주제별로 연결해 보고, 자신의 작업에 적용합니다."}
+          />
           <span>
             {guides.length}
             <small>GUIDES</small>
           </span>
         </div>
-        {!selectedGuide && (
-          <p className="study-page-intro">
-            수업 자료와 디자인 학습 콘텐츠를 주제별로 연결해 보고, 자신의 작업에 적용합니다.
-          </p>
-        )}
       </header>
       {selectedGuide ? (
         <div

@@ -188,13 +188,13 @@ describe("feedback paper presentation", () => {
   it("keeps the ordinary assignment workspace presentation unchanged", async () => {
     render(<AssignmentWorkspace />);
     expect(await screen.findByRole("heading", { name: "과제·피드백" })).toBeVisible();
-    expect(screen.queryByRole("heading", { name: "과제&피드백" })).not.toBeInTheDocument();
+    expect(screen.queryByRole("heading", { name: "FEEDBACK", level: 1 })).not.toBeInTheDocument();
     expect(screen.queryByRole("button", { name: "2주차 피드백 보기" })).not.toBeInTheDocument();
   });
 
   it("shows the feedback identity and current week navigation without removing management controls", async () => {
     render(<AssignmentWorkspace presentation="feedback" />);
-    expect(await screen.findByRole("heading", { name: "과제&피드백" })).toBeVisible();
+    expect(await screen.findByRole("heading", { name: "FEEDBACK", level: 1 })).toBeVisible();
     expect(screen.getByText("WEEK 02", { exact: true })).toBeVisible();
     expect(screen.getByRole("button", { name: "2주차 피드백 보기" })).toHaveAttribute(
       "aria-pressed",

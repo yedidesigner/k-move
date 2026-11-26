@@ -17,7 +17,6 @@ import {
   PanelLeftClose,
   PanelLeftOpen,
 } from "lucide-react";
-import { SITE_NAME, COURSE_NAME } from "@/data/schedule";
 import { useAuth } from "@/lib/auth";
 import { requestEditorExit } from "@/lib/editor-exit-guard";
 
@@ -45,6 +44,37 @@ const INSTRUCTOR_NAV = [
   { to: "/promises", label: "OUR PROMISE", icon: Handshake, group: "보조 메뉴" },
 ] as const;
 
+const NAV_KOREAN = {
+  HOME: "홈",
+  CLASSES: "전체 수업",
+  CHAT: "수업 채팅",
+  GLOSSARY: "용어집",
+  RESOURCES: "학습자료",
+  PORTFOLIO: "포트폴리오",
+  FEEDBACK: "과제&피드백",
+  TOOLS: "도구",
+  "OUR PROMISE": "우리의 약속",
+  STUDENTS: "수강생 관리",
+  SETTINGS: "설정",
+} as const;
+
+function NavLabel({
+  label,
+  stacked = false,
+  hidden = false,
+}: {
+  label: keyof typeof NAV_KOREAN;
+  stacked?: boolean;
+  hidden?: boolean;
+}) {
+  return (
+    <span className={hidden ? "sr-only" : stacked ? "flex flex-col items-center gap-0.5" : "inline-flex flex-wrap items-baseline gap-x-2 gap-y-0.5"}>
+      <span lang="en">{label}</span>
+      <span className={`whitespace-nowrap font-normal opacity-80 ${stacked ? "text-[11px]" : "text-xs"}`}>{NAV_KOREAN[label]}</span>
+    </span>
+  );
+}
+
 export function AppShell({ children }: { children: ReactNode }) {
   const { status, user, signOut, isStudentPreview } = useAuth();
   const instructor = status === "instructor";
@@ -61,6 +91,8 @@ export function AppShell({ children }: { children: ReactNode }) {
     : ["/", "/sessions", "/practice", "/materials", "/feedback"];
   const linkCls =
     "flex min-h-11 items-center gap-3 border-l-2 border-transparent px-3 text-sm font-medium transition-colors hover:bg-sidebar-accent data-[nav-active=true]:border-sidebar-primary data-[nav-active=true]:bg-sidebar-primary data-[nav-active=true]:text-sidebar-primary-foreground focus-visible:outline-2 focus-visible:outline-offset-2";
+  const mobileLinkCls =
+    "inline-flex min-h-11 items-center border border-border px-3 py-2 text-xs font-medium data-[nav-active=true]:border-primary data-[nav-active=true]:bg-primary data-[nav-active=true]:text-primary-foreground";
   const activeTab = (location.search as Record<string, unknown>)["tab"] ?? "students";
   const navActive = (path: string) =>
     path === "/"
@@ -96,7 +128,7 @@ export function AppShell({ children }: { children: ReactNode }) {
         className={`hidden shrink-0 flex-col border-r border-sidebar-border bg-sidebar md:sticky md:top-0 md:flex md:h-screen ${instructor ? (collapsed ? "md:w-[68px]" : "md:w-56") : feedback ? "md:w-80" : "md:w-72"}`}
       >
         <div
-          className={`shrink-0 border-b border-sidebar-border ${instructor ? "px-4 py-6" : "px-6 py-10"}`}
+          className={`shrink-0 border-b border-sidebar-border py-5 ${instructor ? "px-4" : "px-6"}`}
         >
           <div className="flex items-start justify-between gap-2">
             {!collapsed || !instructor ? (
@@ -124,17 +156,10 @@ export function AppShell({ children }: { children: ReactNode }) {
               </button>
             )}
           </div>
-          {(!collapsed || !instructor) && (
-            <p
-              className={`${instructor ? "mt-4 text-xs" : "mt-7 text-[13px]"} font-light leading-relaxed tracking-tight text-muted-foreground break-keep`}
-            >
-              {SITE_NAME}
-            </p>
-          )}
         </div>
         <nav
           aria-label={instructor ? "강사 주요 메뉴" : "주요 메뉴"}
-          className="flex-1 space-y-1 overflow-y-auto px-2 py-4"
+          className="flex-1 space-y-1 overflow-y-auto px-2 py-2"
         >
           {nav.map((item, index) => {
             const Icon = item.icon;
@@ -155,10 +180,10 @@ export function AppShell({ children }: { children: ReactNode }) {
                   data-nav-active={navActive(item.to)}
                   className={linkCls}
                   activeOptions={{ exact: item.to === "/" }}
-                  title={collapsed && instructor ? item.label : undefined}
+                  title={collapsed && instructor ? `${item.label} · ${NAV_KOREAN[item.label]}` : undefined}
                 >
                   <Icon className="size-4 shrink-0" aria-hidden />{" "}
-                  <span className={collapsed && instructor ? "sr-only" : ""}>{item.label}</span>
+                  <NavLabel label={item.label} hidden={collapsed && instructor} />
                 </Link>
               </div>
             );
@@ -169,10 +194,10 @@ export function AppShell({ children }: { children: ReactNode }) {
               search={{ tab: "settings" }}
               data-nav-active={location.pathname === "/admin" && activeTab === "settings"}
               className={`${linkCls} mt-3`}
-              title={collapsed ? "SETTINGS" : undefined}
+              title={collapsed ? "SETTINGS · 설정" : undefined}
             >
               <Settings className="size-4 shrink-0" aria-hidden />
-              <span className={collapsed ? "sr-only" : ""}>SETTINGS</span>
+              <NavLabel label="SETTINGS" hidden={collapsed} />
             </Link>
           )}
         </nav>
@@ -219,7 +244,6 @@ export function AppShell({ children }: { children: ReactNode }) {
             <p className="font-bold">K-MOVE DESIGN</p>
             {instructor && <span className="text-xs">{accountName} · 강사</span>}
           </div>
-          <p className="mt-1 text-xs text-muted-foreground">{COURSE_NAME}</p>
           <details className="mt-1">
             <summary className="min-h-10 cursor-pointer py-2 text-xs font-medium">
               {instructor ? "전체 메뉴" : "추가 메뉴"}
@@ -229,18 +253,21 @@ export function AppShell({ children }: { children: ReactNode }) {
                 <Link
                   key={item.to}
                   to={item.to}
-                  className="min-h-10 border border-border px-3 py-2 text-xs"
+                  className={mobileLinkCls}
+                  data-nav-active={navActive(item.to)}
+                  activeOptions={{ exact: item.to === "/" }}
                 >
-                  {item.label}
+                  <NavLabel label={item.label} />
                 </Link>
               ))}
               {instructor && (
                 <Link
                   to="/admin"
                   search={{ tab: "settings" }}
-                  className="min-h-10 border border-border px-3 py-2 text-xs"
+                  className={mobileLinkCls}
+                  data-nav-active={location.pathname === "/admin" && activeTab === "settings"}
                 >
-                  SETTINGS
+                  <NavLabel label="SETTINGS" />
                 </Link>
               )}
               {!isStudentPreview && <Link to="/password" className="min-h-10 border border-border px-3 py-2 text-xs">
@@ -294,21 +321,10 @@ export function AppShell({ children }: { children: ReactNode }) {
                 to={item.to}
                 data-nav-active={navActive(item.to)}
                 activeOptions={{ exact: item.to === "/" }}
-                className="flex min-h-14 flex-col items-center justify-center gap-1 text-[10px] data-[nav-active=true]:bg-primary data-[nav-active=true]:text-primary-foreground"
+                className="flex min-h-16 min-w-0 flex-col items-center justify-center gap-1 px-0.5 text-[10px] font-medium leading-tight data-[nav-active=true]:bg-primary data-[nav-active=true]:text-primary-foreground"
               >
                 <Icon className="size-5" aria-hidden />
-                {instructor
-                  ? (
-                      {
-                        "/": "HOME",
-                        "/feedback": "FEEDBACK",
-                        "/practice": "CHAT",
-                        "/admin": "STUDENTS",
-                        "/sessions": "CLASSES",
-                        "/portfolio": "PORTFOLIO",
-                      } as Record<string, string>
-                    )[item.to]
-                  : item.label}
+                <NavLabel label={item.label} stacked />
               </Link>
             );
           })}

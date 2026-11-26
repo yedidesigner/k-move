@@ -77,7 +77,7 @@ describe("A focused designer study library", () => {
 
   it("begins with topics rather than full lessons and offers the whole catalog without experience levels", () => {
     render(<StudyMaterials />);
-    expect(screen.getByRole("heading", { name: "학습자료", level: 1 })).toBeVisible();
+    expect(screen.getByRole("heading", { name: "RESOURCES", level: 1 })).toBeVisible();
     expect(screen.getByRole("heading", { name: "주제별로 이어 배우기" })).toBeVisible();
     expect(screen.queryByRole("article")).not.toBeInTheDocument();
     expect(screen.queryByRole("list", { name: "주제별 학습 가이드" })).not.toBeInTheDocument();

@@ -2,9 +2,10 @@ import { ArrowUpRight, ChevronRight } from "lucide-react";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { useAuth } from "@/lib/auth";
+import { PageTitle } from "@/components/lms";
 import { InstructorHome } from "@/components/instructor/InstructorHome";
 import { PublishedAnnouncements, usePublishedSessions } from "@/lib/published-content";
-import { CLASS_END, CLASS_START, COURSE_NAME, formatDateKo } from "@/data/schedule";
+import { CLASS_END, CLASS_START, formatDateKo } from "@/data/schedule";
 
 export const Route = createFileRoute("/_app/")({
   head: () => ({
@@ -80,11 +81,7 @@ function StudentHome() {
   return (
     <>
       <header className="mb-7 border-b border-border pb-5">
-        <p className="text-xs font-semibold tracking-[0.12em] text-muted-foreground">홈</p>
-        <h1 className="mt-2 text-3xl font-bold tracking-tight text-foreground md:text-4xl">HOME</h1>
-        <p className="mt-2 max-w-3xl text-sm leading-7 text-muted-foreground">
-          Google AI를 활용한 포트폴리오 제작과 K-MOVE 학습 현황을 한눈에 확인합니다.
-        </p>
+        <PageTitle title="HOME" description="Google AI를 활용한 포트폴리오 제작과 K-MOVE 학습 현황을 한눈에 확인합니다." />
       </header>
       <PublishedAnnouncements />
       <div className="grid gap-5 lg:grid-cols-[minmax(0,2fr)_minmax(0,1fr)]">
@@ -126,12 +123,12 @@ function StudentHome() {
         </section>
         <div className="grid divide-y divide-border border-y border-border bg-card">
           <Link
-            to="/glossary"
+            to="/feedback"
             className="group flex min-h-28 items-center justify-between gap-4 px-6 py-6 transition-colors hover:bg-muted"
           >
             <span>
-              <span className="block text-xs text-muted-foreground">용어집 · 개념·예시·실습</span>
-              <span className="mt-2 block text-lg font-semibold">GLOSSARY</span>
+              <span className="block text-xs text-muted-foreground">피드백 · 과제 제출과 확인</span>
+              <span className="mt-2 block text-lg font-semibold">FEEDBACK</span>
             </span>
             <ArrowUpRight aria-hidden className="size-5 shrink-0" />
           </Link>
@@ -146,12 +143,12 @@ function StudentHome() {
             <ArrowUpRight aria-hidden className="size-5 shrink-0" />
           </Link>
           <Link
-            to="/feedback"
+            to="/glossary"
             className="group flex min-h-28 items-center justify-between gap-4 px-6 py-6 transition-colors hover:bg-muted"
           >
             <span>
-              <span className="block text-xs text-muted-foreground">피드백 · 과제 제출과 확인</span>
-              <span className="mt-2 block text-lg font-semibold">FEEDBACK</span>
+              <span className="block text-xs text-muted-foreground">용어집 · 개념·예시·실습</span>
+              <span className="mt-2 block text-lg font-semibold">GLOSSARY</span>
             </span>
             <ArrowUpRight aria-hidden className="size-5 shrink-0" />
           </Link>

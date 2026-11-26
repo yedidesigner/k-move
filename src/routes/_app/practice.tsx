@@ -1,7 +1,8 @@
 import { useState } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { ArrowUpRight, MessageSquare } from "lucide-react";
+import { ArrowUpRight } from "lucide-react";
 import { PracticeRoom } from "@/components/PracticeRoom";
+import { PageTitle } from "@/components/lms";
 import { usePublishedContent } from "@/lib/published-content";
 import { currentPublishedSession } from "@/lib/content-model";
 import { formatDateKo, seoulToday } from "@/data/schedule";
@@ -31,13 +32,10 @@ function PracticePage() {
   return (
     <div className="mx-auto max-w-6xl">
       <header className="mb-6 flex flex-wrap items-end justify-between gap-4">
-        <div>
-          <p className="mb-2 flex items-center gap-2 text-xs font-semibold tracking-[0.12em] text-neutral-500">
-            <MessageSquare className="size-4" aria-hidden /> 채팅
-          </p>
-          <h1 className="text-4xl font-semibold tracking-tight">CHAT</h1>
-          <p className="mt-2 text-sm leading-7 text-neutral-600">수업별 대화, 자료 공유, 투표를 한곳에서 확인하고 회차별 기록을 다시 찾아봅니다.</p>
-        </div>
+        <PageTitle
+          title="CHAT"
+          description="수업별 대화, 자료 공유, 투표를 한곳에서 확인하고 회차별 기록을 다시 찾아봅니다."
+        />
         <Link to="/sessions/$id" params={{ id: selected.id }} className="inline-flex min-h-11 items-center gap-2 border border-neutral-300 px-4 text-sm font-medium hover:bg-neutral-50">
           {selected.number}회차 수업 보기 <ArrowUpRight className="size-4" aria-hidden />
         </Link>

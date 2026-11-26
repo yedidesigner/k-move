@@ -9,6 +9,7 @@ import {
 } from "lucide-react";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useAuth } from "@/lib/auth";
+import { PageTitle } from "@/components/lms";
 import {
   listAssignments,
   listAssignmentTargets,
@@ -95,11 +96,7 @@ export function InstructorHome({ onPreview }: { onPreview?: () => void }) {
   return (
     <div className="space-y-7">
       <header className="flex flex-wrap items-start justify-between gap-4 border-b border-neutral-300 pb-5">
-        <div>
-          <p className="text-xs font-semibold tracking-[0.12em] text-neutral-500">강사 홈</p>
-          <h1 className="mt-2 text-3xl font-bold tracking-tight md:text-4xl">HOME</h1>
-          <p className="mt-2 text-sm leading-7 text-neutral-600">오늘 수업, 제출물, 피드백 현황을 한눈에 확인하고 수업 운영을 이어갑니다.</p>
-        </div>
+        <PageTitle title="HOME" description="오늘 수업, 제출물, 피드백 현황을 한눈에 확인하고 수업 운영을 이어갑니다." />
         {onPreview && <button
           type="button"
           onClick={onPreview}

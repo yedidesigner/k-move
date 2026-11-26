@@ -4,19 +4,13 @@ import { useEffect, useState } from "react";
 import { useAuth } from "@/lib/auth";
 import { usePublishedSessions } from "@/lib/published-content";
 import { SessionManager } from "@/components/instructor/SessionManager";
-import {
-  CLASS_END,
-  CLASS_START,
-  SESSIONS,
-  TIME_ZONE,
-  seoulToday,
-  sessionStatusLabel,
-  weekdayKo,
-} from "@/data/schedule";
-import { CURRICULUM_OVERVIEW } from "@/data/curriculum";
+import { seoulToday, sessionStatusLabel, weekdayKo } from "@/data/schedule";
+import type { ManagedSession } from "@/lib/content-model";
+import { PageTitle } from "@/components/lms";
 import { SessionCalendar } from "@/components/SessionCalendar";
 import { defaultCalendarMonth } from "@/lib/session-calendar";
 import { cn } from "@/lib/utils";
+import "@/components/session-list.css";
 
 export const Route = createFileRoute("/_app/sessions/")({
   head: () => ({
@@ -33,12 +27,9 @@ export const Route = createFileRoute("/_app/sessions/")({
   component: Sessions,
 });
 
-const weekdayEn = new Intl.DateTimeFormat("en-US", { weekday: "short", timeZone: TIME_ZONE });
-
 function formatDateCompact(date: string) {
   const [year, month, day] = date.split("-") as [string, string, string];
-  const weekday = weekdayEn.format(new Date(`${date}T12:00:00+09:00`));
-  return `${year.slice(2)}년 ${Number(month)}월 ${day} ${weekday}(${weekdayKo(date)})`;
+  return `${year.slice(2)}년 ${Number(month)}월 ${Number(day)}일 (${weekdayKo(date)})`;
 }
 
 type ScheduleView = "list" | "calendar";
@@ -85,14 +76,15 @@ export function StudentSessionSchedule() {
   return (
     <>
       <header className="mb-6 flex flex-wrap items-start justify-between gap-4">
-        <div>
-          <p className="text-xs font-semibold tracking-[0.12em] text-muted-foreground">수업</p>
-          <h1 className="mt-2 text-3xl font-bold tracking-tight text-foreground md:text-4xl">CLASSES</h1>
-          <p className="mt-2 max-w-3xl text-sm leading-7 text-muted-foreground">
-            전체 수업 일정과 총 {sessions.length}회차의 커리큘럼을 확인합니다. 시간은 한국 시간을 기준으로 합니다.
-          </p>
-        </div>
-        <div role="group" aria-label="수업 보기 방식" className="inline-flex border border-border">
+        <PageTitle
+          title="CLASSES"
+          description={`전체 수업 일정과 총 ${sessions.length}회차의 커리큘럼을 확인합니다. 시간은 한국 시간을 기준으로 합니다.`}
+        />
+        <div
+          role="group"
+          aria-label="수업 보기 방식"
+          className="ml-auto inline-flex shrink-0 border border-border"
+        >
           {(
             [
               { value: "list", label: "목록", icon: List },
@@ -117,105 +109,76 @@ export function StudentSessionSchedule() {
           ))}
         </div>
       </header>
-      <section
-        aria-labelledby="curriculum-overview-title"
-        className="mb-6 border border-border bg-card px-5 py-5 sm:px-6"
-      >
-        <p className="text-xs font-semibold text-muted-foreground">
-          {SESSIONS.length}회차 과정 · 2주 = 1사이클 (생각하는 주 + 만드는 주)
-        </p>
-        <h2
-          id="curriculum-overview-title"
-          className="mt-2 text-lg font-bold tracking-tight sm:text-xl"
-        >
-          {CURRICULUM_OVERVIEW.title}
-        </h2>
-        <p className="mt-2 max-w-3xl text-sm leading-relaxed text-muted-foreground">
-          {CURRICULUM_OVERVIEW.subtitle}
-        </p>
-        <p className="mt-3 text-xs leading-relaxed text-muted-foreground">
-          {CURRICULUM_OVERVIEW.phases.map((phase) => `${phase.range} ${phase.label}`).join(" · ")}
-        </p>
-      </section>
       {view === "calendar" ? (
         <SessionCalendar month={month} today={today} onMonthChange={setMonth} sessions={sessions} />
       ) : (
-        <SessionList today={today} />
+        <SessionList sessions={sessions} today={today} />
       )}
     </>
   );
 }
 
-function SessionList({ today }: { today: string }) {
-  const sessions = usePublishedSessions();
+function SessionList({ sessions, today }: { sessions: ManagedSession[]; today: string }) {
   return (
-    <ul className="divide-y divide-border border-y border-border">
+    <ul className="classes-list divide-y divide-border border-y border-border">
       {sessions.map((s) => {
-        const state = s.date === today ? "today" : s.date < today ? "done" : "upcoming";
+        const isToday = s.date === today;
+        const subtitle = s.curriculum?.stage || s.curriculum?.cycle;
+        const secondary = isToday ? "text-white/80" : "text-muted-foreground";
+        const status = s.progress === "completed" ? "수업 완료" : sessionStatusLabel(s, today);
         return (
           <li key={s.id}>
             <Link
               to="/sessions/$id"
               params={{ id: s.id }}
               className={cn(
-                "group relative grid min-h-24 grid-cols-[4.25rem_minmax(0,1fr)_auto] items-center gap-x-3 px-3 py-4 transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-primary sm:grid-cols-[6rem_minmax(0,1fr)_auto_1.25rem] sm:gap-x-5 sm:px-7",
-                state === "today"
+                "classes-row group transition-colors focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-primary",
+                isToday
                   ? "bg-black text-white hover:bg-neutral-900"
                   : "bg-card text-foreground hover:bg-muted",
               )}
             >
-              <span className="text-[3.6288rem] font-semibold leading-none tracking-[-0.0325em] tabular-nums sm:text-[4.536rem]">
+              <span
+                aria-label={`${s.number}회차`}
+                className="classes-row-number font-semibold leading-none tracking-[-0.035em] tabular-nums"
+              >
                 {String(s.number).padStart(2, "0")}
               </span>
-              <div className="min-w-0">
+              <div className="classes-row-title min-w-0">
                 <p className="break-keep text-base font-bold leading-snug [overflow-wrap:anywhere]">
                   {s.managed ? s.title : (s.curriculum?.project ?? s.title)}
                 </p>
-                {s.curriculum?.stage && (
+                {subtitle && (
                   <p
                     className={cn(
-                      "mt-1 break-keep text-sm leading-relaxed [overflow-wrap:anywhere]",
-                      state === "today" ? "text-white/90" : "text-foreground/80",
+                      "mt-0.5 break-keep text-xs leading-snug [overflow-wrap:anywhere]",
+                      secondary,
                     )}
                   >
-                    {s.curriculum.stage}
+                    {subtitle}
                   </p>
                 )}
-                {s.curriculum && (
-                  <p
-                    className={cn(
-                      "mt-1 text-xs leading-relaxed",
-                      state === "today" ? "text-white/70" : "text-muted-foreground",
-                    )}
-                  >
-                    {s.curriculum.cycle}
-                  </p>
-                )}
-                <time
-                  dateTime={s.date}
-                  className={cn(
-                    "mt-1 block text-[0.675rem] leading-relaxed tabular-nums",
-                    state === "today" ? "text-white/80" : "text-muted-foreground",
-                  )}
-                >
-                  {formatDateCompact(s.date)}
-                </time>
               </div>
-              <span
+              <time
+                dateTime={s.date}
                 className={cn(
-                  "whitespace-nowrap text-xs font-medium sm:text-sm",
-                  state === "today" ? "text-white" : "text-muted-foreground",
+                  "classes-row-date whitespace-nowrap text-xs leading-5 tabular-nums",
+                  secondary,
                 )}
               >
-                {s.progress === "completed"
-                  ? "진행 완료"
-                  : s.date < today
-                    ? "일정 경과"
-                    : sessionStatusLabel(s, today)}
+                {formatDateCompact(s.date)}
+              </time>
+              <span
+                className={cn(
+                  "classes-row-status whitespace-nowrap text-right text-xs font-medium",
+                  secondary,
+                )}
+              >
+                {status}
               </span>
               <ChevronRight
-                aria-hidden
-                className="hidden h-5 w-5 transition-transform group-hover:translate-x-0.5 sm:block"
+                aria-hidden="true"
+                className="classes-row-chevron justify-self-end transition-transform group-hover:translate-x-0.5"
               />
             </Link>
           </li>

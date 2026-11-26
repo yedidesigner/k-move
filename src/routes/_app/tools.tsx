@@ -1,5 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { ExternalLink } from "lucide-react";
+import { PageTitle } from "@/components/lms";
 
 export const Route = createFileRoute("/_app/tools")({
   head: () => ({
@@ -31,9 +32,7 @@ function Tools() {
   return (
     <>
       <header className="mb-7 border-b border-border pb-5">
-        <p className="text-xs font-semibold tracking-[0.12em] text-muted-foreground">도구</p>
-        <h1 className="mt-2 text-3xl font-bold tracking-tight md:text-4xl">TOOLS</h1>
-        <p className="mt-2 max-w-3xl text-sm leading-7 text-muted-foreground">수업과 실습에 사용하는 AI·디자인 도구를 빠르게 열고 활용합니다.</p>
+        <PageTitle title="TOOLS" description="수업과 실습에 사용하는 AI·디자인 도구를 빠르게 열고 활용합니다." />
       </header>
       <div className="divide-y divide-border border-y border-border bg-card">
         {TOOLS.map((t) => (

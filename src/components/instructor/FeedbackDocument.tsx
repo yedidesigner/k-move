@@ -43,11 +43,7 @@ export function FeedbackDocument({
 
   return (
     <div className="feedback-document">
-      <header className="mb-5 text-center">
-        <p className="text-xs font-semibold tracking-[0.12em] text-neutral-500">피드백</p>
-        <h1 className="feedback-document-title mt-2">FEEDBACK</h1>
-        <p className="mt-2 text-sm leading-7 text-neutral-600">과제 자료를 제출하고 강사의 피드백과 수정 기록을 확인합니다.</p>
-      </header>
+      <h1 className="feedback-document-title">FEEDBACK</h1>
       <section className="feedback-paper-stack" aria-label="주차별 피드백 문서">
         <div className="feedback-paper-layer feedback-paper-layer-back" aria-hidden="true" />
         <div className="feedback-paper-layer feedback-paper-layer-front" aria-hidden="true" />
@@ -87,31 +83,33 @@ export function FeedbackDocument({
                   현재 주차 · {String(currentWeek).padStart(2, "0")}
                 </button>
               </div>
-              <div className="feedback-student-heading">
-                <h3>{name}</h3>
-                {students && onStudentChange && (
-                  <label className="feedback-student-picker">
-                    <span className="sr-only">수강생 변경</span>
-                    <span className="feedback-student-picker-icon" aria-hidden="true">
-                      <ChevronDown size={10} />
-                    </span>
-                    <select
-                      aria-label="수강생 변경"
-                      value={selectedStudent ?? "all"}
-                      disabled={loading || !students.length}
-                      onChange={(event) => onStudentChange(event.target.value)}
-                    >
-                      <option value="all">전체 수강생</option>
-                      {students.map((student) => (
-                        <option key={student.user_id} value={student.user_id}>
-                          {student.name}
-                        </option>
-                      ))}
-                    </select>
-                  </label>
-                )}
+              <div className="feedback-heading-summary">
+                <div className="feedback-student-heading">
+                  <h3>{name}</h3>
+                  {students && onStudentChange && (
+                    <label className="feedback-student-picker">
+                      <span className="sr-only">수강생 변경</span>
+                      <span className="feedback-student-picker-icon" aria-hidden="true">
+                        <ChevronDown size={10} />
+                      </span>
+                      <select
+                        aria-label="수강생 변경"
+                        value={selectedStudent ?? "all"}
+                        disabled={loading || !students.length}
+                        onChange={(event) => onStudentChange(event.target.value)}
+                      >
+                        <option value="all">전체 수강생</option>
+                        {students.map((student) => (
+                          <option key={student.user_id} value={student.user_id}>
+                            {student.name}
+                          </option>
+                        ))}
+                      </select>
+                    </label>
+                  )}
+                </div>
+                <p>{description}</p>
               </div>
-              <p>{description}</p>
             </header>
             <div className="instructor-workspace feedback-workspace">{children}</div>
           </div>

@@ -92,7 +92,7 @@ async function renderLearningNavigation(initialEntries = ["/glossary"]) {
   render(<RouterProvider router={router} />);
   await screen.findByRole("heading", {
     name: initialEntries[initialEntries.length - 1]?.startsWith("/materials")
-      ? "학습자료"
+      ? "RESOURCES"
       : /^\/(assignments|feedback)/.test(initialEntries[initialEntries.length - 1] ?? "")
         ? "과제&피드백"
         : "디자인 용어집",
@@ -106,25 +106,28 @@ describe("Separate glossary and study materials navigation", () => {
     await renderLearningNavigation();
     for (const name of ["주요 메뉴", "하단 메뉴"]) {
       const menu = within(screen.getByRole("navigation", { name }));
-      expect(menu.getByRole("link", { name: "용어집" })).toHaveAttribute("href", "/glossary");
-      expect(menu.getByRole("link", { name: "학습자료" })).toHaveAttribute("href", "/materials");
-      expect(menu.getByRole("link", { name: "과제&피드백" })).toHaveAttribute("href", "/feedback");
+      expect(menu.getByRole("link", { name: "RESOURCES 학습자료" })).toHaveAttribute("href", "/materials");
+      expect(menu.getByRole("link", { name: "FEEDBACK 과제&피드백" })).toHaveAttribute("href", "/feedback");
       expect(menu.queryByRole("link", { name: "과제" })).not.toBeInTheDocument();
     }
+    const sidebar = within(screen.getByRole("navigation", { name: "주요 메뉴" }));
+    expect(sidebar.getByRole("link", { name: "GLOSSARY 용어집" })).toHaveAttribute("href", "/glossary");
     const moreMenu = within(screen.getByRole("banner")).getByText("추가 메뉴");
     expect(
       within(screen.getByRole("navigation", { name: "주요 메뉴" })).getByRole("link", {
-        name: "우리의 약속",
+        name: "OUR PROMISE 우리의 약속",
       }),
     ).toHaveAttribute("href", "/promises");
     expect(moreMenu.closest("details")).not.toHaveAttribute("open");
     fireEvent.click(moreMenu);
     expect(
-      within(screen.getByRole("banner")).getByRole("link", { name: "우리의 약속" }),
+      within(screen.getByRole("banner")).getByRole("link", { name: "OUR PROMISE 우리의 약속" }),
     ).toHaveAttribute("href", "/promises");
     expect(
-      within(screen.getByRole("banner")).getByRole("link", { name: "내 포트폴리오" }),
+      within(screen.getByRole("banner")).getByRole("link", { name: "PORTFOLIO 포트폴리오" }),
     ).toHaveAttribute("href", "/portfolio");
+    expect(within(screen.getByRole("banner")).getByRole("link", { name: "GLOSSARY 용어집" }))
+      .toHaveAttribute("href", "/glossary");
   });
 
   it.each(["student", "instructor"])(
@@ -134,7 +137,7 @@ describe("Separate glossary and study materials navigation", () => {
       await renderLearningNavigation(["/feedback"]);
       for (const name of [role === "instructor" ? "강사 주요 메뉴" : "주요 메뉴", "하단 메뉴"]) {
         const menu = within(screen.getByRole("navigation", { name }));
-        const link = menu.getByRole("link", { name: "과제&피드백" });
+        const link = menu.getByRole("link", { name: "FEEDBACK 과제&피드백" });
         expect(link).toHaveAttribute("href", "/feedback");
         expect(link).toHaveAttribute("data-nav-active", "true");
         expect(
@@ -150,7 +153,7 @@ describe("Separate glossary and study materials navigation", () => {
         ),
       );
       const mobileMenu = within(screen.getByRole("navigation", { name: "모바일 전체 메뉴" }));
-      expect(mobileMenu.getByRole("link", { name: "과제&피드백" })).toHaveAttribute(
+      expect(mobileMenu.getByRole("link", { name: "FEEDBACK 과제&피드백" })).toHaveAttribute(
         "href",
         "/feedback",
       );

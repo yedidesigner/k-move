@@ -14,6 +14,7 @@ import { VISUAL_LESSONS } from "./glossary/VisualGlossaryLesson";
 import { getGlossaryPractice, hasGlossaryPractice } from "@/data/glossary-practice";
 import { getGlossaryLearning, getLearningMode, LEARNING_LABELS } from "@/data/glossary-learning";
 import { usePublishedContent } from "@/lib/published-content";
+import { PageTitle } from "@/components/lms";
 import { hasManagedExample, ManagedTermExample } from "./glossary/ManagedTermExample";
 import type { ManagedTerm } from "@/lib/content-model";
 import "./glossary.css";
@@ -210,21 +211,19 @@ export function Glossary({ initialQuery = "" }: { initialQuery?: string } = {}) 
     <GlossaryNavigationContext.Provider value={openRelatedTerm}>
       <section aria-labelledby="glossary-title">
         <header className="mb-7 border-b border-foreground pb-6">
-          <p className="mb-2 text-xs font-semibold tracking-[0.12em] text-muted-foreground">용어집</p>
-          <div className="flex items-end justify-between gap-4">
-            <h1 id="glossary-title" className="text-3xl font-bold tracking-tight md:text-4xl">
-              GLOSSARY
-            </h1>
-            <span className="text-xs tracking-[0.1em] text-muted-foreground">
+          <div className="flex items-baseline justify-between gap-4">
+            <PageTitle
+              titleId="glossary-title"
+              title="GLOSSARY"
+              description="디자인·AI·UX/UI 실무에서 사용하는 핵심 용어를 정의, 예시, 실습과 함께 찾아봅니다."
+            />
+            <span className="shrink-0 text-xs tracking-[0.1em] text-muted-foreground">
               <strong className="mr-1.5 text-xl font-medium tracking-tight text-foreground">
                 {entries.length}
               </strong>{" "}
               TERMS
             </span>
           </div>
-          <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
-            디자인·AI·UX/UI 실무에서 사용하는 핵심 용어를 정의, 예시, 실습과 함께 찾아봅니다.
-          </p>
         </header>
 
         <div className="mb-5 flex flex-col gap-3 sm:flex-row">

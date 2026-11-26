@@ -22,6 +22,29 @@ export function StatusBadge({ tone = "neutral", children }: { tone?: Tone; child
   );
 }
 
+export function PageTitle({
+  title,
+  titleId,
+  description,
+}: {
+  title: string;
+  titleId?: string;
+  description?: string | undefined;
+}) {
+  return (
+    <div className="@container min-w-0 flex-[1_1_18rem]">
+      <div className="flex flex-col gap-y-1.5 @min-[32rem]:flex-row @min-[32rem]:items-baseline @min-[32rem]:gap-x-4">
+        <h1 id={titleId} className="shrink-0 text-3xl font-bold leading-tight tracking-tight text-foreground md:text-4xl">
+          {title}
+        </h1>
+        {description && (
+          <p className="max-w-3xl break-keep text-sm leading-6 text-muted-foreground [overflow-wrap:anywhere]">{description}</p>
+        )}
+      </div>
+    </div>
+  );
+}
+
 export function PageHeader({ title, description }: { title: string; description?: string }) {
   return (
     <header className="mb-6">
