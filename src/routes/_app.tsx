@@ -1,6 +1,7 @@
-import { createFileRoute, Navigate, Outlet, useLocation } from "@tanstack/react-router";
+import { createFileRoute, Outlet, useLocation } from "@tanstack/react-router";
 import { AppShell } from "@/components/AppShell";
 import { Spinner } from "@/components/lms";
+import { AuthRedirect } from "@/components/AuthRedirect";
 import { useAuth } from "@/lib/auth";
 import { PublishedContentProvider } from "@/lib/published-content";
 
@@ -14,7 +15,7 @@ function AppLayout() {
   const location = useLocation();
   if (status === "loading") return <Spinner />;
   if (status === "student" && needsPinSetup && location.pathname.replace(/\/+$/, "") !== "/password") {
-    return <Navigate to="/password" replace />;
+    return <AuthRedirect to="/password" />;
   }
   if (status === "student" || status === "instructor")
     return (
@@ -24,5 +25,5 @@ function AppLayout() {
         </AppShell>
       </PublishedContentProvider>
     );
-  return <Navigate to="/login" />;
+  return <AuthRedirect to="/login" />;
 }

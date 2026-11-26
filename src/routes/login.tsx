@@ -1,6 +1,7 @@
-import { createFileRoute, Link, Navigate } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { FormEvent, useState } from "react";
 import { SITE_NAME, COURSE_NAME } from "@/data/schedule";
+import { AuthRedirect } from "@/components/AuthRedirect";
 import { useAuth } from "@/lib/auth";
 import { getSupabase } from "@/lib/supabase";
 import { isStudentPin, normalizePinInput, TEMPORARY_STUDENT_PIN } from "@/lib/student-pin";
@@ -52,7 +53,7 @@ function Login() {
   const [emailNotice, setEmailNotice] = useState("");
   const [emailError, setEmailError] = useState("");
 
-  if (status === "student" || status === "instructor") return <Navigate to={needsPinSetup ? "/password" : "/"} replace />;
+  if (status === "student" || status === "instructor") return <AuthRedirect to={needsPinSetup ? "/password" : "/"} />;
 
   async function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
