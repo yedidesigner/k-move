@@ -1,0 +1,159 @@
+/* Shared surfaces and controls in the utility-styled LMS screens. The component
+   markup still owns sizing, spacing, breakpoints, navigation and behavior. */
+html:is([data-theme="Liquid Class_basic"], [data-theme="Liquid Class_color"]) {
+  --color-neutral-50: var(--surface);
+  --color-neutral-100: var(--muted);
+  --color-neutral-200: var(--border);
+  --color-neutral-500: var(--muted-foreground);
+  --color-neutral-600: var(--muted-foreground);
+
+  & :where(section, article, div, ul, details):where(.bg-card, .bg-white):where(.border, .border-y),
+  & .lms-form-panel {
+    background-color: var(--card);
+    border-color: var(--border);
+    border-radius: var(--theme-panel-radius);
+    box-shadow: var(--shadow-soft);
+  }
+
+  & :where(a, button):is(.border, .bg-primary, .bg-black, .bg-neutral-950, .bg-foreground),
+  &
+    :where(label.border, textarea.border, select.border, input.border):not(
+      [type="checkbox"],
+      [type="radio"]
+    ) {
+    border-radius: var(--theme-control-radius);
+  }
+
+  & :where(input.border, textarea.border, select.border) {
+    border-color: var(--input);
+    background-color: var(--card);
+    color: var(--foreground);
+  }
+
+  /* Text controls that formerly used the same black fill as noninteractive
+     swatches get an accent. Teaching illustrations and slide images keep theirs. */
+  &
+    :where(a, button):is(
+      .bg-primary,
+      .bg-black,
+      .bg-neutral-900,
+      .bg-neutral-950,
+      .bg-foreground,
+      .lms-submit-action
+    ):not(:disabled) {
+    background: var(--glass-action-sheen, none) var(--primary);
+    box-shadow: var(--glass-action-shadow, revert-layer);
+    border-color: var(--primary);
+    color: var(--primary-foreground);
+  }
+
+  & :where(a, button):is(.bg-black, .bg-neutral-950) .text-neutral-300 {
+    color: var(--primary-foreground);
+  }
+
+  & :is(.lms-workbook-submit, .lms-step-navigation) {
+    border-radius: var(--theme-panel-radius);
+    border: 1px solid var(--glass-edge);
+    background: var(--glass-sheen, none) var(--glass-fill);
+    box-shadow: var(--glass-shadow);
+    -webkit-backdrop-filter: var(--glass-filter);
+    backdrop-filter: var(--glass-filter);
+  }
+
+  & .lms-workbook-submit {
+    border-radius: 999px;
+    color: var(--primary);
+  }
+
+  & nav.lms-step-navigation {
+    padding: 5px;
+  }
+
+  & nav.lms-step-navigation > p {
+    margin: 8px;
+  }
+
+  & .lms-step-navigation :is(button, select) {
+    border-radius: var(--theme-control-radius);
+  }
+
+  & .lms-step-navigation select {
+    background-color: transparent;
+  }
+
+  & button.border-l-2[aria-current="step"],
+  & .lms-route-choice:has(input:checked) {
+    background-color: var(--accent);
+    border-color: var(--primary);
+    color: var(--accent-foreground);
+  }
+
+  & .lms-route-choice:focus-within {
+    outline-color: var(--ring);
+  }
+
+  & [data-status-tone="info"] {
+    color: var(--info);
+  }
+
+  & [data-status-tone="success"] {
+    color: var(--success);
+  }
+
+  & [data-status-tone="warning"] {
+    color: var(--warning);
+  }
+
+  & [data-status-tone="danger"],
+  & [role="alert"].text-sm {
+    color: var(--destructive);
+  }
+
+  & [role="alert"].border-l-2 {
+    border-inline-start-color: var(--destructive);
+  }
+
+  & :where(input, progress).accent-black,
+  & button.border-l-2 span.bg-black {
+    --color-black: var(--primary);
+  }
+
+  & button.border-l-2 span.size-6 {
+    border-radius: 50%;
+  }
+
+  & :where(a, button, summary, input, select, textarea):focus-visible {
+    outline-color: var(--ring);
+  }
+
+  & [role="dialog"].bg-white {
+    border-radius: var(--theme-panel-radius);
+    background-color: var(--popover);
+    color: var(--popover-foreground);
+  }
+
+  @media (hover: hover) {
+    &
+      :where(a, button):is(
+        .bg-primary,
+        .bg-black,
+        .bg-neutral-900,
+        .bg-neutral-950,
+        .bg-foreground,
+        .lms-submit-action
+      ):not(:disabled):hover {
+      background-color: color-mix(in oklch, var(--primary) 90%, black);
+    }
+
+    & .lms-workbook-submit:hover {
+      background-color: var(--accent);
+    }
+  }
+}
+
+html[data-theme="Liquid Class_basic"] :where(#notebook-module, #brand-workshop) {
+  --color-blue-50: var(--surface);
+  --color-blue-200: var(--border);
+  --color-blue-700: var(--primary);
+  --color-blue-800: var(--foreground);
+}

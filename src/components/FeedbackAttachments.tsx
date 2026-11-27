@@ -469,7 +469,7 @@ function AttachmentContent({
       {linkOpen && (
         <form
           onSubmit={(event) => void saveLink(event)}
-          className="grid gap-3 border border-neutral-300 p-4"
+          className="lms-form-panel grid gap-3 border border-neutral-300 p-4"
         >
           <label className="text-xs font-medium">
             링크 제목 <span className="text-neutral-500">(선택)</span>
@@ -498,7 +498,7 @@ function AttachmentContent({
             Figma·Drive 등 원본 서비스에서 강사가 열 수 있는 공유 권한을 설정해 주세요.
           </p>
           <div className="flex gap-2">
-            <button disabled={busy} className={actionClass}>
+            <button disabled={busy} className={`lms-submit-action ${actionClass}`}>
               링크 등록
             </button>
             <button

@@ -8,6 +8,7 @@ export function StatusBadge({ tone = "neutral", children }: { tone?: Tone; child
   const emphasized = tone !== "neutral";
   return (
     <span
+      data-status-tone={tone}
       className={cn(
         "inline-flex items-center gap-1.5 text-xs font-semibold",
         emphasized ? "text-foreground" : "text-muted-foreground",

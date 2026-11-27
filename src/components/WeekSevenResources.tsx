@@ -117,7 +117,7 @@ export function WeekSevenWorkbook({ userId }: { userId: string | null }) {
 
       <div className="grid min-w-0 gap-5 xl:grid-cols-[166px_minmax(0,1fr)] xl:gap-7">
         <aside className="min-w-0 xl:sticky xl:top-6 xl:self-start">
-          <nav aria-label="7회차 실습 단계" className="hidden xl:block">
+          <nav aria-label="7회차 실습 단계" className="lms-step-navigation hidden xl:block">
             <p className="mb-3 text-xs font-semibold text-neutral-500">단계별 실습</p>
             <ol className="space-y-1">
               {stages.map((stage) => {
@@ -163,7 +163,7 @@ export function WeekSevenWorkbook({ userId }: { userId: string | null }) {
               })}
             </ol>
           </nav>
-          <div className="flex items-center gap-3 border border-neutral-300 bg-white p-3 xl:hidden">
+          <div className="lms-step-navigation flex items-center gap-3 border border-neutral-300 bg-white p-3 xl:hidden">
             <label
               htmlFor="s07-stage-select"
               className="shrink-0 text-xs font-semibold text-neutral-600"

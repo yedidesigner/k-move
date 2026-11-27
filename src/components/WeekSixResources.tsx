@@ -127,7 +127,7 @@ export function WeekSixWorkbook({ userId }: { userId: string | null }) {
       </div>
       <div className="grid min-w-0 gap-5 lg:grid-cols-[10.5rem_minmax(0,1fr)] lg:gap-7">
         <aside className="min-w-0 lg:sticky lg:top-6 lg:self-start">
-          <nav aria-label="6회차 실습 단계" className="hidden lg:block">
+          <nav aria-label="6회차 실습 단계" className="lms-step-navigation hidden lg:block">
             <ol className="space-y-1">
               {WEEK_SIX_STEPS.map((item, index) => (
                 <li key={item.shortTitle}>
@@ -152,7 +152,7 @@ export function WeekSixWorkbook({ userId }: { userId: string | null }) {
               ))}
             </ol>
           </nav>
-          <label className="flex items-center gap-3 border border-neutral-300 p-2.5 text-sm font-semibold lg:hidden">
+          <label className="lms-step-navigation flex items-center gap-3 border border-neutral-300 p-2.5 text-sm font-semibold lg:hidden">
             <span className="shrink-0 pl-1">교시 이동</span>
             <select
               className={`min-h-11 min-w-0 flex-1 bg-white text-base ${focus}`}
@@ -217,7 +217,7 @@ export function WeekSixWorkbook({ userId }: { userId: string | null }) {
                     {WEEK_SIX_ROUTES.map((item) => (
                       <label
                         key={item.id}
-                        className={`flex cursor-pointer items-start gap-3 border p-3.5 hover:bg-neutral-50 focus-within:outline focus-within:outline-2 ${route === item.id ? "border-black bg-neutral-50" : "border-neutral-200"}`}
+                        className={`lms-route-choice flex cursor-pointer items-start gap-3 border p-3.5 hover:bg-neutral-50 focus-within:outline focus-within:outline-2 ${route === item.id ? "border-black bg-neutral-50" : "border-neutral-200"}`}
                       >
                         <input
                           type="radio"

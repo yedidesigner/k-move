@@ -6,6 +6,7 @@ import { useAuth } from "@/lib/auth";
 import { getSupabase } from "@/lib/supabase";
 import { isStudentPin, normalizePinInput, TEMPORARY_STUDENT_PIN } from "@/lib/student-pin";
 import { Spinner, StatusBadge } from "@/components/lms";
+import { ThemeSelect } from "@/components/ThemeSelect";
 
 export const Route = createFileRoute("/login")({
   ssr: false,
@@ -99,8 +100,8 @@ function Login() {
 
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-background px-4 py-10">
-      <div className="w-full max-w-md border-y border-foreground bg-card px-5 py-8 sm:px-8">
+    <div className="lms-login-stage flex min-h-screen items-center justify-center bg-background px-4 py-10">
+      <div className="lms-login-card w-full max-w-md border-y border-foreground bg-card px-5 py-8 sm:px-8">
         <p className="mb-6 text-3xl font-bold tracking-tight">
           K-MOVE
           <span className="ml-3 text-xs font-medium tracking-[0.16em] text-muted-foreground">
@@ -212,6 +213,9 @@ function Login() {
               </button>
             </form>
           )}
+        </div>
+        <div className="mt-6 border-t border-border pt-4">
+          <ThemeSelect />
         </div>
       </div>
     </div>

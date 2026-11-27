@@ -19,6 +19,7 @@ import {
 } from "lucide-react";
 import { useAuth } from "@/lib/auth";
 import { requestEditorExit } from "@/lib/editor-exit-guard";
+import { ThemeSelect } from "@/components/ThemeSelect";
 
 const STUDENT_NAV = [
   { to: "/", label: "HOME", icon: Home },
@@ -117,7 +118,7 @@ export function AppShell({ children }: { children: ReactNode }) {
     }
   }
   return (
-    <div className="min-h-screen bg-background md:flex">
+    <div data-lms-shell className="min-h-screen bg-background md:flex">
       <a
         href="#lms-main"
         className="sr-only focus:not-sr-only focus:fixed focus:left-3 focus:top-3 focus:z-50 focus:bg-white focus:p-3 focus:text-black"
@@ -125,6 +126,7 @@ export function AppShell({ children }: { children: ReactNode }) {
         본문 바로가기
       </a>
       <aside
+        data-lms-sidebar
         className={`hidden shrink-0 flex-col border-r border-sidebar-border bg-sidebar md:sticky md:top-0 md:flex md:h-screen ${instructor ? (collapsed ? "md:w-[68px]" : "md:w-56") : feedback ? "md:w-80" : "md:w-72"}`}
       >
         <div
@@ -212,6 +214,9 @@ export function AppShell({ children }: { children: ReactNode }) {
               )}
             </p>
           )}
+          <div className="mt-2">
+            <ThemeSelect compact={collapsed && instructor} />
+          </div>
           {!isStudentPreview && <Link
             to="/password"
             title="비밀번호 변경"
@@ -239,7 +244,7 @@ export function AppShell({ children }: { children: ReactNode }) {
         </div>
       </aside>
       <div className="min-w-0 flex-1">
-        <header className="border-b border-border bg-card px-4 py-3 md:hidden">
+        <header data-lms-header className="border-b border-border bg-card px-4 py-3 md:hidden">
           <div className="flex items-center justify-between gap-3">
             <p className="font-bold">K-MOVE DESIGN</p>
             {instructor && <span className="text-xs">{accountName} · 강사</span>}
@@ -283,6 +288,7 @@ export function AppShell({ children }: { children: ReactNode }) {
                 {loggingOut ? "로그아웃 중…" : "로그아웃"}
               </button>
             </nav>
+            <ThemeSelect />
             {logoutError && (
               <p role="alert" className="text-xs text-destructive">
                 로그아웃에 실패했습니다. 다시 시도해 주세요.
@@ -308,6 +314,7 @@ export function AppShell({ children }: { children: ReactNode }) {
       </div>
       <nav
         aria-label="하단 메뉴"
+        data-lms-dock
         className="fixed inset-x-0 bottom-0 z-20 grid grid-cols-5 border-t border-border bg-card pb-[env(safe-area-inset-bottom)] md:hidden"
       >
         {mobilePaths

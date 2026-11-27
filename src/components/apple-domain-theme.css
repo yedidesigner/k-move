@@ -1,0 +1,326 @@
+/* Screen-specific controls that predate the shared LMS design tokens. */
+html:is([data-theme="Liquid Class_basic"], [data-theme="Liquid Class_color"]) {
+  & :is(.study-shared, .study-guide) {
+    --study-ink: var(--foreground);
+    --study-muted: var(--muted-foreground);
+    --study-line: var(--border);
+    --study-accent: var(--primary);
+  }
+
+  & .pr-room {
+    --pr-ink: var(--foreground);
+    --pr-muted: var(--muted-foreground);
+    --pr-line: var(--border);
+  }
+
+  & :is(.feedback-document, .instructor-workspace) {
+    background: var(--background);
+    color: var(--foreground);
+  }
+
+  & :is(.feedback-paper, .glossary-lesson-dialog, .pr-room, .pr-poll-card, .wrl-mailbox) {
+    color: var(--card-foreground);
+    background: var(--card);
+    border-color: var(--border);
+    border-radius: var(--theme-panel-radius);
+    box-shadow: var(--shadow-soft);
+  }
+
+  & .feedback-paper-layer {
+    border-color: var(--border);
+    border-radius: var(--theme-panel-radius);
+  }
+
+  & .feedback-paper-layer-back {
+    background: var(--border);
+  }
+  & .feedback-paper-layer-front {
+    background: var(--secondary);
+  }
+
+  & :is(.pr-composer, .pr-polls-create) {
+    background: var(--secondary);
+    border-color: var(--border);
+  }
+
+  &
+    :is(
+      .feedback-heading-summary p,
+      .feedback-week-heading span,
+      .iw-muted,
+      .iw-description,
+      .pr-composer-foot,
+      .pr-save-note,
+      .pr-polls-footer,
+      .pr-poll-card time,
+      .pr-polls-privacy,
+      .wrl-privacy
+    ) {
+    color: var(--muted-foreground);
+  }
+
+  &
+    :is(
+      .feedback-week-heading > button,
+      .study-next-guide a,
+      .gl-next-step,
+      .glossary-learn-button,
+      .pr-text-button
+    ) {
+    color: var(--primary);
+  }
+
+  &
+    :is(
+      .iw-button,
+      .iw-input,
+      .pr-input-box,
+      .pr-expand,
+      .pr-outline-button,
+      .pr-solid-button,
+      .pr-polls-action,
+      .pr-poll-option,
+      .pr-filters button,
+      .pr-polls-field input,
+      .pr-polls-option-input input,
+      .pr-polls-reason-editor textarea,
+      .study-search-wrap,
+      .study-select-wrap,
+      .study-select-wrap select,
+      .glossary-type-filters button,
+      .gp-choices button,
+      .gp-primary,
+      .gp-secondary,
+      .wrl-main-button,
+      .wrl-sub-button,
+      .wrl-icon-button,
+      .wrl-size-control
+    ) {
+    border-radius: var(--theme-control-radius);
+  }
+
+  &
+    :is(
+      .iw-button,
+      .iw-input,
+      .study-select-wrap select,
+      .study-search-wrap,
+      .pr-input-box,
+      .pr-polls-field input,
+      .pr-polls-option-input input,
+      .pr-polls-reason-editor textarea,
+      .wrl-size-control
+    ) {
+    background: var(--card);
+    color: var(--card-foreground);
+    border-color: var(--input);
+  }
+
+  &
+    :is(
+      .iw-fieldset,
+      .iw-queue,
+      .iw-readonly,
+      .iw-viewer,
+      .iw-pin-card,
+      .iw-asset-option,
+      .study-topic-grid button,
+      .pr-material-card,
+      .pr-emoji-panel,
+      .pr-polls-winner,
+      .pr-polls-create,
+      .wrl-save-menu
+    ) {
+    border-color: var(--border);
+    border-radius: var(--theme-panel-radius);
+  }
+
+  &
+    :is(
+      .iw-primary,
+      .pr-solid-button,
+      .pr-polls-primary,
+      .gp-primary,
+      .wrl-main-button,
+      .wrl-icon-button,
+      .glossary-type-filters button[aria-pressed="true"]
+    ) {
+    color: var(--primary-foreground);
+    background: var(--glass-action-sheen, none) var(--primary);
+    box-shadow: var(--glass-action-shadow, revert-layer);
+    border-color: var(--primary);
+  }
+
+  & .pr-tab.is-active .pr-count {
+    color: var(--primary-foreground);
+    background: var(--primary);
+  }
+
+  &
+    :is(
+      .iw-primary,
+      .pr-solid-button,
+      .pr-polls-primary,
+      .gp-primary,
+      .wrl-main-button,
+      .wrl-icon-button
+    ):hover:not(:disabled) {
+    background-color: color-mix(in srgb, var(--primary) 85%, black);
+  }
+
+  & .pr-solid-button:disabled {
+    background: var(--muted);
+    color: var(--muted-foreground);
+    border-color: var(--border);
+    box-shadow: none;
+  }
+
+  &
+    :is(
+      .pr-tab.is-active,
+      .iw-tabs button[aria-selected="true"],
+      .study-reading-tabs > button[aria-selected="true"],
+      .gl-step-tabs > button[aria-selected="true"]
+    ) {
+    color: var(--primary);
+    border-bottom-color: var(--primary);
+  }
+
+  &
+    :is(
+      .pr-filters button.is-active,
+      .pr-poll-option.is-selected,
+      .iw-asset-option:has(input:checked),
+      .iw-pin-card[data-active="true"],
+      .gp-choices button[aria-pressed="true"]
+    ) {
+    background: var(--accent);
+    border-color: var(--primary);
+    color: var(--accent-foreground);
+  }
+
+  & .iw-queue-row[aria-pressed="true"] {
+    background: var(--accent);
+    box-shadow: inset 3px 0 var(--primary);
+  }
+
+  & :is(.iw-asset-option input, .pr-poll-option input) {
+    accent-color: var(--primary);
+  }
+
+  & .iw-badge {
+    border-radius: 999px;
+  }
+  & .iw-badge[data-tone="attention"] {
+    color: var(--warning);
+    background: var(--warning-soft);
+    border-color: var(--warning);
+  }
+
+  & .iw-notice {
+    background: var(--info-soft);
+    color: var(--info);
+    border-color: var(--info);
+  }
+
+  & .glossary-card-face {
+    border-radius: var(--theme-panel-radius);
+  }
+  & .glossary-card-shell:has(.glossary-learn-button) .glossary-card-face {
+    border-radius: var(--theme-panel-radius) var(--theme-panel-radius) 0 0;
+  }
+  & .glossary-card-back,
+  & .glossary-card:hover .glossary-card-front {
+    border-color: var(--primary);
+  }
+
+  & .glossary-learn-button {
+    border-radius: 0 0 var(--theme-panel-radius) var(--theme-panel-radius);
+  }
+
+  & .glossary-card-shell .glossary-learn-button:hover,
+  & .study-topic-grid button:hover {
+    background: var(--accent);
+    color: var(--accent-foreground);
+    border-color: var(--primary);
+  }
+
+  &
+    :is(
+      .glossary-lesson-toolbar,
+      .iw-sticky-actions,
+      .feedback-week-tabs,
+      .pr-emoji-panel,
+      .wrl-save-menu
+    ) {
+    background: var(--glass-sheen, none) var(--glass-fill);
+    border-color: var(--glass-edge);
+    box-shadow: var(--glass-shadow);
+    -webkit-backdrop-filter: var(--glass-filter);
+    backdrop-filter: var(--glass-filter);
+  }
+
+  & :is(.iw-sticky-actions, .feedback-week-tabs) {
+    border: 1px solid var(--glass-edge);
+    border-radius: var(--theme-panel-radius);
+  }
+
+  & .iw-sticky-actions {
+    padding-inline: 0.75rem;
+  }
+
+  & .feedback-week-tabs {
+    padding: 3px;
+  }
+
+  & .feedback-week-tabs button {
+    background-color: transparent;
+    border: 1px solid transparent;
+    border-radius: var(--theme-control-radius);
+    color: var(--muted-foreground);
+  }
+
+  & .feedback-week-tabs button[aria-pressed="true"] {
+    margin: 0;
+    width: 44px;
+    border-color: var(--primary);
+    color: var(--primary-foreground);
+    background: var(--glass-action-sheen, none) var(--primary);
+    box-shadow: var(--glass-action-shadow, none);
+  }
+
+  & .wrl-save-menu > button {
+    background-color: transparent;
+  }
+
+  @media (hover: hover) {
+    & .feedback-week-tabs button:not([aria-pressed="true"]):hover,
+    & .wrl-save-menu > button:hover {
+      color: var(--accent-foreground);
+      background-color: var(--accent);
+    }
+  }
+
+  & .pr-input-box:focus-within {
+    border-color: var(--ring);
+    box-shadow: 0 0 0 1px var(--ring);
+  }
+
+  & .wrl-size-control:focus-within {
+    outline: 2px solid var(--ring);
+    outline-offset: 2px;
+  }
+
+  &
+    :is(.instructor-workspace, .feedback-document, .pr-room, .wrl-mailbox)
+    :is(button, a, summary, input, select, textarea):focus-visible,
+  &
+    :is(
+      .glossary-type-filters button,
+      .glossary-card,
+      .glossary-learn-button,
+      .glossary-lesson-toolbar button
+    ):focus-visible {
+    outline-color: var(--ring);
+  }
+}
