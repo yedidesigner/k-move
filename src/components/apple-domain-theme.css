@@ -1,5 +1,9 @@
 /* Screen-specific controls that predate the shared LMS design tokens. */
-html:is([data-theme="Liquid Class_basic"], [data-theme="Liquid Class_color"]) {
+html:is(
+  [data-theme="Liquid Glass_basic"],
+  [data-theme="Liquid Glass_color"],
+  [data-theme="LiquidGlass_v2"]
+) {
   & :is(.study-shared, .study-guide) {
     --study-ink: var(--foreground);
     --study-muted: var(--muted-foreground);

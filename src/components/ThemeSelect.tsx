@@ -1,8 +1,9 @@
 import { Palette } from "lucide-react";
 import {
-  DEFAULT_THEME,
-  LIQUID_CLASS_COLOR_THEME,
-  LIQUID_CLASS_BASIC_THEME,
+  AFTER_THEME,
+  LIQUID_GLASS_COLOR_THEME,
+  LIQUID_GLASS_BASIC_THEME,
+  LIQUID_GLASS_V2_THEME,
   setTheme,
   useTheme,
 } from "@/lib/theme";
@@ -29,9 +30,10 @@ export function ThemeSelect({ compact = false }: { compact?: boolean }) {
         value={theme}
         onChange={(event) => setTheme(event.target.value)}
       >
-        <option value={DEFAULT_THEME}>기본 · After 261127</option>
-        <option value={LIQUID_CLASS_COLOR_THEME}>{LIQUID_CLASS_COLOR_THEME}</option>
-        <option value={LIQUID_CLASS_BASIC_THEME}>{LIQUID_CLASS_BASIC_THEME}</option>
+        <option value={LIQUID_GLASS_V2_THEME}>{LIQUID_GLASS_V2_THEME}</option>
+        <option value={LIQUID_GLASS_COLOR_THEME}>{LIQUID_GLASS_COLOR_THEME}</option>
+        <option value={LIQUID_GLASS_BASIC_THEME}>{LIQUID_GLASS_BASIC_THEME}</option>
+        <option value={AFTER_THEME}>After 261127</option>
       </select>
     </label>
   );

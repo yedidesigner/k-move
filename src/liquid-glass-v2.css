@@ -1,0 +1,292 @@
+/* iOS text styles at the default content size. The root follows Dynamic Type on iOS. */
+:root[data-theme="LiquidGlass_v2"] {
+  --ios-body: 1.0625rem;
+  --text-xs: calc(var(--ios-body) * 13 / 17);
+  --text-xs--line-height: calc(18 / 13);
+  --text-sm: calc(var(--ios-body) * 15 / 17);
+  --text-sm--line-height: calc(20 / 15);
+  --text-base: var(--ios-body);
+  --text-base--line-height: calc(22 / 17);
+  --text-lg: calc(var(--ios-body) * 20 / 17);
+  --text-lg--line-height: 1.25;
+  --text-xl: calc(var(--ios-body) * 22 / 17);
+  --text-xl--line-height: calc(28 / 22);
+  --text-2xl: calc(var(--ios-body) * 28 / 17);
+  --text-2xl--line-height: calc(34 / 28);
+  --text-3xl: calc(var(--ios-body) * 2);
+  --text-3xl--line-height: calc(41 / 34);
+  --text-4xl: var(--text-3xl);
+  --text-4xl--line-height: var(--text-3xl--line-height);
+
+  --lms-sans:
+    -apple-system, BlinkMacSystemFont, system-ui, "Apple SD Gothic Neo", "Noto Sans KR", sans-serif;
+  --background: oklch(0.965 0.003 285);
+  --surface: oklch(0.946 0.003 285);
+  --foreground: oklch(0.192 0.004 285);
+  --muted-foreground: oklch(0.436 0.009 285);
+  --primary: oklch(0.506 0.181 257);
+  --accent: oklch(0.935 0.011 263);
+  --accent-foreground: var(--foreground);
+  --input: oklch(0.628 0.008 285);
+  --ring: var(--primary);
+  --theme-panel-radius: 1.5rem;
+  --theme-control-radius: 0.875rem;
+  --shadow-soft: 0 1px 3px oklch(0 0 0 / 0.035);
+
+  /* A diffuse fill keeps moving text legible behind the toolbar. Opposing inner
+     edges produce a narrow highlight and dark optical rim even on plain pages. */
+  --glass-solid: oklch(0.98 0.002 285);
+  --glass-fill: var(--glass-solid);
+  --glass-filter: none;
+  --glass-edge: oklch(0.29 0.008 285 / 0.17);
+  --glass-sheen: linear-gradient(
+    155deg,
+    oklch(1 0 0 / 0.48),
+    transparent 32%,
+    transparent 75%,
+    oklch(1 0 0 / 0.18)
+  );
+  --glass-shadow:
+    inset 0 1px 1px oklch(1 0 0 / 0.95), inset 1px 0 0 oklch(1 0 0 / 0.65),
+    inset 0 -1px 1px oklch(0 0 0 / 0.12), 0 4px 14px -6px oklch(0.18 0.006 285 / 0.19);
+  --glass-action-sheen: linear-gradient(172deg, oklch(1 0 0 / 0.13), transparent 48%);
+  --glass-action-shadow: inset 0 1px 1px oklch(1 0 0 / 0.55), inset 0 -1px 1px oklch(0 0 0 / 0.17);
+  --glass-press-shadow: inset 0 2px 4px oklch(0 0 0 / 0.22), inset 0 -1px 1px oklch(1 0 0 / 0.6);
+  --glass-settle: 210ms cubic-bezier(0.22, 0.75, 0.28, 1.15);
+  font-optical-sizing: auto;
+  -webkit-font-smoothing: antialiased;
+}
+
+@supports (font: -apple-system-body) and (-webkit-touch-callout: none) {
+  :root[data-theme="LiquidGlass_v2"] {
+    font: -apple-system-body;
+    --ios-body: 1rem;
+  }
+}
+
+@supports ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  :root[data-theme="LiquidGlass_v2"] {
+    --glass-fill: oklch(1 0 0 / 0.67);
+    --glass-filter: saturate(130%) blur(18px);
+  }
+}
+
+:root[data-theme="LiquidGlass_v2"] {
+  & body {
+    font-family: var(--lms-sans);
+    font-size: var(--ios-body);
+    line-height: var(--text-base--line-height);
+  }
+
+  & :is(main, .lms-login-card) h1 {
+    font-size: var(--text-3xl);
+    font-weight: 700;
+    letter-spacing: -0.025em;
+    line-height: var(--text-3xl--line-height);
+    text-wrap: balance;
+    overflow-wrap: anywhere;
+  }
+
+  & :is(.study-section-heading h2, .pr-header h2, .iw-section-title) {
+    font-size: var(--text-xl);
+    font-weight: 700;
+    letter-spacing: -0.018em;
+    line-height: var(--text-xl--line-height);
+  }
+
+  & :is(.study-guide-summary, .iw-description, .pr-message-body) {
+    font-size: var(--ios-body);
+    line-height: 1.5;
+  }
+
+  & :is(input, textarea, select, button) {
+    font-family: inherit;
+  }
+
+  & :is([data-lms-sidebar], [data-lms-header]) {
+    border: 1px solid var(--glass-edge);
+    background: var(--glass-sheen) var(--glass-fill);
+    -webkit-backdrop-filter: var(--glass-filter);
+    backdrop-filter: var(--glass-filter);
+    box-shadow: var(--glass-shadow);
+  }
+
+  & [data-lms-sidebar] {
+    height: 100dvh;
+    border-width: 0 1px 0 0;
+  }
+
+  & [data-lms-header] {
+    margin: 8px 8px 0;
+    border-radius: 1.5rem;
+  }
+
+  & :is([data-lms-header], [data-lms-sidebar]) [data-nav-active] {
+    border-radius: 999px;
+  }
+
+  & :is([data-lms-header], [data-lms-sidebar]) [data-nav-active="true"] {
+    color: var(--foreground);
+    background: var(--accent);
+    border-color: transparent;
+    font-weight: 650;
+  }
+
+  & [data-lms-sidebar] [data-nav-active] > svg {
+    color: var(--primary);
+  }
+
+  & .lms-login-card {
+    border: 1px solid var(--border);
+    border-radius: 2rem;
+    background-color: var(--card);
+    box-shadow: var(--shadow-soft);
+  }
+
+  & .lms-login-card > p:first-child {
+    margin-bottom: 0.75rem;
+    color: var(--muted-foreground);
+    font-size: var(--text-xs);
+    line-height: var(--text-xs--line-height);
+    letter-spacing: 0.045em;
+    font-weight: 600;
+  }
+
+  & .lms-login-card > p:first-child > span {
+    margin-inline-start: 0.3em;
+    font-size: inherit;
+    letter-spacing: inherit;
+  }
+
+  & .lms-login-card .bg-primary:disabled {
+    background: var(--secondary);
+    color: var(--muted-foreground);
+    opacity: 1;
+  }
+
+  & :is(.lms-login-card, [data-lms-header], [data-lms-sidebar]) select {
+    border: 1px solid var(--glass-edge);
+    border-radius: 999px;
+    color: var(--foreground);
+    padding-inline: 0.875rem;
+    background: var(--glass-sheen) var(--glass-solid);
+    box-shadow: var(--glass-shadow);
+  }
+
+  & :is(.lms-login-card, .lms-form-panel) input:focus-visible {
+    border-color: var(--ring);
+    outline: 2px solid var(--ring);
+    outline-offset: 2px;
+  }
+
+  &
+    :is(a, button):is(
+      .bg-primary,
+      .bg-foreground,
+      .bg-black,
+      .bg-neutral-950,
+      .lms-workbook-submit,
+      .lms-submit-action,
+      .iw-primary,
+      .pr-solid-button,
+      .pr-polls-primary,
+      .gp-primary,
+      .wrl-main-button,
+      .wrl-icon-button
+    ) {
+    border-radius: 999px;
+    -webkit-tap-highlight-color: transparent;
+    transition:
+      scale var(--glass-settle),
+      box-shadow 140ms ease-out,
+      background-color 140ms ease-out;
+
+    &:active:not(:disabled):not([aria-disabled="true"]) {
+      scale: 0.97;
+      box-shadow: var(--glass-press-shadow);
+      transition-duration: 65ms;
+    }
+  }
+
+  & [data-lms-header] details[open] > nav {
+    animation: lms-glass-menu-in var(--glass-settle) both;
+  }
+}
+
+@keyframes lms-glass-menu-in {
+  from {
+    opacity: 0;
+    translate: 0 -0.35rem;
+  }
+  to {
+    opacity: 1;
+    translate: 0 0;
+  }
+}
+
+@media (max-width: 47.999rem) {
+  :root[data-theme="LiquidGlass_v2"] {
+    & [data-lms-shell] {
+      display: flow-root;
+    }
+    & :is(input:not([type="checkbox"]):not([type="radio"]), select, textarea) {
+      font-size: max(1rem, var(--ios-body));
+    }
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :root[data-theme="LiquidGlass_v2"] {
+    --glass-settle: 0s;
+    & [data-lms-header] details[open] > nav {
+      animation: none;
+    }
+    & :is(a, button) {
+      transition-duration: 0s;
+    }
+    & :is(a, button):active:not(:disabled):not([aria-disabled="true"]) {
+      scale: none;
+    }
+  }
+}
+
+@media (prefers-reduced-transparency: reduce), (prefers-contrast: more), (forced-colors: active) {
+  :root[data-theme="LiquidGlass_v2"] {
+    --glass-fill: var(--glass-solid);
+    --glass-edge: var(--input);
+    --glass-filter: none;
+    --glass-sheen: none;
+    --glass-action-sheen: none;
+    --glass-shadow: none;
+    --glass-action-shadow: none;
+    --glass-press-shadow: none;
+  }
+}
+
+@media (prefers-contrast: more), (forced-colors: active) {
+  :root[data-theme="LiquidGlass_v2"]
+    :is([data-lms-header], [data-lms-sidebar])
+    [data-nav-active="true"] {
+    outline: 2px solid currentColor;
+    outline-offset: -3px;
+    text-decoration: underline;
+  }
+}
+
+@media (forced-colors: active) {
+  :root[data-theme="LiquidGlass_v2"] {
+    --glass-solid: Canvas;
+    --glass-edge: ButtonText;
+  }
+}
+
+/* The narrow reflection moves on the touched control, independently of its fill. */
+:root[data-theme="LiquidGlass_v2"] [data-glass-lit]:is(a, button, select, summary) {
+  background-image:
+    radial-gradient(
+      ellipse 4rem 1.9rem at var(--glass-light-x) var(--glass-light-y),
+      rgb(255 255 255 / 25%),
+      transparent 95%
+    ),
+    var(--glass-sheen, none);
+}

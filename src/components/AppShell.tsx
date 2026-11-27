@@ -20,6 +20,7 @@ import {
 import { useAuth } from "@/lib/auth";
 import { requestEditorExit } from "@/lib/editor-exit-guard";
 import { ThemeSelect } from "@/components/ThemeSelect";
+import { MobileDock } from "@/components/MobileDock";
 
 const STUDENT_NAV = [
   { to: "/", label: "HOME", icon: Home },
@@ -312,11 +313,7 @@ export function AppShell({ children }: { children: ReactNode }) {
           {children}
         </main>
       </div>
-      <nav
-        aria-label="하단 메뉴"
-        data-lms-dock
-        className="fixed inset-x-0 bottom-0 z-20 grid grid-cols-5 border-t border-border bg-card pb-[env(safe-area-inset-bottom)] md:hidden"
-      >
+      <MobileDock activeIndex={mobilePaths.findIndex(navActive)} count={mobilePaths.length}>
         {mobilePaths
           .map((path) => nav.find((item) => item.to === path))
           .filter((item) => !!item)
@@ -335,7 +332,7 @@ export function AppShell({ children }: { children: ReactNode }) {
               </Link>
             );
           })}
-      </nav>
+      </MobileDock>
     </div>
   );
 }

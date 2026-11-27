@@ -1,6 +1,10 @@
 /* Shared surfaces and controls in the utility-styled LMS screens. The component
    markup still owns sizing, spacing, breakpoints, navigation and behavior. */
-html:is([data-theme="Liquid Class_basic"], [data-theme="Liquid Class_color"]) {
+html:is(
+  [data-theme="Liquid Glass_basic"],
+  [data-theme="Liquid Glass_color"],
+  [data-theme="LiquidGlass_v2"]
+) {
   --color-neutral-50: var(--surface);
   --color-neutral-100: var(--muted);
   --color-neutral-200: var(--border);
@@ -151,7 +155,8 @@ html:is([data-theme="Liquid Class_basic"], [data-theme="Liquid Class_color"]) {
   }
 }
 
-html[data-theme="Liquid Class_basic"] :where(#notebook-module, #brand-workshop) {
+html:is([data-theme="Liquid Glass_basic"], [data-theme="LiquidGlass_v2"])
+  :where(#notebook-module, #brand-workshop) {
   --color-blue-50: var(--surface);
   --color-blue-200: var(--border);
   --color-blue-700: var(--primary);

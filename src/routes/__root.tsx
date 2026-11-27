@@ -13,7 +13,8 @@ import { useEffect, type ReactNode } from "react";
 import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
 import { AuthProvider } from "../lib/auth";
-import { syncStoredTheme, themeBootstrapScript } from "../lib/theme";
+import { DEFAULT_THEME, syncStoredTheme, themeBootstrapScript } from "../lib/theme";
+import { useGlassLight } from "../lib/use-glass-light";
 
 function NotFoundComponent() {
   return (
@@ -104,8 +105,9 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
 
 function RootShell({ children }: { children: ReactNode }) {
   useEffect(syncStoredTheme, []);
+  useGlassLight();
   return (
-    <html lang="ko" suppressHydrationWarning>
+    <html lang="ko" data-theme={DEFAULT_THEME} suppressHydrationWarning>
       <head>
         <script dangerouslySetInnerHTML={{ __html: themeBootstrapScript }} />
         <HeadContent />

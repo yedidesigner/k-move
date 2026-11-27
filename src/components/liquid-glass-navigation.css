@@ -1,0 +1,133 @@
+html[data-theme="LiquidGlass_v2"] nav[data-lms-dock] {
+  /* The iPhone kit's five-tab bar is 346 x 62 in a 402-wide frame. */
+  --dock-padding: 3px;
+  --dock-inset: clamp(8px, calc((100% - 312px) / 2), 28px);
+  inset-inline: max(var(--dock-inset), env(safe-area-inset-left))
+    max(var(--dock-inset), env(safe-area-inset-right));
+  bottom: max(6px, env(safe-area-inset-bottom));
+  max-width: 32rem;
+  margin-inline: auto;
+  padding: var(--dock-padding);
+  isolation: isolate;
+  border: 1px solid var(--glass-edge);
+  border-radius: 999px;
+  background-color: var(--glass-fill);
+  background-image: var(--glass-sheen, none);
+  box-shadow: var(--glass-shadow);
+  -webkit-backdrop-filter: var(--glass-filter);
+  backdrop-filter: var(--glass-filter);
+  -webkit-user-select: none;
+  user-select: none;
+  touch-action: pan-y pinch-zoom;
+}
+
+html[data-theme="LiquidGlass_v2"] [data-dock-track] {
+  position: absolute;
+  inset: var(--dock-padding);
+  overflow: hidden;
+  border-radius: inherit;
+  pointer-events: none;
+}
+
+html[data-theme="LiquidGlass_v2"] [data-dock-track]::before {
+  content: "";
+  display: block;
+  width: calc(100% / var(--dock-count));
+  height: 100%;
+  border-radius: inherit;
+  opacity: 0;
+  background-color: color-mix(in srgb, var(--foreground) 9%, transparent);
+  box-shadow:
+    inset 0 1px 1px rgb(255 255 255 / 92%),
+    inset 0 -1px 1px rgb(33 35 39 / 12%);
+  transform: translateX(calc(100% * var(--dock-drag-position, var(--dock-active-index))));
+  transition:
+    transform 320ms cubic-bezier(0.2, 0, 0, 1),
+    opacity 120ms ease-out;
+}
+
+html[data-theme="LiquidGlass_v2"]
+  :is([data-dock-selected], [data-dock-dragging])
+  > [data-dock-track]::before {
+  opacity: 1;
+}
+
+html[data-theme="LiquidGlass_v2"] [data-dock-dragging] > [data-dock-track]::before {
+  transform: translateX(calc(100% * var(--dock-drag-position))) scale(1.035, 0.97);
+  transition: none;
+}
+
+html[data-theme="LiquidGlass_v2"] nav[data-lms-dock] > a[data-nav-active] {
+  position: relative;
+  min-height: 54px;
+  gap: 2px;
+  padding-inline: 1px;
+  border-radius: 999px;
+  color: var(--foreground);
+  background: transparent;
+  box-shadow: none;
+  -webkit-tap-highlight-color: transparent;
+  transition:
+    min-height 180ms ease-out,
+    color 120ms ease-out;
+}
+html[data-theme="LiquidGlass_v2"] nav[data-lms-dock] > a[data-nav-active="true"] {
+  color: var(--primary);
+  font-weight: 600;
+}
+
+html[data-theme="LiquidGlass_v2"] nav[data-lms-dock] > a > svg {
+  width: 22px;
+  height: 22px;
+  transition: transform 140ms ease-out;
+}
+
+html[data-theme="LiquidGlass_v2"] nav[data-lms-dock] > a:active > svg {
+  transform: scale(0.96);
+}
+
+/* One caption fits the native-sized tab. Both languages remain in the link's accessible name. */
+html[data-theme="LiquidGlass_v2"] nav[data-lms-dock] [lang="en"] {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  clip-path: inset(50%);
+  overflow: hidden;
+}
+html[data-theme="LiquidGlass_v2"] nav[data-lms-dock] [lang="en"] + span {
+  font-size: 0.6875rem;
+  line-height: 1.25;
+  font-weight: inherit;
+  opacity: 1;
+}
+
+html[data-theme="LiquidGlass_v2"] nav[data-lms-dock][data-dock-scrolled] > a[data-nav-active] {
+  min-height: 46px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html[data-theme="LiquidGlass_v2"] [data-dock-track]::before,
+  html[data-theme="LiquidGlass_v2"] nav[data-lms-dock] > a[data-nav-active],
+  html[data-theme="LiquidGlass_v2"] nav[data-lms-dock] > a > svg {
+    transition: none;
+  }
+  html[data-theme="LiquidGlass_v2"] nav[data-lms-dock] > a:active > svg {
+    transform: none;
+  }
+  html[data-theme="LiquidGlass_v2"] [data-dock-dragging] > [data-dock-track]::before {
+    transform: translateX(calc(100% * var(--dock-drag-position)));
+  }
+}
+
+@media (prefers-reduced-transparency: reduce), (prefers-contrast: more) {
+  html[data-theme="LiquidGlass_v2"] [data-dock-track]::before {
+    background-color: var(--accent);
+    box-shadow: none;
+  }
+}
+@media (prefers-contrast: more), (forced-colors: active) {
+  html[data-theme="LiquidGlass_v2"] nav[data-lms-dock] > a[data-nav-active="true"] {
+    text-decoration: underline;
+    text-underline-offset: 2px;
+  }
+}
